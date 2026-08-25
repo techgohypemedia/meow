@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Cat3D from "../components/Cat3D";
+import InteractiveCat from "../components/InteractiveCat";
 
 export default function Home() {
   return (
@@ -17,7 +17,7 @@ export default function Home() {
         {/* Navigation */}
       <nav className="w-full z-50 px-6 py-2 md:px-12 md:py-4 flex items-center justify-between h-20 md:h-24">
         <div className="flex items-center gap-3 cursor-pointer group -my-12 md:-my-16">
-          <div className="relative w-32 h-32 md:w-48 md:h-48 transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-2">
+          <div className="relative w-40 h-40 md:w-56 md:h-56 transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-2">
             <Image 
               src="/meowganics_logo_transparent.png" 
               alt="Meow Ganics Logo" 
@@ -55,7 +55,7 @@ export default function Home() {
           
           <div className="flex flex-col items-center">
             {/* Product Packaging Image */}
-            <div className="relative w-full max-w-[350px] md:max-w-[450px] animate-float drop-shadow-[0_20px_25px_rgba(0,0,0,0.2)] z-40">
+            <div className="relative w-full max-w-[400px] md:max-w-[550px] animate-float drop-shadow-[0_20px_25px_rgba(0,0,0,0.2)] z-40">
               <Image 
                 src="/product-bag.png" 
                 alt="Clean Bean Product Bag" 
@@ -66,16 +66,8 @@ export default function Home() {
               />
             </div>
             
-            <button className="mt-6 px-16 py-4 bg-brand-black text-brand-white font-bold rounded-xl text-xl hover:bg-gray-800 transition-colors shadow-[6px_6px_0px_#CFE5F8]">
-              Buy Now
-            </button>
-            
-            {/* Feature Badges */}
-            <div className="flex flex-row flex-nowrap whitespace-nowrap gap-2 md:gap-3 justify-center mt-6 w-full">
-               <span className="px-3 md:px-4 py-2 bg-brand-white border-2 border-brand-black rounded-full font-bold text-xs md:text-sm shadow-[2px_2px_0px_#111111] hover:-translate-y-1 transition-transform cursor-default">🌱 Plant Based</span>
-               <span className="px-3 md:px-4 py-2 bg-brand-white border-2 border-brand-black rounded-full font-bold text-xs md:text-sm shadow-[2px_2px_0px_#111111] hover:-translate-y-1 transition-transform cursor-default">💧 Strong Clumping</span>
-               <span className="px-3 md:px-4 py-2 bg-brand-white border-2 border-brand-black rounded-full font-bold text-xs md:text-sm shadow-[2px_2px_0px_#111111] hover:-translate-y-1 transition-transform cursor-default">🚽 Flushable</span>
-            </div>
+
+
           </div>
           
         </div>
@@ -85,36 +77,14 @@ export default function Home() {
           
           {/* Text Details (z-30) */}
           <div className="w-full flex flex-col items-center md:items-end text-center md:text-right z-30 px-4">
-             <h1 className="text-6xl md:text-8xl font-heading text-brand-black leading-none mb-2 drop-shadow-sm whitespace-nowrap">
-               Clean Bean
-             </h1>
-             <h2 className="text-2xl md:text-3xl font-bold text-brand-black mb-6 italic">
-               Pure Routine.
-             </h2>
-             <p className="text-brand-black text-lg mb-8 font-medium leading-relaxed max-w-md">
-               A natural, plant-based alternative made from soybean fiber. 
-               Lightweight, dust-free, and your firm, fluffy companion for easy scooping and hassle-free cleaning.
-             </p>
-             
 
           </div>
           
-          {/* Bowl of food - positioned slightly left of the cat, sitting ON the table (z-30) */}
-          <div className="absolute right-32 md:right-72 bottom-10 md:bottom-16 w-24 md:w-32 z-30">
-            <svg viewBox="0 0 100 60" className="w-full h-auto drop-shadow-[0_10px_0px_rgba(17,17,17,0.1)]">
-              <ellipse cx="50" cy="25" rx="45" ry="15" fill="#CFE5F8" stroke="#111111" strokeWidth="4"/>
-              <path d="M5,25 C5,55 95,55 95,25" fill="#FFFFFF" stroke="#111111" strokeWidth="4"/>
-              {/* Food mound */}
-              <path d="M20,25 Q50,0 80,25" fill="#8FBEE5" stroke="#111111" strokeWidth="4"/>
-              <circle cx="40" cy="15" r="2.5" fill="#111111"/>
-              <circle cx="60" cy="18" r="3.5" fill="#111111"/>
-              <circle cx="50" cy="10" r="2" fill="#111111"/>
-            </svg>
-          </div>
+
           
-          {/* 3D Peaking Cat - BEHIND the table (z-10) */}
-          <div className="absolute right-0 md:right-10 bottom-6 md:bottom-8 w-[300px] h-[300px] md:w-[450px] md:h-[450px] z-20 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
-            <Cat3D />
+          {/* Peaking Cat - ON TOP of the table (z-30) */}
+          <div className="absolute right-0 md:right-10 -bottom-8 md:-bottom-12 w-[350px] h-[350px] md:w-[520px] md:h-[520px] z-30 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+            <InteractiveCat />
           </div>
           
         </div>
@@ -129,6 +99,25 @@ export default function Home() {
         />
       </div>
       </div>
+
+      {/* Marquee Section */}
+      <div className="w-full bg-[#49675B] border-y-[3px] border-brand-black shadow-[0_6px_0px_#111111] py-3 md:py-4 overflow-hidden flex relative z-30 transform -translate-y-1">
+        <div className="flex whitespace-nowrap animate-marquee w-fit">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center shrink-0 gap-6 md:gap-10 px-3 md:px-5 text-brand-white font-heading text-lg md:text-xl tracking-widest uppercase font-bold">
+              <span>100% Biodegradable</span>
+              <span>•</span>
+              <span>Dust-Free Formula</span>
+              <span>•</span>
+              <span>Odor-Blocking Tech</span>
+              <span>•</span>
+              <span>Vet Approved</span>
+              <span>•</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Features Section */}
       <section className="w-full bg-brand-white py-24 px-6 md:px-12 relative z-10">
         <div className="max-w-7xl mx-auto">
