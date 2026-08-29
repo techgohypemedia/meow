@@ -48,14 +48,17 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <main className="flex-1 flex flex-col md:flex-row relative max-w-7xl mx-auto w-full px-6 overflow-hidden items-center md:items-stretch">
+      <main className="flex-1 flex flex-col md:flex-row relative max-w-7xl mx-auto w-full px-6 items-center md:items-stretch z-20">
         
         {/* Left Side: Product - ON TOP of table (z-30) */}
         <div className="w-full md:w-1/2 flex flex-col items-center justify-center z-30 pt-4 md:pt-0 pb-4 md:pb-8">
           
           <div className="flex flex-col items-center">
             {/* Product Packaging Image */}
-            <div className="relative w-full max-w-[400px] md:max-w-[550px] animate-float drop-shadow-[0_20px_25px_rgba(0,0,0,0.2)] z-40">
+            <div 
+              className="relative w-full max-w-[400px] md:max-w-[550px] animate-float drop-shadow-[0_20px_25px_rgba(0,0,0,0.2)] z-40"
+              style={{ WebkitMaskImage: 'linear-gradient(to right, black 80%, transparent 98%)', maskImage: 'linear-gradient(to right, black 80%, transparent 98%)' }}
+            >
               <Image 
                 src="/product-bag.png" 
                 alt="Clean Bean Product Bag" 
@@ -72,32 +75,37 @@ export default function Home() {
           
         </div>
         
-        {/* Right Side: Text (Top) & Peaking Cat (Bottom) */}
-        <div className="w-full md:w-1/2 relative h-[600px] md:h-auto mt-4 md:mt-0 flex flex-col items-center md:items-end justify-between md:pr-10 pt-8">
+        {/* Right Side: Text (Top) */}
+        <div className="w-full md:w-1/2 relative h-[300px] md:h-auto mt-4 md:mt-0 flex flex-col items-center md:items-end justify-start md:pr-10 pt-8 z-30">
           
-          {/* Text Details (z-30) */}
-          <div className="w-full flex flex-col items-center md:items-end text-center md:text-right z-30 px-4">
+          {/* Text Details */}
+          <div className="w-full flex flex-col items-center md:items-end text-center md:text-right px-4">
 
-          </div>
-          
-
-          
-          {/* Peaking Cat - ON TOP of the table (z-30) */}
-          <div className="absolute right-0 md:right-10 -bottom-8 md:-bottom-12 w-[350px] h-[350px] md:w-[520px] md:h-[520px] z-30 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
-            <InteractiveCat />
           </div>
           
         </div>
       </main>
 
-      {/* Curved SVG Mask (replaces the table) */}
-      <div className="absolute -bottom-1 w-full z-20 pointer-events-none">
-        <img 
-          src="/tofu-mask.svg"
-          alt="Curved separator"
-          className="w-full h-[50px] md:h-[100px] xl:h-[120px] object-fill"
-        />
+      {/* Full-width Litter Pile Background (behind product bag) */}
+      <div className="absolute bottom-[-110px] md:bottom-[-150px] left-0 w-full h-[350px] md:h-[520px] z-10 pointer-events-none">
+        <div className="absolute inset-0 w-full h-full scale-105 origin-bottom">
+          <Image 
+            src="/merged_litter_pile.png" 
+            alt="Litter Pile" 
+            fill 
+            className="object-cover md:object-fill object-top drop-shadow-[0_5px_15px_rgba(0,0,0,0.1)]"
+          />
+        </div>
       </div>
+
+      {/* Peaking Cat (in front of product bag) */}
+      <div className="absolute bottom-[-110px] md:bottom-[-150px] left-0 w-full h-[300px] md:h-[450px] z-50 pointer-events-none">
+        <div className="absolute top-[-50px] md:top-[-90px] right-[5%] md:right-[15%] w-[350px] h-[350px] md:w-[520px] md:h-[520px] drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] pointer-events-auto">
+          <InteractiveCat />
+        </div>
+      </div>
+
+
       </div>
 
       {/* Marquee Section */}

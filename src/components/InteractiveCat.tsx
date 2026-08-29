@@ -2,53 +2,21 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-const TOTAL_FRAMES = 192;
 const TOTAL_WAVE_FRAMES = 80;
-// We assume the 192 frames are mapped as a grid of mouse positions.
-// A common grid for 192 is 16 columns by 12 rows (16x12=192), mapping to screen X/Y.
-const COLS = 16;
-const ROWS = 12;
 
 export default function InteractiveCat() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
-  const imagesRef = useRef<HTMLImageElement[]>([]);
   const waveImagesRef = useRef<HTMLImageElement[]>([]);
-  
-  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [waveImagesLoaded, setWaveImagesLoaded] = useState(false);
 
   // References for animation loop to avoid React re-renders
-  const targetPos = useRef({ x: 0.5, y: 0.5 });
-  const currentPos = useRef({ x: 0.5, y: 0.5 });
-  const currentFrameRef = useRef(1);
   const requestRef = useRef<number | null>(null);
 
   // Wave state
   const isWavingRef = useRef(false);
   const waveFrameRef = useRef(1);
   const lastWaveTimeRef = useRef(0);
-
-  // Preload eye tracking frames
-  useEffect(() => {
-    let loadedCount = 0;
-    const images: HTMLImageElement[] = [];
-    
-    for (let i = 1; i <= TOTAL_FRAMES; i++) {
-      const img = new Image();
-      const frameString = i.toString().padStart(4, '0');
-      img.src = `/cat_eye_video_frames_transparent/frame_${frameString}.png`;
-      img.onload = () => {
-        loadedCount++;
-        if (loadedCount === TOTAL_FRAMES) {
-          setImagesLoaded(true);
-          currentFrameRef.current = Math.floor(TOTAL_FRAMES / 2);
-        }
-      };
-      images.push(img);
-    }
-    imagesRef.current = images;
-  }, []);
 
   // Preload waving frames
   useEffect(() => {
@@ -70,40 +38,9 @@ export default function InteractiveCat() {
     waveImagesRef.current = images;
   }, []);
 
-  // Update target based on mouse position
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      if (!canvasRef.current) return;
-      
-      const { clientX, clientY } = event;
-      const rect = canvasRef.current.getBoundingClientRect();
-      
-      const catCenterX = rect.left + rect.width / 2;
-      const catCenterY = rect.top + rect.height / 2;
-      
-      const dx = clientX - catCenterX;
-      const dy = clientY - catCenterY;
-      
-      const maxDx = dx < 0 ? catCenterX : window.innerWidth - catCenterX;
-      const maxDy = dy < 0 ? catCenterY : window.innerHeight - catCenterY;
-      
-      const safeMaxDx = Math.max(1, maxDx);
-      const safeMaxDy = Math.max(1, maxDy);
-
-      const normalizedX = Math.max(-1, Math.min(1, dx / safeMaxDx));
-      const normalizedY = Math.max(-1, Math.min(1, dy / safeMaxDy));
-      
-      targetPos.current.x = (normalizedX + 1) / 2;
-      targetPos.current.y = (normalizedY + 1) / 2;
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
   // Central animation and rendering loop
   useEffect(() => {
-    if (!imagesLoaded || !waveImagesLoaded) return;
+    if (!waveImagesLoaded) return;
     
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -123,28 +60,16 @@ export default function InteractiveCat() {
         }
 
         if (waveFrameRef.current > TOTAL_WAVE_FRAMES) {
-          // Animation finished, return to eye tracking
+          // Animation finished, return to idle
           isWavingRef.current = false;
           waveFrameRef.current = 1;
-          imgToDraw = imagesRef.current[currentFrameRef.current - 1];
+          imgToDraw = waveImagesRef.current[0];
         } else {
           imgToDraw = waveImagesRef.current[waveFrameRef.current - 1];
         }
       } else {
-        // Smoothly interpolate (lerp) towards the target with a much lower factor for smoother animation
-        currentPos.current.x += (targetPos.current.x - currentPos.current.x) * 0.05;
-        currentPos.current.y += (targetPos.current.y - currentPos.current.y) * 0.05;
-        
-        const col = Math.floor(currentPos.current.x * (COLS - 1));
-        const row = Math.floor(currentPos.current.y * (ROWS - 1));
-        
-        const frameIndex = row * COLS + col + 1;
-        
-        if (frameIndex >= 1 && frameIndex <= TOTAL_FRAMES) {
-          currentFrameRef.current = frameIndex;
-        }
-        
-        imgToDraw = imagesRef.current[currentFrameRef.current - 1];
+        // Idle frame (first frame of wave animation)
+        imgToDraw = waveImagesRef.current[0];
       }
 
       // Draw the frame
@@ -166,7 +91,7 @@ export default function InteractiveCat() {
         cancelAnimationFrame(requestRef.current);
       }
     };
-  }, [imagesLoaded, waveImagesLoaded]);
+  }, [waveImagesLoaded]);
 
   const handleInteract = () => {
     if (!isWavingRef.current && waveImagesLoaded) {
@@ -176,16 +101,14 @@ export default function InteractiveCat() {
     }
   };
 
-  const isReady = imagesLoaded && waveImagesLoaded;
-
   return (
     <div className="w-full h-full relative pointer-events-none flex items-center justify-center">
 
       {/* SSR / Hydration Fallback Image: Shows instantly on page load */}
       <img 
-        src="/cat_eye_video_frames_transparent/frame_0096.png"
+        src="/cat_wave_frames_transparent/frame_0001.png"
         alt="Interactive Cat"
-        className={`absolute w-full h-full object-contain pointer-events-none transition-opacity duration-300 ${isReady ? 'opacity-0' : 'opacity-100'}`}
+        className={`absolute w-full h-full object-contain pointer-events-none transition-opacity duration-300 ${waveImagesLoaded ? 'opacity-0' : 'opacity-100'}`}
       />
       
       {/* Interactive Canvas: Fades in once frames are loaded */}
@@ -195,7 +118,7 @@ export default function InteractiveCat() {
         height={800} 
         onMouseEnter={handleInteract}
         onClick={handleInteract}
-        className={`w-full h-full object-contain pointer-events-auto transition-opacity duration-300 ${isReady ? 'opacity-100 cursor-pointer' : 'opacity-0'}`}
+        className={`w-full h-full object-contain pointer-events-auto transition-opacity duration-300 ${waveImagesLoaded ? 'opacity-100 cursor-pointer' : 'opacity-0'}`}
       />
     </div>
   );
