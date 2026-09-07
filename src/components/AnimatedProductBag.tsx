@@ -22,9 +22,9 @@ export default function AnimatedProductBag() {
   // Global motion for the container
   const desktopX = useTransform(scrollY, [0, 500], ["0vw", "25vw"]);
   const mobileX = useTransform(scrollY, [0, 500], ["0vw", "0vw"]);
-  const desktopY = useTransform(scrollY, [0, 500], ["0vh", "0vh"]); // Now perfectly centered by flexbox
-  const mobileY = useTransform(scrollY, [0, 500], ["0vh", "0vh"]);
-  const containerScale = useTransform(scrollY, [0, 500], [1, 0.9]);
+  const desktopY = useTransform(scrollY, [0, 500], ["0vh", "-18vh"]);
+  const mobileY = useTransform(scrollY, [0, 500], ["0vh", "-12vh"]);
+  const containerScale = useTransform(scrollY, [0, 500], [1, 0.95]);
   
   // Single continuous bag filter transition
   const bagFilter = useTransform(
@@ -86,7 +86,7 @@ export default function AnimatedProductBag() {
           y: isMobile ? mobileY : desktopY,
           scale: containerScale 
         }}
-        className="relative w-full max-w-[320px] md:max-w-[450px] aspect-[4/5] z-50 origin-center"
+        className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[420px] lg:max-w-[480px] xl:max-w-[540px] 2xl:max-w-[600px] aspect-[4/5] z-50 origin-center"
       >
         
         {/* SINGLE Continuous Bag Image */}
@@ -101,28 +101,28 @@ export default function AnimatedProductBag() {
           <motion.div key={i} style={{ opacity: t.opacity }} className={commonClasses + " z-20 pointer-events-auto"}>
             
             {/* Title (Top) */}
-            <motion.div className="absolute bottom-[80%] left-1/2 -translate-x-1/2 mb-4 w-max text-center flex flex-col items-center pointer-events-none">
-              <h1 className="font-outfit text-5xl md:text-7xl font-black text-brand-black leading-none tracking-tight">{t.title}</h1>
+            <motion.div className="absolute bottom-[84%] left-1/2 -translate-x-1/2 mb-2 w-max text-center flex flex-col items-center pointer-events-none">
+              <h1 className="font-outfit text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-brand-black leading-none tracking-tight">{t.title}</h1>
             </motion.div>
 
             {/* Description (Left) - Hidden on mobile, shown on desktop */}
-            <motion.div className="hidden md:flex absolute right-[95%] top-1/2 -translate-y-1/2 mr-10 w-[300px] text-right flex-col items-end pointer-events-none">
-              <p className="text-brand-black/75 text-base md:text-lg font-medium leading-relaxed">{t.desc}</p>
+            <motion.div className="hidden md:flex absolute right-[95%] top-1/2 -translate-y-1/2 mr-8 w-[260px] lg:w-[320px] xl:w-[360px] text-right flex-col items-end pointer-events-none">
+              <p className="text-brand-black/75 text-sm md:text-base lg:text-lg xl:text-xl font-medium leading-relaxed">{t.desc}</p>
             </motion.div>
 
             {/* Price (Right) - Hidden on mobile, shown on desktop */}
-            <motion.div className="hidden md:flex absolute left-[95%] top-1/2 -translate-y-1/2 ml-10 w-max text-left flex-col items-start pointer-events-none">
-              <span className="text-sm font-bold uppercase tracking-widest text-brand-black/50 mb-1">Price</span>
-              <p className="font-outfit text-4xl font-black text-brand-black tracking-tight">{t.price}</p>
+            <motion.div className="hidden md:flex absolute left-[95%] top-1/2 -translate-y-1/2 ml-8 w-max text-left flex-col items-start pointer-events-none">
+              <span className="text-xs md:text-sm lg:text-base font-bold uppercase tracking-widest text-brand-black/50 mb-1">Price</span>
+              <p className="font-outfit text-3xl md:text-4xl lg:text-5xl font-black text-brand-black tracking-tight">{t.price}</p>
             </motion.div>
 
             {/* Buttons (Bottom) */}
-            <motion.div className="absolute top-[85%] left-1/2 -translate-x-1/2 mt-4 flex items-center gap-4 pointer-events-auto">
-              <button className="bg-brand-black text-white px-8 py-3 md:py-4 rounded-full font-bold text-base md:text-lg hover:scale-105 transition-transform shadow-xl whitespace-nowrap">
+            <motion.div className="absolute top-[88%] left-1/2 -translate-x-1/2 mt-2 flex items-center gap-3 md:gap-4 pointer-events-auto">
+              <button className="bg-brand-black text-white px-6 md:px-8 py-2.5 md:py-3.5 rounded-full font-bold text-sm md:text-base hover:scale-105 transition-transform shadow-xl whitespace-nowrap">
                 Buy Now
               </button>
-              <button className="bg-white text-brand-black border-2 border-brand-black w-14 h-14 md:w-16 md:h-16 rounded-full font-bold text-lg hover:bg-brand-black/5 transition-colors flex items-center justify-center group shrink-0">
-                <svg className="w-5 h-5 md:w-6 md:h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+              <button className="bg-white text-brand-black border-2 border-brand-black w-12 h-12 md:w-14 md:h-14 rounded-full font-bold text-base md:text-lg hover:bg-brand-black/5 transition-colors flex items-center justify-center group shrink-0">
+                <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                   <line x1="3" y1="6" x2="21" y2="6"></line>
                   <path d="M16 10a4 4 0 0 1-8 0"></path>

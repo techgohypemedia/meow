@@ -75,11 +75,7 @@ export default function InteractiveCat() {
       // Draw the frame
       if (imgToDraw) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const scale = Math.min(canvas.width / imgToDraw.width, canvas.height / imgToDraw.height);
-        const x = (canvas.width / 2) - (imgToDraw.width / 2) * scale;
-        const y = (canvas.height / 2) - (imgToDraw.height / 2) * scale;
-        
-        ctx.drawImage(imgToDraw, x, y, imgToDraw.width * scale, imgToDraw.height * scale);
+        ctx.drawImage(imgToDraw, 0, 0, canvas.width, canvas.height);
       }
       
       requestRef.current = requestAnimationFrame(animate);
@@ -114,8 +110,8 @@ export default function InteractiveCat() {
       {/* Interactive Canvas: Fades in once frames are loaded */}
       <canvas 
         ref={canvasRef} 
-        width={800} 
-        height={800} 
+        width={1280} 
+        height={720} 
         onMouseEnter={handleInteract}
         onClick={handleInteract}
         className={`w-full h-full object-contain pointer-events-auto transition-opacity duration-300 ${waveImagesLoaded ? 'opacity-100 cursor-pointer' : 'opacity-0'}`}

@@ -20,7 +20,7 @@ export default function HeroScrollOverlay() {
   );
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-40">
+    <div className="absolute inset-0 pointer-events-none z-20">
       {/* Solid background to hide original background */}
       <motion.div 
         style={{ opacity: bgOpacity }}

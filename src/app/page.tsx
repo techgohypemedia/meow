@@ -1,3 +1,6 @@
+"use client";
+
+import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import InteractiveCat from "../components/InteractiveCat";
 import AnimatedProductBag from "../components/AnimatedProductBag";
@@ -5,6 +8,12 @@ import ScrollBlurOverlay from "../components/ScrollBlurOverlay";
 import HeroScrollOverlay from "../components/HeroScrollOverlay";
 
 export default function Home() {
+  const { scrollY } = useScroll();
+
+  // Smoothly and swiftly fade out the cat, dust free badge, and white curve when scrolling starts
+  const heroExitOpacity = useTransform(scrollY, [0, 150], [1, 0]);
+  const heroExitY = useTransform(scrollY, [0, 150], [0, 40]);
+
   return (
     <div className="bg-brand-blue text-brand-black selection:bg-brand-black selection:text-brand-white font-sans">
       
@@ -15,73 +24,77 @@ export default function Home() {
 
         
         {/* Navigation */}
-      <nav className="w-full z-50 px-6 py-2 md:px-12 md:py-4 flex items-center justify-between h-20 md:h-24">
-        <div className="flex items-center gap-3 cursor-pointer group -my-12 md:-my-16">
-          <div className="relative w-40 h-40 md:w-56 md:h-56 transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-2">
+        <nav className="w-full z-50 px-6 py-2 md:px-12 md:py-4 flex items-center justify-between h-20 md:h-24">
+          <div className="flex items-center gap-3 cursor-pointer group -my-12 md:-my-16">
+            <div className="relative w-40 h-40 md:w-56 md:h-56 transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-2">
+              <Image 
+                src="/meowganics_logo_transparent.png" 
+                alt="Meow Ganics Logo" 
+                fill 
+                className="object-contain object-left" 
+                priority
+              />
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3 md:gap-5">
+            {/* Shopping Bag Icon with '0' badge */}
+            <button className="relative p-2 md:p-3 hover:scale-110 transition-transform flex items-center justify-center cursor-pointer">
+              <svg className="w-8 h-8 md:w-9 md:h-9" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span className="absolute top-1 right-0 md:top-1.5 md:right-0.5 bg-brand-black text-brand-white text-[10px] md:text-xs font-heading font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-brand-blue">
+                0
+              </span>
+            </button>
+            
+            {/* Hamburger Menu */}
+            <button className="flex flex-col justify-center gap-1.5 p-2.5 md:p-3 hover:bg-brand-black/10 rounded-xl transition-colors cursor-pointer">
+              <span className="w-7 md:w-8 h-[3.5px] bg-brand-black rounded-full"></span>
+              <span className="w-7 md:w-8 h-[3.5px] bg-brand-black rounded-full"></span>
+              <span className="w-5 md:w-6 h-[3.5px] bg-brand-black rounded-full self-end"></span>
+            </button>
+          </div>
+        </nav>
+
+        {/* Hero Stage (End-to-end responsive layout anchored to curve features) */}
+        <main className="flex-1 relative w-full px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 z-40 pointer-events-none overflow-visible flex items-end justify-between">
+          
+          {/* Left Side: Product Bag Placement (Sitting on left curve) */}
+          <div className="w-1/2 flex justify-start sm:justify-center items-end pb-[6vh] sm:pb-[7vh] md:pb-[8vh] pointer-events-none overflow-visible pl-2 sm:pl-6 md:pl-10">
+            <div className="w-full max-w-[240px] sm:max-w-[300px] md:max-w-[360px] lg:max-w-[420px] xl:max-w-[500px] 2xl:max-w-[580px] overflow-visible">
+              <AnimatedProductBag />
+            </div>
+          </div>
+          
+          {/* Right Side: Interactive Cat (Seated right on top of the curve crest) */}
+          <motion.div 
+            style={{ opacity: heroExitOpacity, y: heroExitY }}
+            className="w-1/2 flex justify-end items-end pb-[23vh] sm:pb-[24vh] md:pb-[25vh] lg:pb-[25.5vh] pointer-events-none z-30 pr-2 sm:pr-6 md:pr-12 lg:pr-16 xl:pr-24"
+          >
+            <div className="w-[280px] sm:w-[360px] md:w-[440px] lg:w-[540px] xl:w-[660px] 2xl:w-[760px] aspect-[16/9] relative pointer-events-auto hover:scale-105 transition-transform duration-300">
+              <InteractiveCat />
+            </div>
+          </motion.div>
+        </main>
+
+        {/* White Wave Curve Mask SVG (Scales synchronously with vh across all screens) */}
+        <motion.div 
+          style={{ opacity: heroExitOpacity }}
+          className="absolute bottom-0 left-0 w-full h-[36vh] z-10 pointer-events-none overflow-hidden"
+        >
+          <div className="relative w-full h-full">
             <Image 
-              src="/meowganics_logo_transparent.png" 
-              alt="Meow Ganics Logo" 
+              src="/white_curve_transparent.svg" 
+              alt="Wave Curve Mask" 
               fill 
-              className="object-contain object-left" 
+              className="object-fill object-bottom" 
               priority
             />
           </div>
-        </div>
-        
-        <div className="flex items-center gap-2 md:gap-4">
-          {/* Shopping Bag Icon */}
-          <button className="p-2 md:p-4 hover:scale-110 transition-transform">
-            <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <path d="M16 10a4 4 0 0 1-8 0"></path>
-            </svg>
-          </button>
-          
-          {/* Hamburger Menu */}
-          <button className="flex flex-col gap-2 p-3 hover:bg-brand-black/5 rounded-lg transition-colors">
-            <span className="w-8 h-[4px] bg-brand-black rounded-full"></span>
-            <span className="w-8 h-[4px] bg-brand-black rounded-full"></span>
-            <span className="w-6 h-[4px] bg-brand-black rounded-full self-end"></span>
-          </button>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <main className="flex-1 flex flex-col md:flex-row relative max-w-7xl mx-auto w-full px-6 items-center md:items-stretch z-50 pointer-events-none">
-        
-        {/* Left Side: Product - ON TOP of table (z-30) */}
-        <div className="w-full md:w-1/2 flex flex-col items-center justify-center z-30 pt-4 md:pt-0 pb-4 md:pb-12 pointer-events-none">
-          
-          <AnimatedProductBag />
-          
-        </div>
-        
-        {/* Right Side: Empty spacing */}
-        <div className="w-full md:w-1/2 relative h-[400px] md:h-auto mt-4 md:mt-0 flex flex-col items-center md:items-end justify-start md:pr-10 pt-8 z-30 pointer-events-none">
-          
-        </div>
-      </main>
-
-      {/* Full-width Litter Pile Background (behind product bag) */}
-      <div className="absolute bottom-[-110px] md:bottom-[-150px] left-0 w-full h-[350px] md:h-[520px] z-10 pointer-events-none">
-        <div className="absolute inset-0 w-full h-full scale-105 origin-bottom">
-          <Image 
-            src="/merged_litter_pile.png" 
-            alt="Litter Pile" 
-            fill 
-            className="object-cover md:object-fill object-top drop-shadow-[0_5px_15px_rgba(0,0,0,0.1)]"
-          />
-        </div>
-      </div>
-
-      {/* Peaking Cat (in front of product bag initially, but under blur) */}
-      <div className="absolute bottom-[-110px] md:bottom-[-150px] left-0 w-full h-[300px] md:h-[450px] z-10 pointer-events-none">
-        <div className="absolute top-[-50px] md:top-[-90px] right-[5%] md:right-[15%] w-[350px] h-[350px] md:w-[520px] md:h-[520px] pointer-events-auto">
-          <InteractiveCat />
-        </div>
-      </div>
-
+        </motion.div>
 
         </div>
       </div>
