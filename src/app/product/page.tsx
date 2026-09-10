@@ -82,7 +82,7 @@ function ProductContent() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-blue font-sans text-brand-black selection:bg-brand-black selection:text-brand-white">
+    <div className="min-h-screen bg-brand-blue text-brand-black selection:bg-brand-black selection:text-brand-white font-sans overflow-x-hidden">
       {/* Top Banner */}
       <div className="bg-[#49675B] text-brand-white py-2 px-3 sm:px-4 text-center text-[11px] sm:text-xs md:text-sm font-heading font-bold tracking-wider uppercase border-b-2 border-brand-black">
         🎉 Free Express Shipping on orders over $45 • 30-Day Cat Happiness Guarantee 🐾
@@ -105,7 +105,7 @@ function ProductContent() {
       </div>
 
       {/* Main Product Showcase Section */}
-      <main className="w-full">
+      <main className="w-full overflow-x-hidden">
         <section className="w-full bg-brand-blue pb-12 sm:pb-16 pt-4 sm:pt-6 md:pt-8 px-4 sm:px-6 md:px-12 border-b-[3px] border-brand-black relative">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-14">
             
@@ -718,7 +718,7 @@ function ProductContent() {
         </section>
 
         {/* ACCESSORIES CROSS-SELL SECTION */}
-        <section id="accessories" className="w-full py-12 sm:py-20 px-4 sm:px-6 md:px-12 bg-brand-blue border-b-[3px] border-brand-black">
+        <section id="accessories" className="w-full py-12 sm:py-20 px-4 sm:px-6 md:px-12 bg-brand-blue border-b-[3px] border-brand-black overflow-hidden">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 sm:mb-12 gap-2 sm:gap-4">
               <div>
@@ -735,8 +735,7 @@ function ProductContent() {
             </div>
 
             <div 
-              data-lenis-prevent
-              className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 pt-2 pb-5 sm:pb-0 no-scrollbar touch-pan-x overscroll-x-contain"
+              className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 pt-2 pb-5 sm:pb-0 no-scrollbar touch-pan-x"
             >
               {PRODUCTS.filter((p) => p.id !== "clean-bean").map((acc) => (
                 <div

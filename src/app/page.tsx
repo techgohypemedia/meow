@@ -81,11 +81,11 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* Hero Interactive Cat (Sitting / Peeking on top ridge of SVG curve at z-30) */}
+        {/* Hero Interactive Cat (Sitting directly on top ridge of SVG curve at z-30) */}
         <div className="absolute inset-0 px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 z-30 pointer-events-none overflow-visible flex items-end justify-end">
           <motion.div 
             style={{ opacity: heroExitOpacity, y: heroExitY }}
-            className="w-1/2 flex justify-end items-end pb-[28vh] sm:pb-[29vh] md:pb-[30vh] lg:pb-[31vh] pointer-events-none pr-1 sm:pr-4 md:pr-10 lg:pr-16 xl:pr-20"
+            className="w-1/2 flex justify-end items-end pb-[calc(24vh-6px)] sm:pb-[calc(25vh-6px)] md:pb-[calc(26vh-6px)] lg:pb-[calc(26.5vh-6px)] pointer-events-none pr-1 sm:pr-4 md:pr-10 lg:pr-16 xl:pr-20"
           >
             <div className="w-[260px] sm:w-[340px] md:w-[420px] lg:w-[520px] xl:w-[640px] 2xl:w-[740px] aspect-[16/9] relative pointer-events-auto hover:scale-105 transition-transform duration-300">
               <InteractiveCat />

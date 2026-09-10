@@ -244,7 +244,6 @@ export const StaggerTestimonials: React.FC<StaggerTestimonialsProps> = ({
 
   return (
     <div
-      data-lenis-prevent
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       className={cn(

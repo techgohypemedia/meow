@@ -139,7 +139,7 @@ export default function AnimatedProductBag() {
       >
         {/* SINGLE Continuous Bag Image (Clickable Link to Product Details Page) */}
         <motion.div
-          className="absolute inset-0 w-full h-full origin-center flex items-center justify-center pointer-events-auto z-10"
+          className="absolute inset-0 w-full h-full origin-center flex items-center justify-center pointer-events-auto z-30"
           style={{ filter: bagFilter }}
         >
           <Link
@@ -163,7 +163,7 @@ export default function AnimatedProductBag() {
           <motion.div
             key={i}
             style={{ opacity: t.opacity }}
-            className={commonClasses + " z-20 pointer-events-auto"}
+            className={commonClasses + " z-40 pointer-events-none"}
           >
             {/* Title (Top) */}
             <motion.div className="absolute bottom-[86%] sm:bottom-[88%] left-1/2 -translate-x-1/2 mb-1 w-max text-center flex flex-col items-center pointer-events-none">
