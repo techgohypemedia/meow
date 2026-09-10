@@ -92,7 +92,12 @@ function ProductContent() {
       <Navbar theme="blue" />
 
       {/* Breadcrumbs */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 pt-4 md:pt-6 pb-2 text-xs sm:text-sm font-bold text-brand-black/70 flex items-center gap-2 flex-wrap">
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 pt-4 md:pt-6 pb-2 text-xs sm:text-sm font-bold text-brand-black/70 flex items-center gap-2 flex-wrap"
+      >
         <Link href="/" className="hover:text-brand-black transition-colors">
           Home
         </Link>
@@ -102,7 +107,7 @@ function ProductContent() {
         </Link>
         <span>/</span>
         <span className="text-brand-black font-black">{product.name}</span>
-      </div>
+      </motion.div>
 
       {/* Main Product Showcase Section */}
       <main className="w-full overflow-x-hidden">
@@ -110,7 +115,12 @@ function ProductContent() {
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-14">
             
             {/* Left Column: Product Visuals (col-span-6) */}
-            <div className="lg:col-span-6 flex flex-col items-center lg:items-start w-full">
+            <motion.div 
+              initial={{ opacity: 0, x: -35 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="lg:col-span-6 flex flex-col items-center lg:items-start w-full"
+            >
               {/* Main Image Card with Dynamic Hue Filter */}
               <div className="w-full bg-brand-white rounded-3xl sm:rounded-[2.5rem] border-[3px] border-brand-black p-6 sm:p-8 md:p-12 shadow-[6px_6px_0px_#111111] md:shadow-[8px_8px_0px_#111111] hover:shadow-[12px_12px_0px_#111111] transition-all duration-300 aspect-[4/3] sm:aspect-square lg:aspect-[4/5] flex items-center justify-center relative overflow-hidden group">
                 
@@ -211,10 +221,15 @@ function ProductContent() {
                   <span className="text-[9px] sm:text-[10px] text-brand-black/60 font-bold">Septic Approved</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Right Column: Customizer & Actions (col-span-6) */}
-            <div className="lg:col-span-6 flex flex-col justify-start">
+            <motion.div 
+              initial={{ opacity: 0, x: 35 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+              className="lg:col-span-6 flex flex-col justify-start"
+            >
               
               {/* Reviews Summary */}
               <div className="flex items-center gap-2 mb-2 sm:mb-3">
@@ -493,13 +508,19 @@ function ProductContent() {
                 <span>In Stock • 30-Day Money-Back Guarantee</span>
               </div>
 
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* INTERACTIVE LITTER CALCULATOR SECTION */}
         <section className="w-full py-12 sm:py-16 px-4 sm:px-6 md:px-12 bg-[#D1F0E4] border-b-[3px] border-brand-black relative">
-          <div className="max-w-5xl mx-auto bg-brand-white border-[2.5px] sm:border-[3px] border-brand-black rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 md:p-12 shadow-[6px_6px_0px_#111111]">
+          <motion.div 
+            initial={{ opacity: 0, y: 35, scale: 0.98 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="max-w-5xl mx-auto bg-brand-white border-[2.5px] sm:border-[3px] border-brand-black rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 md:p-12 shadow-[6px_6px_0px_#111111]"
+          >
             <div className="text-center max-w-xl mx-auto mb-6 sm:mb-8">
               <span className="bg-[#FFEDEA] text-brand-black font-heading font-bold text-[10px] sm:text-xs px-3 py-1 rounded-full border-2 border-brand-black uppercase tracking-wider mb-2 inline-block">
                 Interactive Tool
@@ -572,23 +593,35 @@ function ProductContent() {
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* THE NITTY GRITTY (Tabs & Detailed Breakdown) */}
         <section id="details" className="w-full py-12 sm:py-20 px-4 sm:px-6 md:px-12 bg-[#F8F9FA] border-b-[3px] border-brand-black relative">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="text-center max-w-2xl mx-auto mb-8 sm:mb-12"
+            >
               <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl text-brand-black tracking-tight mb-2 sm:mb-4">
                 The Nitty Gritty
               </h2>
               <p className="text-sm sm:text-base md:text-lg font-bold text-brand-black/70">
                 Everything you need to know about why Clean Bean is superior to clay and silica litters.
               </p>
-            </div>
+            </motion.div>
 
             {/* Tab Navigation */}
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6 sm:mb-10">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.45, delay: 0.1 }}
+              className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6 sm:mb-10"
+            >
               {[
                 { id: "benefits", label: "Key Benefits", icon: "✨" },
                 { id: "ingredients", label: "Ingredients", icon: "🌱" },
@@ -608,119 +641,160 @@ function ProductContent() {
                   <span>{tab.label}</span>
                 </button>
               ))}
-            </div>
+            </motion.div>
 
             {/* Tab Content Panels */}
-            <div className="bg-brand-white border-[2.5px] sm:border-[3px] border-brand-black rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 md:p-12 shadow-[6px_6px_0px_#111111]">
-              {/* 1. Benefits */}
-              {activeTab === "benefits" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
-                  {product.benefits.map((b, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-[#EBF4FC] border-2 border-brand-black rounded-2xl p-4 sm:p-6 shadow-[2px_2px_0px_#111111] sm:shadow-[3px_3px_0px_#111111] flex gap-3 sm:gap-4"
-                    >
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-brand-white border-2 border-brand-black flex items-center justify-center text-xl sm:text-2xl shrink-0 shadow-[2px_2px_0px_#111111]">
-                        {b.icon}
-                      </div>
-                      <div>
-                        <h4 className="font-heading text-lg sm:text-xl font-bold text-brand-black mb-1">
-                          {b.title}
-                        </h4>
-                        <p className="text-xs sm:text-sm font-bold text-brand-black/75 leading-relaxed">
-                          {b.desc}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* 2. Ingredients */}
-              {activeTab === "ingredients" && (
-                <div>
-                  <p className="text-xs sm:text-sm md:text-base font-bold text-brand-black/80 mb-4 sm:mb-6 max-w-2xl">
-                    We believe in radical transparency. Every single component of Clean Bean is organic, edible-grade, and free from artificial dyes or silica dust.
-                  </p>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse min-w-[340px]">
-                      <thead>
-                        <tr className="border-b-2 border-brand-black text-[10px] sm:text-xs font-heading font-bold uppercase tracking-wider text-brand-black/60">
-                          <th className="py-2.5 px-3 sm:px-4">Ingredient</th>
-                          <th className="py-2.5 px-3 sm:px-4">Share</th>
-                          <th className="py-2.5 px-3 sm:px-4">Function</th>
-                        </tr>
-                      </thead>
-                      <tbody className="font-bold text-xs sm:text-sm divide-y divide-brand-black/10">
-                        {product.ingredients.map((ing, i) => (
-                          <tr key={i} className="hover:bg-[#F8F9FA]">
-                            <td className="py-3 px-3 sm:px-4 font-heading text-sm sm:text-base text-brand-black">
-                              {ing.name}
-                            </td>
-                            <td className="py-3 px-3 sm:px-4 text-[#2B7A5D]">
-                              {ing.percentage}
-                            </td>
-                            <td className="py-3 px-3 sm:px-4 text-brand-black/70 text-xs sm:text-sm">
-                              {ing.purpose}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-
-              {/* 3. Usage & Flushing */}
-              {activeTab === "usage" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                  {product.usageSteps.map((step) => (
-                    <div
-                      key={step.step}
-                      className="bg-[#FFEDEA] border-2 border-brand-black rounded-2xl p-4 sm:p-6 shadow-[2px_2px_0px_#111111] flex flex-col justify-between"
-                    >
-                      <div>
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-black text-brand-white font-heading font-black text-sm sm:text-lg flex items-center justify-center mb-3 sm:mb-4 shadow-[2px_2px_0px_#A9D3F4]">
-                          {step.step}
+            <motion.div 
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="bg-brand-white border-[2.5px] sm:border-[3px] border-brand-black rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 md:p-12 shadow-[6px_6px_0px_#111111]"
+            >
+              <AnimatePresence mode="wait">
+                {/* 1. Benefits */}
+                {activeTab === "benefits" && (
+                  <motion.div 
+                    key="benefits"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ duration: 0.25 }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8"
+                  >
+                    {product.benefits.map((b, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-[#EBF4FC] border-2 border-brand-black rounded-2xl p-4 sm:p-6 shadow-[2px_2px_0px_#111111] sm:shadow-[3px_3px_0px_#111111] flex gap-3 sm:gap-4"
+                      >
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-brand-white border-2 border-brand-black flex items-center justify-center text-xl sm:text-2xl shrink-0 shadow-[2px_2px_0px_#111111]">
+                          {b.icon}
                         </div>
-                        <h4 className="font-heading text-lg sm:text-xl font-bold text-brand-black mb-1.5 sm:mb-2">
-                          {step.title}
+                        <div>
+                          <h4 className="font-heading text-lg sm:text-xl font-bold text-brand-black mb-1">
+                            {b.title}
+                          </h4>
+                          <p className="text-xs sm:text-sm font-bold text-brand-black/75 leading-relaxed">
+                            {b.desc}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+
+                {/* 2. Ingredients */}
+                {activeTab === "ingredients" && (
+                  <motion.div
+                    key="ingredients"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <p className="text-xs sm:text-sm md:text-base font-bold text-brand-black/80 mb-4 sm:mb-6 max-w-2xl">
+                      We believe in radical transparency. Every single component of Clean Bean is organic, edible-grade, and free from artificial dyes or silica dust.
+                    </p>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse min-w-[340px]">
+                        <thead>
+                          <tr className="border-b-2 border-brand-black text-[10px] sm:text-xs font-heading font-bold uppercase tracking-wider text-brand-black/60">
+                            <th className="py-2.5 px-3 sm:px-4">Ingredient</th>
+                            <th className="py-2.5 px-3 sm:px-4">Share</th>
+                            <th className="py-2.5 px-3 sm:px-4">Function</th>
+                          </tr>
+                        </thead>
+                        <tbody className="font-bold text-xs sm:text-sm divide-y divide-brand-black/10">
+                          {product.ingredients.map((ing, i) => (
+                            <tr key={i} className="hover:bg-[#F8F9FA]">
+                              <td className="py-3 px-3 sm:px-4 font-heading text-sm sm:text-base text-brand-black">
+                                {ing.name}
+                              </td>
+                              <td className="py-3 px-3 sm:px-4 text-[#2B7A5D]">
+                                {ing.percentage}
+                              </td>
+                              <td className="py-3 px-3 sm:px-4 text-brand-black/70 text-xs sm:text-sm">
+                                {ing.purpose}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 3. Usage & Flushing */}
+                {activeTab === "usage" && (
+                  <motion.div 
+                    key="usage"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ duration: 0.25 }}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+                  >
+                    {product.usageSteps.map((step) => (
+                      <div
+                        key={step.step}
+                        className="bg-[#FFEDEA] border-2 border-brand-black rounded-2xl p-4 sm:p-6 shadow-[2px_2px_0px_#111111] flex flex-col justify-between"
+                      >
+                        <div>
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-black text-brand-white font-heading font-black text-sm sm:text-lg flex items-center justify-center mb-3 sm:mb-4 shadow-[2px_2px_0px_#A9D3F4]">
+                            {step.step}
+                          </div>
+                          <h4 className="font-heading text-lg sm:text-xl font-bold text-brand-black mb-1.5 sm:mb-2">
+                            {step.title}
+                          </h4>
+                          <p className="text-xs font-bold text-brand-black/75 leading-relaxed">
+                            {step.instruction}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+
+                {/* 4. FAQ */}
+                {activeTab === "faq" && (
+                  <motion.div 
+                    key="faq"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ duration: 0.25 }}
+                    className="space-y-3 sm:space-y-4"
+                  >
+                    {product.faqs.map((faq, i) => (
+                      <div
+                        key={i}
+                        className="bg-[#F8F9FA] border-2 border-brand-black rounded-2xl p-4 sm:p-6 shadow-[2px_2px_0px_#111111]"
+                      >
+                        <h4 className="font-heading text-base sm:text-lg font-bold text-brand-black mb-1.5 flex items-center gap-2">
+                          <span className="text-[#059669]">Q:</span> {faq.question}
                         </h4>
-                        <p className="text-xs font-bold text-brand-black/75 leading-relaxed">
-                          {step.instruction}
+                        <p className="text-xs sm:text-sm font-bold text-brand-black/75 leading-relaxed pl-5 sm:pl-6">
+                          {faq.answer}
                         </p>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* 4. FAQ */}
-              {activeTab === "faq" && (
-                <div className="space-y-3 sm:space-y-4">
-                  {product.faqs.map((faq, i) => (
-                    <div
-                      key={i}
-                      className="bg-[#F8F9FA] border-2 border-brand-black rounded-2xl p-4 sm:p-6 shadow-[2px_2px_0px_#111111]"
-                    >
-                      <h4 className="font-heading text-base sm:text-lg font-bold text-brand-black mb-1.5 flex items-center gap-2">
-                        <span className="text-[#059669]">Q:</span> {faq.question}
-                      </h4>
-                      <p className="text-xs sm:text-sm font-bold text-brand-black/75 leading-relaxed pl-5 sm:pl-6">
-                        {faq.answer}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           </div>
         </section>
 
         {/* ACCESSORIES CROSS-SELL SECTION */}
         <section id="accessories" className="w-full py-12 sm:py-20 px-4 sm:px-6 md:px-12 bg-brand-blue border-b-[3px] border-brand-black overflow-hidden">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 sm:mb-12 gap-2 sm:gap-4">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 sm:mb-12 gap-2 sm:gap-4"
+            >
               <div>
                 <span className="bg-[#FFEDEA] text-brand-black font-heading font-bold text-[10px] sm:text-xs px-3 py-1 rounded-full border-2 border-brand-black uppercase tracking-wider mb-2 inline-block">
                   Complete Routine
@@ -732,14 +806,18 @@ function ProductContent() {
                   Engineered accessories designed specifically for Clean Bean pellets.
                 </p>
               </div>
-            </div>
+            </motion.div>
 
             <div 
               className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 pt-2 pb-5 sm:pb-0 no-scrollbar touch-pan-x"
             >
-              {PRODUCTS.filter((p) => p.id !== "clean-bean").map((acc) => (
-                <div
+              {PRODUCTS.filter((p) => p.id !== "clean-bean").map((acc, idx) => (
+                <motion.div
                   key={acc.id}
+                  initial={{ opacity: 0, y: 35 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.45, delay: idx * 0.1, ease: "easeOut" }}
                   className="w-[82vw] max-w-[320px] sm:w-auto shrink-0 snap-center bg-brand-white border-[2.5px] sm:border-[3px] border-brand-black rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-6 shadow-[5px_5px_0px_#111111] sm:shadow-[8px_8px_0px_#111111] hover:shadow-[12px_12px_0px_#111111] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
                 >
                   <div>
@@ -785,7 +863,7 @@ function ProductContent() {
                       <span>+ Add to Cart</span>
                     </button>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
 
@@ -801,7 +879,13 @@ function ProductContent() {
         {/* CUSTOMER REVIEWS SECTION WITH STAGGER TESTIMONIALS */}
         <section id="reviews" className="w-full py-12 sm:py-20 px-4 sm:px-6 md:px-12 bg-[#F8F9FA] border-b-[3px] border-brand-black">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="text-center max-w-2xl mx-auto mb-8 sm:mb-12"
+            >
               <span className="bg-[#D1F0E4] text-brand-black font-heading font-bold text-[10px] sm:text-xs px-3.5 py-1.5 rounded-full border-2 border-brand-black uppercase tracking-wider mb-3 inline-block shadow-[2px_2px_0px_#111111]">
                 🐾 Real Verified Cat Parents
               </span>
@@ -811,11 +895,17 @@ function ProductContent() {
               <p className="text-sm sm:text-base md:text-lg font-bold text-brand-black/70">
                 Tap or swipe the cards to explore why thousands of cat parents made the switch.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="max-w-5xl mx-auto">
+            <motion.div 
+              initial={{ opacity: 0, y: 35, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.55, delay: 0.1, ease: "easeOut" }}
+              className="max-w-5xl mx-auto"
+            >
               <StaggerTestimonials />
-            </div>
+            </motion.div>
           </div>
         </section>
       </main>
