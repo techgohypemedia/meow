@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Fredoka, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
+import { CartProvider } from "@/context/CartContext";
+import CartDrawer from "@/components/CartDrawer";
 
 const fredoka = Fredoka({
   variable: "--font-fredoka",
@@ -14,8 +16,8 @@ const nunitoSans = Nunito_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Meow Ganics",
-  description: "Pure nature for your feline friend.",
+  title: "Meow Ganics | 100% Organic Flushable Tofu Cat Litter",
+  description: "Pure nature for your feline friend. 99% dust-free, instant clumping, flushable organic tofu cat litter.",
 };
 
 export default function RootLayout({
@@ -26,12 +28,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${fredoka.variable} ${nunitoSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-brand-blue text-brand-black">
-        <SmoothScroll>
-          {children}
-        </SmoothScroll>
+        <CartProvider>
+          <SmoothScroll>
+            {children}
+          </SmoothScroll>
+          <CartDrawer />
+        </CartProvider>
       </body>
     </html>
   );

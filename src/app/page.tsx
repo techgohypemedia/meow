@@ -2,13 +2,15 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import InteractiveCat from "../components/InteractiveCat";
 import AnimatedProductBag from "../components/AnimatedProductBag";
-import ScrollBlurOverlay from "../components/ScrollBlurOverlay";
 import HeroScrollOverlay from "../components/HeroScrollOverlay";
+import { useCart } from "@/context/CartContext";
 
 export default function Home() {
   const { scrollY } = useScroll();
+  const { totalItems, openCart } = useCart();
 
   // Smoothly and swiftly fade out the cat, dust free badge, and white curve when scrolling starts
   const heroExitOpacity = useTransform(scrollY, [0, 150], [1, 0]);
@@ -22,7 +24,6 @@ export default function Home() {
         <div className="sticky top-0 h-screen flex flex-col overflow-hidden w-full">
           <HeroScrollOverlay />
 
-        
         {/* Navigation */}
         <nav className="w-full z-50 px-6 py-2 md:px-12 md:py-4 flex items-center justify-between h-20 md:h-24">
           <div className="flex items-center gap-3 cursor-pointer group -my-12 md:-my-16">
@@ -31,6 +32,7 @@ export default function Home() {
                 src="/meowganics_logo_transparent.png" 
                 alt="Meow Ganics Logo" 
                 fill 
+                sizes="(max-width: 768px) 160px, 224px"
                 className="object-contain object-left" 
                 priority
               />
@@ -38,15 +40,19 @@ export default function Home() {
           </div>
           
           <div className="flex items-center gap-3 md:gap-5">
-            {/* Shopping Bag Icon with '0' badge */}
-            <button className="relative p-2 md:p-3 hover:scale-110 transition-transform flex items-center justify-center cursor-pointer">
+            {/* Shopping Bag Icon with dynamic badge that opens side cart */}
+            <button
+              onClick={openCart}
+              className="relative p-2 md:p-3 hover:scale-110 transition-transform flex items-center justify-center cursor-pointer"
+              aria-label="Open Cart"
+            >
               <svg className="w-8 h-8 md:w-9 md:h-9" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
                 <path d="M16 10a4 4 0 0 1-8 0"></path>
               </svg>
               <span className="absolute top-1 right-0 md:top-1.5 md:right-0.5 bg-brand-black text-brand-white text-[10px] md:text-xs font-heading font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-brand-blue">
-                0
+                {totalItems}
               </span>
             </button>
             
@@ -59,28 +65,7 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero Stage (End-to-end responsive layout anchored to curve features) */}
-        <main className="flex-1 relative w-full px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 z-40 pointer-events-none overflow-visible flex items-end justify-between">
-          
-          {/* Left Side: Product Bag Placement (Sitting on left curve) */}
-          <div className="w-1/2 flex justify-start sm:justify-center items-end pb-[6vh] sm:pb-[7vh] md:pb-[8vh] pointer-events-none overflow-visible pl-2 sm:pl-6 md:pl-10">
-            <div className="w-full max-w-[240px] sm:max-w-[300px] md:max-w-[360px] lg:max-w-[420px] xl:max-w-[500px] 2xl:max-w-[580px] overflow-visible">
-              <AnimatedProductBag />
-            </div>
-          </div>
-          
-          {/* Right Side: Interactive Cat (Seated right on top of the curve crest) */}
-          <motion.div 
-            style={{ opacity: heroExitOpacity, y: heroExitY }}
-            className="w-1/2 flex justify-end items-end pb-[23vh] sm:pb-[24vh] md:pb-[25vh] lg:pb-[25.5vh] pointer-events-none z-30 pr-2 sm:pr-6 md:pr-12 lg:pr-16 xl:pr-24"
-          >
-            <div className="w-[280px] sm:w-[360px] md:w-[440px] lg:w-[540px] xl:w-[660px] 2xl:w-[760px] aspect-[16/9] relative pointer-events-auto hover:scale-105 transition-transform duration-300">
-              <InteractiveCat />
-            </div>
-          </motion.div>
-        </main>
-
-        {/* White Wave Curve Mask SVG (Scales synchronously with vh across all screens) */}
+        {/* White Wave Curve Mask SVG (Background Hill at z-10) */}
         <motion.div 
           style={{ opacity: heroExitOpacity }}
           className="absolute bottom-0 left-0 w-full h-[36vh] z-10 pointer-events-none overflow-hidden"
@@ -95,6 +80,27 @@ export default function Home() {
             />
           </div>
         </motion.div>
+
+        {/* Hero Interactive Cat (Sitting / Peeking on top ridge of SVG curve at z-30) */}
+        <div className="absolute inset-0 px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 z-30 pointer-events-none overflow-visible flex items-end justify-end">
+          <motion.div 
+            style={{ opacity: heroExitOpacity, y: heroExitY }}
+            className="w-1/2 flex justify-end items-end pb-[28vh] sm:pb-[29vh] md:pb-[30vh] lg:pb-[31vh] pointer-events-none pr-1 sm:pr-4 md:pr-10 lg:pr-16 xl:pr-20"
+          >
+            <div className="w-[260px] sm:w-[340px] md:w-[420px] lg:w-[520px] xl:w-[640px] 2xl:w-[740px] aspect-[16/9] relative pointer-events-auto hover:scale-105 transition-transform duration-300">
+              <InteractiveCat />
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Hero Product Bag Stage (Layered in front at z-40) */}
+        <main className="flex-1 relative w-full px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 z-40 pointer-events-none overflow-visible flex items-end justify-start">
+          <div className="w-1/2 flex justify-start sm:justify-center items-end pb-[6vh] sm:pb-[7vh] md:pb-[8vh] pointer-events-none overflow-visible pl-2 sm:pl-6 md:pl-10">
+            <div className="w-full max-w-[240px] sm:max-w-[300px] md:max-w-[360px] lg:max-w-[420px] xl:max-w-[500px] 2xl:max-w-[580px] overflow-visible pointer-events-auto">
+              <AnimatedProductBag />
+            </div>
+          </div>
+        </main>
 
         </div>
       </div>
@@ -116,7 +122,6 @@ export default function Home() {
           ))}
         </div>
       </div>
-      {/* Static Sections Removed */}
 
       {/* Footer */}
       <footer className="w-full bg-brand-black text-brand-white py-16 px-6 md:px-12 border-t-8 border-brand-black">
@@ -142,10 +147,26 @@ export default function Home() {
           <div>
             <h3 className="text-xl font-heading mb-6 text-brand-blue">Shop</h3>
             <ul className="space-y-4 font-bold opacity-80">
-              <li className="hover:text-brand-blue cursor-pointer transition-colors">All Products</li>
-              <li className="hover:text-brand-blue cursor-pointer transition-colors">Clean Bean</li>
-              <li className="hover:text-brand-blue cursor-pointer transition-colors">Subscriptions</li>
-              <li className="hover:text-brand-blue cursor-pointer transition-colors">Gift Cards</li>
+              <li>
+                <Link href="/product" className="hover:text-brand-blue cursor-pointer transition-colors">
+                  Clean Bean Litter
+                </Link>
+              </li>
+              <li>
+                <Link href="/product#accessories" className="hover:text-brand-blue cursor-pointer transition-colors">
+                  The Zen Scoop
+                </Link>
+              </li>
+              <li>
+                <Link href="/product#accessories" className="hover:text-brand-blue cursor-pointer transition-colors">
+                  Subscriptions
+                </Link>
+              </li>
+              <li>
+                <Link href="/product#reviews" className="hover:text-brand-blue cursor-pointer transition-colors">
+                  Customer Reviews
+                </Link>
+              </li>
             </ul>
           </div>
           
