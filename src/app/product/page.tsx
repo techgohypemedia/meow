@@ -122,7 +122,7 @@ function ProductContent() {
               className="lg:col-span-6 flex flex-col items-center lg:items-start w-full"
             >
               {/* Main Image Card with Dynamic Hue Filter */}
-              <div className="w-full bg-brand-white rounded-3xl sm:rounded-[2.5rem] border-[3px] border-brand-black p-6 sm:p-8 md:p-12 shadow-[6px_6px_0px_#111111] md:shadow-[8px_8px_0px_#111111] hover:shadow-[12px_12px_0px_#111111] transition-all duration-300 aspect-[4/3] sm:aspect-square lg:aspect-[4/5] flex items-center justify-center relative overflow-hidden group">
+              <div className="w-full bg-brand-white rounded-3xl sm:rounded-[2.5rem] border-[3px] border-brand-black p-4 sm:p-6 md:p-8 pt-14 sm:pt-16 pb-12 sm:pb-14 shadow-[6px_6px_0px_#111111] md:shadow-[8px_8px_0px_#111111] hover:shadow-[12px_12px_0px_#111111] transition-all duration-300 aspect-[4/3] sm:aspect-square lg:aspect-[4/5] flex items-center justify-center relative overflow-hidden group">
                 
                 {/* Background Aura matching flavor color */}
                 <div
@@ -134,13 +134,13 @@ function ProductContent() {
                 />
 
                 {/* Floating Badges */}
-                <div className="absolute top-4 left-4 sm:top-6 sm:left-6 bg-[#FFEDEA] text-brand-black font-heading font-bold text-xs sm:text-sm md:text-base px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-[2.5px] sm:border-[3px] border-brand-black transform -rotate-6 shadow-[2px_2px_0px_#111111] sm:shadow-[3px_3px_0px_#111111] z-20 flex items-center gap-1">
+                <div className="absolute top-3 left-3 sm:top-5 sm:left-5 bg-[#FFEDEA] text-brand-black font-heading font-bold text-xs sm:text-sm md:text-base px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-[2.5px] sm:border-[3px] border-brand-black transform -rotate-6 shadow-[2px_2px_0px_#111111] sm:shadow-[3px_3px_0px_#111111] z-20 flex items-center gap-1">
                   <span>🔥</span> {product.badge}
                 </div>
 
                 {selectedFlavor && (
                   <div
-                    className="absolute top-4 right-4 sm:top-6 sm:right-6 font-heading font-bold text-[11px] sm:text-xs md:text-sm px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border-2 border-brand-black shadow-[2px_2px_0px_#111111] z-20 text-brand-black"
+                    className="absolute top-3 right-3 sm:top-5 sm:right-5 font-heading font-bold text-[11px] sm:text-xs md:text-sm px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border-2 sm:border-[2.5px] border-brand-black shadow-[2px_2px_0px_#111111] z-20 text-brand-black"
                     style={{ backgroundColor: selectedFlavor.accentBg }}
                   >
                     ✨ {selectedFlavor.name}
@@ -154,20 +154,20 @@ function ProductContent() {
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.3 }}
                   style={{ filter: selectedFlavor?.hueFilter || "none" }}
-                  className="w-full max-w-[240px] sm:max-w-[300px] lg:max-w-[380px] h-full flex items-center justify-center relative z-10"
+                  className="w-full max-w-[320px] sm:max-w-[420px] md:max-w-[480px] lg:max-w-[500px] xl:max-w-[540px] h-full flex items-center justify-center relative z-10 py-2"
                 >
                   <Image
                     src={product.image}
                     alt={product.name}
-                    width={600}
-                    height={700}
-                    className="w-full h-auto object-contain drop-shadow-[0_15px_20px_rgba(0,0,0,0.18)] group-hover:scale-105 transition-transform duration-500"
+                    width={800}
+                    height={900}
+                    className="w-full h-full max-h-[320px] sm:max-h-[440px] lg:max-h-[500px] object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.22)] group-hover:scale-105 transition-transform duration-500"
                     priority
                   />
                 </motion.div>
 
                 {/* Micro Guarantee footer on image */}
-                <div className="absolute bottom-3 sm:bottom-4 inset-x-4 sm:inset-x-6 text-center text-[10px] sm:text-xs font-heading font-bold text-brand-black/70 bg-brand-white/90 backdrop-blur-sm py-1.5 rounded-xl border border-brand-black/20">
+                <div className="absolute bottom-2.5 sm:bottom-3 inset-x-3 sm:inset-x-6 text-center text-[10px] sm:text-xs font-heading font-bold text-brand-black/80 bg-brand-white/95 backdrop-blur-sm py-1.5 px-2 rounded-xl border border-brand-black/20 shadow-sm z-20">
                   🌱 100% Food-Grade Soybean Fiber • Zero Harmful Silica
                 </div>
               </div>

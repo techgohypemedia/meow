@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 
 interface NavbarProps {
@@ -16,7 +17,10 @@ export default function Navbar({ theme = "blue" }: NavbarProps) {
   const isLight = theme === "light";
 
   return (
-    <header
+    <motion.header
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
       className="w-full z-50 px-6 py-3 md:px-12 flex items-center justify-between h-20 md:h-24 bg-brand-blue"
     >
       {/* Brand Logo */}
@@ -134,6 +138,6 @@ export default function Navbar({ theme = "blue" }: NavbarProps) {
           </Link>
         </div>
       )}
-    </header>
+    </motion.header>
   );
 }
