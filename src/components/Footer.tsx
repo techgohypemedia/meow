@@ -18,7 +18,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full bg-brand-black text-brand-white pt-16 sm:pt-20 pb-8 px-4 sm:px-8 md:px-12 border-t-[3px] border-brand-black relative overflow-hidden">
+    <footer className="w-full bg-brand-black text-brand-white pt-12 sm:pt-14 pb-5 px-4 sm:px-8 md:px-12 border-t-[3px] border-brand-black relative overflow-hidden">
       {/* Background ambient glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-[20%] left-1/4 w-[40vw] h-[30vh] rounded-full bg-brand-blue/5 blur-[120px]" />
@@ -27,10 +27,10 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Main Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-12 sm:pb-16 border-b border-white/10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-8 pb-8 sm:pb-10 border-b border-white/10">
           
           {/* Brand Column (Col 1-5) */}
-          <div className="lg:col-span-5 flex flex-col items-start pr-0 lg:pr-8">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-5 flex flex-col items-start pr-0 lg:pr-8">
             <Link href="/" className="inline-block group mb-4">
               <Image 
                 src="/meowganics_logo_footer.png" 
@@ -105,81 +105,84 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Shop Links (Col 6-7) */}
-          <div className="lg:col-span-2">
-            <h3 className="text-base font-heading font-black uppercase tracking-wider mb-4 text-brand-blue">
-              Shop Clean
-            </h3>
-            <ul className="space-y-2.5 font-bold text-sm text-white/75">
-              <li>
-                <Link href="/product" className="hover:text-brand-blue transition-colors flex items-center gap-1.5">
-                  Clean Bean Litter
-                </Link>
-              </li>
-              <li>
-                <Link href="/product?flavor=peach" className="hover:text-brand-blue transition-colors">
-                  Peach Paradise
-                </Link>
-              </li>
-              <li>
-                <Link href="/product?flavor=green-tea" className="hover:text-brand-blue transition-colors">
-                  Fresh Green Tea
-                </Link>
-              </li>
-              <li>
-                <Link href="/product#accessories" className="hover:text-brand-blue transition-colors">
-                  The Zen Scoop
-                </Link>
-              </li>
-              <li>
-                <Link href="/product#accessories" className="hover:text-brand-blue transition-colors">
-                  Cloud Trap Mat
-                </Link>
-              </li>
-              <li>
-                <Link href="/product#accessories" className="hover:text-brand-blue transition-colors text-brand-blue">
-                  Subscribe & Save 15%
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {/* Quick Links Columns - Side by Side on Mobile (Col 6-9 on desktop) */}
+          <div className="col-span-1 sm:col-span-2 lg:col-span-4 grid grid-cols-2 gap-4 sm:gap-8">
+            {/* Shop Links */}
+            <div>
+              <h3 className="text-sm sm:text-base font-heading font-black uppercase tracking-wider mb-3 sm:mb-4 text-brand-blue">
+                Shop Clean
+              </h3>
+              <ul className="space-y-2 sm:space-y-2.5 font-bold text-xs sm:text-sm text-white/75">
+                <li>
+                  <Link href="/product" className="hover:text-brand-blue transition-colors flex items-center gap-1.5">
+                    Clean Bean Litter
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/product?flavor=peach" className="hover:text-brand-blue transition-colors">
+                    Peach Paradise
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/product?flavor=green-tea" className="hover:text-brand-blue transition-colors">
+                    Fresh Green Tea
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/product#accessories" className="hover:text-brand-blue transition-colors">
+                    The Zen Scoop
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/product#accessories" className="hover:text-brand-blue transition-colors">
+                    Cloud Trap Mat
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/product#accessories" className="hover:text-brand-blue transition-colors text-brand-blue">
+                    Subscribe & Save 15%
+                  </Link>
+                </li>
+              </ul>
+            </div>
 
-          {/* Learn & Care (Col 8-9) */}
-          <div className="lg:col-span-2">
-            <h3 className="text-base font-heading font-black uppercase tracking-wider mb-4 text-brand-blue">
-              Care & Help
-            </h3>
-            <ul className="space-y-2.5 font-bold text-sm text-white/75">
-              <li>
-                <Link href="/product#details" className="hover:text-brand-blue transition-colors">
-                  Why Tofu Litter?
-                </Link>
-              </li>
-              <li>
-                <Link href="/product#details" className="hover:text-brand-blue transition-colors">
-                  How to Flush Safely
-                </Link>
-              </li>
-              <li>
-                <Link href="/product#details" className="hover:text-brand-blue transition-colors">
-                  Transition Guide
-                </Link>
-              </li>
-              <li>
-                <Link href="/product#reviews" className="hover:text-brand-blue transition-colors">
-                  Reviews (4.9★)
-                </Link>
-              </li>
-              <li>
-                <Link href="/product#details" className="hover:text-brand-blue transition-colors">
-                  Vet FAQs
-                </Link>
-              </li>
-            </ul>
+            {/* Learn & Care */}
+            <div>
+              <h3 className="text-sm sm:text-base font-heading font-black uppercase tracking-wider mb-3 sm:mb-4 text-brand-blue">
+                Care & Help
+              </h3>
+              <ul className="space-y-2 sm:space-y-2.5 font-bold text-xs sm:text-sm text-white/75">
+                <li>
+                  <Link href="/product#details" className="hover:text-brand-blue transition-colors">
+                    Why Tofu Litter?
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/product#details" className="hover:text-brand-blue transition-colors">
+                    How to Flush Safely
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/product#details" className="hover:text-brand-blue transition-colors">
+                    Transition Guide
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/product#reviews" className="hover:text-brand-blue transition-colors">
+                    Reviews (4.9★)
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/product#details" className="hover:text-brand-blue transition-colors">
+                    Vet FAQs
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
 
           {/* Newsletter Column (Col 10-12) */}
-          <div className="lg:col-span-3">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-3">
             <h3 className="text-base font-heading font-black uppercase tracking-wider mb-2 text-brand-blue">
               Join the Meow Club
             </h3>
@@ -216,42 +219,22 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Trust Badges Strip */}
-        <div className="py-6 border-b border-white/10 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div className="flex items-center justify-center gap-2 text-xs font-bold text-white/70">
-            <span className="text-base">🚽</span>
-            <span>100% Flush & Septic Safe</span>
-          </div>
-          <div className="flex items-center justify-center gap-2 text-xs font-bold text-white/70">
-            <span className="text-base">✨</span>
-            <span>99.9% Dust-Free Formula</span>
-          </div>
-          <div className="flex items-center justify-center gap-2 text-xs font-bold text-white/70">
-            <span className="text-base">🌿</span>
-            <span>Food-Grade Soybean Fiber</span>
-          </div>
-          <div className="flex items-center justify-center gap-2 text-xs font-bold text-white/70">
-            <span className="text-base">🔒</span>
-            <span>30-Day Odor-Lock Guarantee</span>
+        {/* Copyright & Legal Sub-Footer Bar */}
+        <div className="pt-5 sm:pt-6 pb-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-bold text-white/50 text-center sm:text-left">
+          <p>© {new Date().getFullYear()} MeowGanics Inc. All rights reserved.</p>
+          <div className="flex items-center gap-6 text-[11px] sm:text-xs">
+            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link href="#" className="hover:text-white transition-colors">Shipping & Returns</Link>
           </div>
         </div>
       </div>
 
-      {/* Massive Faded Logo Text Title Watermark Behind Bottom Footer */}
-      <div className="w-full overflow-hidden flex items-center justify-center pointer-events-none select-none relative -mb-3 sm:-mb-6 md:-mb-8 mt-6 sm:mt-10">
-        <span className="font-heading font-black text-[14vw] sm:text-[15vw] md:text-[16vw] tracking-tighter uppercase leading-none text-transparent bg-clip-text bg-gradient-to-b from-white/[0.12] via-white/[0.04] to-transparent whitespace-nowrap">
+      {/* Faded Logo Text Title Watermark - after bottom border line */}
+      <div className="w-full overflow-hidden flex items-center justify-center pointer-events-none select-none relative mt-2 sm:mt-3 -mb-2 sm:-mb-3">
+        <span className="font-heading font-black text-[8vw] sm:text-[8.5vw] md:text-[9vw] tracking-normal uppercase leading-[0.85] text-transparent bg-clip-text bg-gradient-to-b from-white/[0.12] via-white/[0.04] to-transparent whitespace-nowrap px-4">
           MEOWGANICS
         </span>
-      </div>
-
-      {/* Copyright & Legal Sub-Footer Bar */}
-      <div className="relative z-10 max-w-7xl mx-auto pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-bold text-white/50 text-center sm:text-left">
-        <p>© {new Date().getFullYear()} MeowGanics Inc. All rights reserved.</p>
-        <div className="flex items-center gap-6 text-[11px] sm:text-xs">
-          <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-          <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
-          <Link href="#" className="hover:text-white transition-colors">Shipping & Returns</Link>
-        </div>
       </div>
     </footer>
   );

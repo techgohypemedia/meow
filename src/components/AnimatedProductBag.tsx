@@ -22,12 +22,13 @@ export default function AnimatedProductBag() {
 
   const { scrollY } = useScroll();
 
-  // Global motion for the container - smoothly animates from hero curve position (left side) to true viewport center
+  // Global motion for the container - smoothly animates from hero curve position (bottom-left corner) to true viewport center
   const desktopX = useTransform(scrollY, [0, 500], ["-24vw", "0vw"]);
-  const mobileX = useTransform(scrollY, [0, 500], ["0vw", "0vw"]);
+  const mobileX = useTransform(scrollY, [0, 500], ["-23vw", "0vw"]);
   const desktopY = useTransform(scrollY, [0, 500], ["12vh", "0vh"]);
-  const mobileY = useTransform(scrollY, [0, 500], ["8vh", "0vh"]);
-  const containerScale = useTransform(scrollY, [0, 500], [0.92, 1]);
+  const mobileY = useTransform(scrollY, [0, 500], ["18vh", "0vh"]);
+  const desktopScale = useTransform(scrollY, [0, 500], [0.92, 1]);
+  const mobileScale = useTransform(scrollY, [0, 500], [0.72, 1]);
 
   // Single continuous bag filter transition
   const bagFilter = useTransform(
@@ -128,14 +129,14 @@ export default function AnimatedProductBag() {
       ref={containerRef}
       className="flex flex-col items-center w-full h-full relative pointer-events-none"
     >
-      {/* Master Container - Perfectly Center Aligned & Prominently Sized on Mobile */}
+      {/* Master Container - Positioned on bottom-left curve at scroll 0, centered on scroll */}
       <motion.div
         style={{
           x: isMobile ? mobileX : desktopX,
           y: isMobile ? mobileY : desktopY,
-          scale: containerScale,
+          scale: isMobile ? mobileScale : desktopScale,
         }}
-        className="relative w-[78vw] sm:w-[68vw] md:w-auto h-[48vh] sm:h-[50vh] md:h-[44vh] max-w-[350px] sm:max-w-[400px] md:max-w-none max-h-[450px] sm:max-h-[480px] md:max-h-[400px] aspect-[926/1004] z-50 origin-center flex items-center justify-center"
+        className="relative w-[58vw] sm:w-[64vw] md:w-auto h-[36vh] sm:h-[40vh] md:h-[44vh] max-w-[260px] sm:max-w-[320px] md:max-w-none max-h-[330px] sm:max-h-[360px] md:max-h-[400px] aspect-[926/1004] z-50 origin-center flex items-center justify-center"
       >
         {/* SINGLE Continuous Bag Image (Clickable Link to Product Details Page) */}
         <motion.div
