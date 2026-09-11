@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 
-export default function AnimatedProductBag() {
+export default function AnimatedProductBag({ staticHero = false }: { staticHero?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const { addToCart } = useCart();
@@ -132,16 +132,16 @@ export default function AnimatedProductBag() {
       {/* Master Container - Positioned on bottom-left curve at scroll 0, centered on scroll */}
       <motion.div
         style={{
-          x: isMobile ? mobileX : desktopX,
-          y: isMobile ? mobileY : desktopY,
-          scale: isMobile ? mobileScale : desktopScale,
+          x: staticHero ? (isMobile ? "-23vw" : "-24vw") : (isMobile ? mobileX : desktopX),
+          y: staticHero ? (isMobile ? "18vh" : "12vh") : (isMobile ? mobileY : desktopY),
+          scale: staticHero ? (isMobile ? 0.72 : 0.92) : (isMobile ? mobileScale : desktopScale),
         }}
         className="relative w-[58vw] sm:w-[64vw] md:w-auto h-[36vh] sm:h-[40vh] md:h-[44vh] max-w-[260px] sm:max-w-[320px] md:max-w-none max-h-[330px] sm:max-h-[360px] md:max-h-[400px] aspect-[926/1004] z-50 origin-center flex items-center justify-center"
       >
         {/* SINGLE Continuous Bag Image (Clickable Link to Product Details Page) */}
         <motion.div
           className="absolute inset-0 w-full h-full origin-center flex items-center justify-center pointer-events-auto z-30"
-          style={{ filter: bagFilter }}
+          style={{ filter: staticHero ? "none" : bagFilter }}
         >
           <Link
             href="/product"
@@ -159,8 +159,8 @@ export default function AnimatedProductBag() {
           </Link>
         </motion.div>
 
-        {/* Mapped Text Elements */}
-        {texts.map((t, i) => (
+        {/* Mapped Text Elements (Only shown if NOT staticHero) */}
+        {!staticHero && texts.map((t, i) => (
           <motion.div
             key={i}
             style={{ opacity: t.opacity }}
