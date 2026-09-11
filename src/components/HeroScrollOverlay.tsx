@@ -8,9 +8,8 @@ export default function HeroScrollOverlay() {
   // Fade in a solid background to hide the litter pile and peaking cat
   const bgOpacity = useTransform(scrollY, [0, 300], [0, 1]);
 
-  // Fade the neon glow in at start, but fade it OUT at the end of the scroll section 
-  // (around 2000px-2300px) so it doesn't overlap the Marquee when the sticky container scrolls up
-  const glowOpacity = useTransform(scrollY, [0, 300, 2000, 2300], [0, 1, 1, 0]);
+  // Fade the neon glow in at start, but fade it OUT as hero concludes
+  const glowOpacity = useTransform(scrollY, [0, 300, 1800, 2100], [0, 1, 1, 0]);
 
   // Match the product bag's hue rotation perfectly
   const borderFilter = useTransform(

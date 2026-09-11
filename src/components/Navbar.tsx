@@ -24,17 +24,15 @@ export default function Navbar({ theme = "blue" }: NavbarProps) {
       className="w-full z-50 px-6 py-3 md:px-12 flex items-center justify-between h-20 md:h-24 bg-brand-blue"
     >
       {/* Brand Logo */}
-      <Link href="/" className="flex items-center gap-3 cursor-pointer group">
-        <div className="relative w-40 h-40 md:w-52 md:h-52 transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-2 -my-10 md:-my-14">
-          <Image
-            src="/meowganics_logo_transparent.png"
-            alt="Meow Ganics Logo"
-            fill
-            sizes="(max-width: 768px) 160px, 208px"
-            className="object-contain object-left"
-            priority
-          />
-        </div>
+      <Link href="/" className="flex items-center cursor-pointer group h-full py-1 sm:py-1.5 shrink-0">
+        <Image
+          src="/meowganics_logo_transparent.png"
+          alt="Meow Ganics Logo"
+          width={1776}
+          height={725}
+          className="h-full w-auto max-h-[74px] sm:max-h-[82px] md:max-h-[90px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_2px_4px_rgba(0,0,0,0.08)]"
+          priority
+        />
       </Link>
 
       {/* Center Nav Links (Desktop) */}

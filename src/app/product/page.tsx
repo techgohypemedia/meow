@@ -6,9 +6,17 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { useCart } from "@/context/CartContext";
 import { PRODUCTS, getProductById, ProductFlavor, ProductSize } from "@/data/products";
 import { StaggerTestimonials } from "@/components/ui/stagger-testimonials";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { BlurredStagger } from "@/components/ui/text-reveal-faqs";
 
 function ProductContent() {
   const searchParams = useSearchParams();
@@ -763,21 +771,37 @@ function ProductContent() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -15 }}
                     transition={{ duration: 0.25 }}
-                    className="space-y-3 sm:space-y-4"
                   >
-                    {product.faqs.map((faq, i) => (
-                      <div
-                        key={i}
-                        className="bg-[#F8F9FA] border-2 border-brand-black rounded-2xl p-4 sm:p-6 shadow-[2px_2px_0px_#111111]"
-                      >
-                        <h4 className="font-heading text-base sm:text-lg font-bold text-brand-black mb-1.5 flex items-center gap-2">
-                          <span className="text-[#059669]">Q:</span> {faq.question}
-                        </h4>
-                        <p className="text-xs sm:text-sm font-bold text-brand-black/75 leading-relaxed pl-5 sm:pl-6">
-                          {faq.answer}
-                        </p>
-                      </div>
-                    ))}
+                    <Accordion
+                      type="single"
+                      collapsible
+                      defaultValue="faq-0"
+                      className="w-full space-y-3 sm:space-y-3.5"
+                    >
+                      {product.faqs.map((faq, i) => (
+                        <AccordionItem
+                          key={i}
+                          value={`faq-${i}`}
+                          className="rounded-2xl border-2 border-brand-black bg-[#F8F9FA] shadow-[2px_2px_0px_#111111] sm:shadow-[3px_3px_0px_#111111] overflow-hidden transition-all duration-200 data-[state=open]:bg-brand-blue-light/25 data-[state=open]:shadow-[4px_4px_0px_#111111] data-[state=open]:-translate-y-0.5"
+                        >
+                          <AccordionTrigger className="cursor-pointer px-4 sm:px-6 py-3.5 sm:py-4.5 hover:no-underline text-left flex items-center justify-between gap-3 group w-full">
+                            <div className="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0 pr-2">
+                              <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-brand-blue/30 text-brand-black font-heading font-black text-xs sm:text-sm flex items-center justify-center shrink-0 border border-brand-black/20 group-hover:bg-brand-blue group-hover:scale-105 transition-all">
+                                {i + 1}
+                              </span>
+                              <span className="font-heading font-bold text-sm sm:text-base md:text-lg text-brand-black leading-snug">
+                                {faq.question}
+                              </span>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="px-4 sm:px-6 pb-4 sm:pb-5 pt-0 text-brand-black/85 font-medium">
+                            <div className="pt-2 border-t border-brand-black/10">
+                              <BlurredStagger text={faq.answer} />
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -911,74 +935,7 @@ function ProductContent() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full bg-brand-black text-brand-white py-12 sm:py-16 px-4 sm:px-6 md:px-12 border-t-8 border-brand-black">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 sm:gap-12">
-          <div className="col-span-1 md:col-span-2">
-            <h2 className="text-3xl sm:text-4xl font-heading mb-3 sm:mb-4 tracking-tight">
-              Meow<span className="text-brand-blue">Ganics</span>
-            </h2>
-            <p className="text-sm sm:text-base font-bold opacity-80 mb-6 sm:mb-8 max-w-md">
-              Making cats happy and the planet healthier, one flushable bowl of Clean Bean at a time.
-            </p>
-            <div className="flex gap-3 sm:gap-4">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-brand-white text-brand-black rounded-full border-2 border-brand-white flex items-center justify-center hover:bg-brand-blue hover:scale-110 transition-all cursor-pointer shadow-[2px_2px_0px_#A9D3F4]">
-                In
-              </div>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-brand-white text-brand-black rounded-full border-2 border-brand-white flex items-center justify-center hover:bg-brand-blue hover:scale-110 transition-all cursor-pointer shadow-[2px_2px_0px_#A9D3F4]">
-                Fb
-              </div>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-brand-white text-brand-black rounded-full border-2 border-brand-white flex items-center justify-center hover:bg-brand-blue hover:scale-110 transition-all cursor-pointer shadow-[2px_2px_0px_#A9D3F4]">
-                Tw
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-base sm:text-lg font-heading mb-3 sm:mb-4 text-brand-blue">Products</h3>
-            <ul className="space-y-2.5 sm:space-y-3 font-bold opacity-80 text-xs sm:text-sm">
-              <li>
-                <Link href="/product" className="hover:text-brand-blue transition-colors">
-                  Clean Bean Litter
-                </Link>
-              </li>
-              <li>
-                <Link href="/product#accessories" className="hover:text-brand-blue transition-colors">
-                  The Zen Scoop
-                </Link>
-              </li>
-              <li>
-                <Link href="/product#accessories" className="hover:text-brand-blue transition-colors">
-                  Cloud Trap Mat
-                </Link>
-              </li>
-              <li>
-                <Link href="/product#accessories" className="hover:text-brand-blue transition-colors">
-                  Catnip Mist
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-base sm:text-lg font-heading mb-3 sm:mb-4 text-brand-blue">Stay in the Loop</h3>
-            <p className="font-bold opacity-80 mb-3 sm:mb-4 text-xs sm:text-sm">Get 10% off your first order!</p>
-            <div className="flex border-2 border-brand-white rounded-2xl overflow-hidden focus-within:border-brand-blue transition-colors">
-              <input
-                type="email"
-                placeholder="Enter email"
-                className="w-full bg-brand-black text-brand-white px-3 py-2 sm:py-2.5 outline-none font-bold text-xs sm:text-sm placeholder:text-brand-white/50"
-              />
-              <button className="bg-brand-white text-brand-black px-3.5 sm:px-4 py-2 sm:py-2.5 font-bold hover:bg-brand-blue transition-colors">
-                →
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto mt-8 sm:mt-12 pt-6 border-t border-brand-white/20 text-center font-bold opacity-60 text-[10px] sm:text-xs">
-          <p>© {new Date().getFullYear()} MeowGanics Inc. Purely feline, planet approved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

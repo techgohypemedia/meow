@@ -22,12 +22,12 @@ export default function AnimatedProductBag() {
 
   const { scrollY } = useScroll();
 
-  // Global motion for the container - centered in viewport with clean nav clearance
-  const desktopX = useTransform(scrollY, [0, 500], ["0vw", "24vw"]);
-  const mobileX = useTransform(scrollY, [0, 500], ["0vw", "24vw"]);
-  const desktopY = useTransform(scrollY, [0, 500], ["0vh", "-6vh"]);
-  const mobileY = useTransform(scrollY, [0, 500], ["0vh", "-18vh"]);
-  const containerScale = useTransform(scrollY, [0, 500], [1, 0.95]);
+  // Global motion for the container - smoothly animates from hero curve position (left side) to true viewport center
+  const desktopX = useTransform(scrollY, [0, 500], ["-24vw", "0vw"]);
+  const mobileX = useTransform(scrollY, [0, 500], ["0vw", "0vw"]);
+  const desktopY = useTransform(scrollY, [0, 500], ["12vh", "0vh"]);
+  const mobileY = useTransform(scrollY, [0, 500], ["8vh", "0vh"]);
+  const containerScale = useTransform(scrollY, [0, 500], [0.92, 1]);
 
   // Single continuous bag filter transition
   const bagFilter = useTransform(
@@ -42,11 +42,11 @@ export default function AnimatedProductBag() {
     ]
   );
 
-  // Text Opacities
-  const text1Opacity = useTransform(scrollY, [0, 400, 500, 650, 750], [0, 0, 1, 1, 0]);
-  const text2Opacity = useTransform(scrollY, [750, 850, 1000, 1150, 1250], [0, 1, 1, 1, 0]);
-  const text3Opacity = useTransform(scrollY, [1250, 1350, 1500, 1650, 1750], [0, 1, 1, 1, 0]);
-  const text4Opacity = useTransform(scrollY, [1750, 1850, 2000], [0, 1, 1]);
+  // Text Opacities - smoothly transitions across the 4 flavors without disappearing
+  const text1Opacity = useTransform(scrollY, [0, 350, 450, 600, 700], [0, 0, 1, 1, 0]);
+  const text2Opacity = useTransform(scrollY, [700, 800, 950, 1100, 1200], [0, 1, 1, 1, 0]);
+  const text3Opacity = useTransform(scrollY, [1200, 1300, 1450, 1600, 1700], [0, 1, 1, 1, 0]);
+  const text4Opacity = useTransform(scrollY, [1700, 1800, 2400], [0, 1, 1]);
 
   const commonClasses =
     "absolute inset-0 w-full h-full origin-center flex items-center justify-center";
@@ -128,14 +128,14 @@ export default function AnimatedProductBag() {
       ref={containerRef}
       className="flex flex-col items-center w-full h-full relative pointer-events-none"
     >
-      {/* Master Container */}
+      {/* Master Container - Perfectly Center Aligned & Prominently Sized on Mobile */}
       <motion.div
         style={{
           x: isMobile ? mobileX : desktopX,
           y: isMobile ? mobileY : desktopY,
           scale: containerScale,
         }}
-        className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[420px] lg:max-w-[480px] xl:max-w-[540px] 2xl:max-w-[600px] aspect-[4/5] z-50 origin-center"
+        className="relative w-[78vw] sm:w-[68vw] md:w-auto h-[48vh] sm:h-[50vh] md:h-[44vh] max-w-[350px] sm:max-w-[400px] md:max-w-none max-h-[450px] sm:max-h-[480px] md:max-h-[400px] aspect-[926/1004] z-50 origin-center flex items-center justify-center"
       >
         {/* SINGLE Continuous Bag Image (Clickable Link to Product Details Page) */}
         <motion.div
@@ -144,15 +144,15 @@ export default function AnimatedProductBag() {
         >
           <Link
             href="/product"
-            className="animate-float drop-shadow-[0_20px_25px_rgba(0,0,0,0.2)] w-full block cursor-pointer hover:scale-105 transition-transform duration-300"
+            className="animate-float drop-shadow-[0_20px_25px_rgba(0,0,0,0.2)] w-full h-full block cursor-pointer hover:scale-105 transition-transform duration-300 relative"
             title="View Product Details"
           >
             <Image
               src="/product-bag.png"
               alt="Clean Bean Product Bag"
-              width={800}
-              height={800}
-              className="w-full h-auto object-contain pointer-events-auto cursor-pointer"
+              fill
+              sizes="(max-width: 768px) 380px, 440px"
+              className="object-contain pointer-events-auto cursor-pointer"
               priority
             />
           </Link>
@@ -165,11 +165,14 @@ export default function AnimatedProductBag() {
             style={{ opacity: t.opacity }}
             className={commonClasses + " z-40 pointer-events-none"}
           >
-            {/* Title (Top) */}
-            <motion.div className="absolute bottom-[86%] sm:bottom-[88%] left-1/2 -translate-x-1/2 mb-1 w-max text-center flex flex-col items-center pointer-events-none">
-              <h1 className="font-heading text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-brand-black leading-none tracking-tight">
+            {/* Title (Top) - positioned with comfortable breathing room above bag handle */}
+            <motion.div className="absolute bottom-[102%] left-1/2 -translate-x-1/2 mb-5 sm:mb-6 md:mb-7 lg:mb-8 w-max text-center flex flex-col items-center pointer-events-none z-50">
+              <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-black text-brand-black leading-tight tracking-tight drop-shadow-sm">
                 {t.title}
               </h1>
+              <p className="hidden md:block text-xs md:text-sm font-heading font-bold uppercase tracking-widest text-brand-black/60 mt-1 sm:mt-1.5">
+                {t.subtitle}
+              </p>
               {/* Mobile Subtitle & Price Badge */}
               <div className="flex md:hidden items-center gap-1.5 mt-1.5">
                 <span className="text-[10px] font-bold text-brand-black/80 bg-brand-white px-2.5 py-0.5 rounded-full border border-brand-black/20 shadow-[1px_1px_0px_#111111]">
@@ -182,33 +185,33 @@ export default function AnimatedProductBag() {
             </motion.div>
 
             {/* Description (Left - Desktop) */}
-            <motion.div className="hidden md:flex absolute right-[95%] top-1/2 -translate-y-1/2 mr-8 w-[260px] lg:w-[320px] xl:w-[360px] text-right flex-col items-end pointer-events-none">
-              <p className="text-brand-black/80 text-sm md:text-base lg:text-lg xl:text-xl font-bold leading-relaxed">
+            <motion.div className="hidden md:flex absolute right-[106%] top-1/2 -translate-y-1/2 mr-4 lg:mr-8 w-[230px] lg:w-[280px] xl:w-[320px] text-right flex-col items-end pointer-events-none">
+              <p className="text-brand-black/80 text-xs md:text-sm lg:text-base font-bold leading-relaxed">
                 {t.desc}
               </p>
             </motion.div>
 
             {/* Price (Right - Desktop) */}
-            <motion.div className="hidden md:flex absolute left-[95%] top-1/2 -translate-y-1/2 ml-8 w-max text-left flex-col items-start pointer-events-none">
-              <span className="text-xs md:text-sm lg:text-base font-heading font-bold uppercase tracking-widest text-brand-black/60 mb-1">
+            <motion.div className="hidden md:flex absolute left-[106%] top-1/2 -translate-y-1/2 ml-4 lg:ml-8 w-max text-left flex-col items-start pointer-events-none">
+              <span className="text-xs md:text-sm font-heading font-bold uppercase tracking-widest text-brand-black/60 mb-0.5">
                 Price
               </span>
-              <p className="font-heading text-3xl md:text-4xl lg:text-5xl font-black text-brand-black tracking-tight">
+              <p className="font-heading text-2xl md:text-3xl lg:text-4xl font-black text-brand-black tracking-tight">
                 {t.price}
               </p>
             </motion.div>
 
             {/* Buttons (Bottom) */}
-            <motion.div className="absolute top-[88%] left-1/2 -translate-x-1/2 mt-2.5 flex items-center gap-2.5 sm:gap-4 pointer-events-auto">
+            <motion.div className="absolute top-[103%] left-1/2 -translate-x-1/2 mt-4 sm:mt-5 md:mt-6 flex items-center gap-2.5 sm:gap-4 pointer-events-auto">
               <Link
                 href={`/product?flavor=${t.id}`}
-                className="bg-brand-black text-white px-5 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-bold text-xs sm:text-base hover:scale-105 transition-transform shadow-[3px_3px_0px_#A9D3F4] whitespace-nowrap inline-block"
+                className="bg-brand-black text-white px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-bold text-xs sm:text-base hover:scale-105 transition-transform shadow-[3px_3px_0px_#A9D3F4] whitespace-nowrap inline-block"
               >
                 Buy Now • {t.price}
               </Link>
               <button
                 onClick={() => handleQuickAdd(t)}
-                className="bg-white text-brand-black border-2 border-brand-black w-10 h-10 sm:w-14 sm:h-14 rounded-full font-bold text-base md:text-lg hover:bg-brand-black/5 shadow-[2px_2px_0px_#111111] transition-colors flex items-center justify-center group shrink-0 cursor-pointer"
+                className="bg-white text-brand-black border-2 border-brand-black w-10 h-10 sm:w-12 sm:h-12 rounded-full font-bold text-sm md:text-base hover:bg-brand-black/5 shadow-[2px_2px_0px_#111111] transition-colors flex items-center justify-center group shrink-0 cursor-pointer"
                 aria-label={`Add ${t.subtitle} to cart`}
               >
                 <svg

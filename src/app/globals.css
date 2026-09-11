@@ -78,10 +78,30 @@ html {
   --font-heading: var(--font-fredoka);
 
   --animate-marquee: marquee 25s linear infinite;
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
   
   @keyframes marquee {
     0% { transform: translateX(0%); }
     100% { transform: translateX(-50%); }
+  }
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
   }
 }
 
@@ -125,3 +145,34 @@ button {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Scroll Reel Testimonials Keyframes & Classes */
+@keyframes scroll-reel-char-rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scroll-reel-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+.scroll-reel-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(100%);
+  animation: scroll-reel-char-rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.scroll-reel-exit {
+  animation: scroll-reel-exit 0.24s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
