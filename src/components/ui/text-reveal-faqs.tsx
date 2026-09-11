@@ -75,26 +75,6 @@ export default function FAQs({
             <p className="text-brand-black/75 mt-2.5 sm:mt-3 text-sm sm:text-base leading-relaxed font-medium">
               {subtitle}
             </p>
-
-            {/* Desktop Support Card */}
-            <div className="hidden md:flex mt-8 p-5 rounded-2xl bg-brand-blue-light/50 border-2 border-brand-black shadow-[3px_3px_0px_#111111] flex-col gap-3">
-              <div>
-                <p className="font-heading font-bold text-sm text-brand-black flex items-center gap-1.5">
-                  <span>💬</span>
-                  <span>{supportText}</span>
-                </p>
-                <p className="text-xs text-brand-black/70 font-medium mt-1">
-                  Our feline care team answers questions 7 days a week.
-                </p>
-              </div>
-              <Link
-                href={supportLinkHref}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-brand-black text-brand-white rounded-full font-heading font-bold text-xs shadow-[2px_2px_0px_#A9D3F4] hover:scale-105 active:scale-95 transition-transform text-center"
-              >
-                <span>{supportLinkText}</span>
-                <span>→</span>
-              </Link>
-            </div>
           </div>
 
           {/* Right / Accordion Column */}
@@ -128,26 +108,6 @@ export default function FAQs({
                 </AccordionItem>
               ))}
             </Accordion>
-
-            {/* Mobile Support Card (Tactile, visible on mobile screens) */}
-            <div className="md:hidden mt-6 p-4 rounded-2xl bg-brand-blue-light/50 border-2 border-brand-black shadow-[3px_3px_0px_#111111] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div>
-                <p className="font-heading font-bold text-sm text-brand-black flex items-center gap-1.5">
-                  <span>💬</span>
-                  <span>{supportText}</span>
-                </p>
-                <p className="text-xs text-brand-black/70 font-medium mt-0.5">
-                  Our feline care team is always here to help.
-                </p>
-              </div>
-              <Link
-                href={supportLinkHref}
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-brand-black text-brand-white rounded-full font-heading font-bold text-xs shadow-[2px_2px_0px_#A9D3F4] hover:scale-105 active:scale-95 transition-transform w-full sm:w-auto text-center"
-              >
-                <span>{supportLinkText}</span>
-                <span>→</span>
-              </Link>
-            </div>
           </div>
         </div>
       </div>

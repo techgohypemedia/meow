@@ -155,9 +155,6 @@ export default function Home() {
         <FAQs
           title="Frequently Asked Questions"
           subtitle="Everything you need to know about Clean Bean 100% Organic Tofu Cat Litter."
-          supportText="Have a question about your cat's setup or subscription?"
-          supportLinkText="Chat with our feline care team"
-          supportLinkHref="/product"
           items={[
             {
               id: "faq-1",
