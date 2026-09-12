@@ -385,10 +385,21 @@ export default function HeroScrollExperience() {
       </div>
 
       {/* Layer 6: Main Showcase Arena matching Oryzo.ai layout */}
-      <div 
+      <motion.div 
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
-        className="relative z-30 w-full flex-1 flex flex-col items-center justify-center my-auto px-4 overflow-visible"
+        animate={{
+          opacity: isDocked ? 1 : 0,
+          pointerEvents: isDocked ? "auto" : "none",
+        }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        style={{
+          opacity: isDocked ? 1 : 0,
+          visibility: isDocked ? "visible" : "hidden",
+        }}
+        className={`relative z-30 w-full flex-1 flex flex-col items-center justify-center my-auto px-4 overflow-visible ${
+          !isDocked ? "opacity-0 pointer-events-none invisible" : ""
+        }`}
       >
         
         {/* Left Headline: Compact, elegant Oryzo Typography placed in Upper-Left corner above side cards (matching Image 2) */}
@@ -399,7 +410,13 @@ export default function HeroScrollExperience() {
             pointerEvents: isDocked ? "auto" : "none",
           }}
           transition={{ duration: 0.8, delay: isDocked ? 0.35 : 0, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute left-6 sm:left-10 md:left-14 lg:left-16 xl:left-20 top-16 sm:top-18 md:top-20 lg:top-22 z-40 max-w-[220px] sm:max-w-[280px] md:max-w-[340px] flex flex-col items-start text-left pointer-events-auto"
+          style={{
+            opacity: isDocked ? 1 : 0,
+            visibility: isDocked ? "visible" : "hidden",
+          }}
+          className={`absolute left-6 sm:left-10 md:left-14 lg:left-16 xl:left-20 top-16 sm:top-18 md:top-20 lg:top-22 z-40 max-w-[220px] sm:max-w-[280px] md:max-w-[340px] flex flex-col items-start text-left pointer-events-auto ${
+            !isDocked ? "opacity-0 pointer-events-none invisible" : ""
+          }`}
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -467,7 +484,13 @@ export default function HeroScrollExperience() {
               scale: isDocked ? 1 : 0.9,
             }}
             transition={{ duration: 0.9, delay: isDocked ? 0.35 : 0, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute z-10 w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] h-[310px] sm:h-[370px] md:h-[430px] lg:h-[470px] rounded-2xl md:rounded-3xl border border-dashed border-white/50 pointer-events-none shadow-2xl" 
+            style={{
+              opacity: isDocked ? 1 : 0,
+              visibility: isDocked ? "visible" : "hidden",
+            }}
+            className={`absolute z-10 w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] h-[310px] sm:h-[370px] md:h-[430px] lg:h-[470px] rounded-2xl md:rounded-3xl border border-dashed border-white/50 pointer-events-none shadow-2xl ${
+              !isDocked ? "opacity-0 invisible" : ""
+            }`} 
           />
 
           {/* Horizontal Filmstrip: Center Card is Large, Side Cards are Reduced Thumbnails (matching Image 2) */}
@@ -477,7 +500,13 @@ export default function HeroScrollExperience() {
               pointerEvents: isDocked ? "auto" : "none",
             }}
             transition={{ duration: 0.9, delay: isDocked ? 0.4 : 0, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full h-full flex items-center justify-center overflow-visible z-20"
+            style={{
+              opacity: isDocked ? 1 : 0,
+              visibility: isDocked ? "visible" : "hidden",
+            }}
+            className={`relative w-full h-full flex items-center justify-center overflow-visible z-20 ${
+              !isDocked ? "opacity-0 pointer-events-none invisible" : ""
+            }`}
           >
             <div className="relative flex items-center justify-center w-full">
               {ORYZO_ITEMS.map((prod, index) => {
@@ -491,7 +520,7 @@ export default function HeroScrollExperience() {
                 const stepDist = isMobile ? 115 : 160;
                 const targetX = isCenter ? 0 : sign * (baseDist + (abs - 1) * stepDist);
                 const targetScale = isCenter ? 1 : (isMobile ? 0.45 : 0.48);
-                const targetOpacity = isCenter ? 1 : (abs === 1 ? 0.85 : abs === 2 ? 0.6 : 0.35);
+                const targetOpacity = !isDocked ? 0 : (isCenter ? 1 : (abs === 1 ? 0.85 : abs === 2 ? 0.6 : 0.35));
 
                 return (
                   <motion.div
@@ -546,7 +575,13 @@ export default function HeroScrollExperience() {
               pointerEvents: isDocked ? "auto" : "none",
             }}
             transition={{ duration: 0.5, delay: isDocked ? 0.2 : 0 }}
-            className="absolute z-40 w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] flex items-center justify-between pointer-events-none"
+            style={{
+              opacity: isDocked ? 1 : 0,
+              visibility: isDocked ? "visible" : "hidden",
+            }}
+            className={`absolute z-40 w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] flex items-center justify-between pointer-events-none ${
+              !isDocked ? "opacity-0 invisible pointer-events-none" : ""
+            }`}
           >
             <button
               onClick={(e) => {
@@ -576,7 +611,7 @@ export default function HeroScrollExperience() {
           </motion.div>
 
         </div>
-      </div>
+      </motion.div>
 
       {/* Layer 7: Bottom Navigation & Swap Indicators (Locked cleanly at the bottom) */}
       <div className="relative z-30 max-w-7xl mx-auto w-full pb-4 sm:pb-6 px-6 sm:px-10 flex items-center justify-between text-xs text-white/50 pointer-events-auto">
@@ -605,7 +640,13 @@ export default function HeroScrollExperience() {
             pointerEvents: isDocked ? "auto" : "none",
           }}
           transition={{ duration: 0.5 }}
-          className="flex items-center gap-3"
+          style={{
+            opacity: isDocked ? 1 : 0,
+            visibility: isDocked ? "visible" : "hidden",
+          }}
+          className={`flex items-center gap-3 ${
+            !isDocked ? "opacity-0 pointer-events-none invisible" : ""
+          }`}
         >
           <div className="flex items-center gap-1.5">
             {ORYZO_ITEMS.map((_, i) => (
@@ -630,11 +671,18 @@ export default function HeroScrollExperience() {
             opacity: isDocked ? 1 : 0,
             pointerEvents: isDocked ? "auto" : "none",
           }}
+          transition={{ duration: 0.5 }}
+          style={{
+            opacity: isDocked ? 1 : 0,
+            visibility: isDocked ? "visible" : "hidden",
+          }}
           onClick={() => {
             setActiveIndex(0);
             setIsDocked(false);
           }}
-          className="hover:text-white text-white/60 transition-colors cursor-pointer text-[11px] flex items-center gap-1 font-heading font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10"
+          className={`hover:text-white text-white/60 transition-colors cursor-pointer text-[11px] flex items-center gap-1 font-heading font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10 ${
+            !isDocked ? "opacity-0 pointer-events-none invisible" : ""
+          }`}
         >
           <span>↑ Back to Hill</span>
         </motion.button>
