@@ -1,11 +1,12 @@
-"use client";
+﻿"use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import InteractiveCat from "./InteractiveCat";
 import { useCart } from "@/context/CartContext";
+import gsap from "gsap";
 
 export interface OryzoItem {
   id: string;
@@ -80,6 +81,84 @@ export const ORYZO_ITEMS: OryzoItem[] = [
     comingSoonDrop: "Drop 04",
   },
 ];
+
+// â”€â”€ Continuous filmstrip: all images joined side-by-side, GSAP slides the whole strip â”€â”€
+function WipeSlider({ items, activeIndex }: { items: typeof ORYZO_ITEMS; activeIndex: number }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const prevIndexRef = useRef(activeIndex);
+
+  useLayoutEffect(() => {
+    if (!stripRef.current || !cardRef.current) return;
+
+    const isFirst = prevIndexRef.current === activeIndex;
+    prevIndexRef.current = activeIndex;
+
+    // Use the card's actual pixel width â€” strip slides exactly one card-width per step
+    const cardWidth = cardRef.current.offsetWidth;
+
+    gsap.to(stripRef.current, {
+      x: -(activeIndex * cardWidth),
+      duration: isFirst ? 0 : 0.75,
+      ease: "power3.inOut",
+    });
+  }, [activeIndex]);
+
+  // Re-snap on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (!stripRef.current || !cardRef.current) return;
+      const cardWidth = cardRef.current.offsetWidth;
+      gsap.set(stripRef.current, { x: -(prevIndexRef.current * cardWidth) });
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const activeItem = items[activeIndex];
+
+  return (
+    <div ref={cardRef} className="relative w-full h-full overflow-hidden">
+      {/* One continuous strip â€” all images joined side-by-side as one piece */}
+      <div
+        ref={stripRef}
+        className="absolute top-0 left-0 h-full flex will-change-transform"
+        style={{ width: `${items.length * 100}%` }}
+      >
+        {items.map((item) => (
+          <div
+            key={item.id}
+            className="relative h-full flex-shrink-0"
+            style={{ width: `${100 / items.length}%` }}
+          >
+            <Image
+              src={item.image}
+              alt={item.flavor}
+              fill
+              sizes="(max-width: 640px) 210px, (max-width: 768px) 280px, 360px"
+              className="object-cover object-center"
+              priority={item.id === items[0].id}
+            />
+          </div>
+        ))}
+      </div>
+      {/* Coming Soon badge */}
+      {activeItem.isComingSoon && (
+        <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 z-10 pointer-events-none">
+          <span
+            className="px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1.5"
+            style={{ backgroundColor: `${activeItem.accentColor}33` }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: activeItem.accentColor }} />
+            Soon
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
 
 export default function HeroScrollExperience() {
   const [isMobile, setIsMobile] = useState(false);
@@ -343,7 +422,7 @@ export default function HeroScrollExperience() {
             href="/product"
             className="hidden sm:flex items-center gap-2 bg-brand-white text-brand-black px-4 py-2 rounded-full font-heading font-bold text-xs md:text-sm border-2 border-brand-black shadow-[2px_2px_0px_#111111] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_#111111] transition-all"
           >
-            Shop Litter →
+            Shop Litter â†’
           </Link>
         </div>
       </nav>
@@ -455,7 +534,7 @@ export default function HeroScrollExperience() {
                       href={`/product${currentItem.flavorId ? `?flavor=${currentItem.flavorId}` : ""}`}
                       className="px-4 sm:px-5 py-1.5 sm:py-2 bg-white text-brand-black rounded-full font-heading font-black text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_#A9D3F4]"
                     >
-                      Buy Now • {currentItem.price}
+                      Buy Now â€¢ {currentItem.price}
                     </Link>
 
                     <button
@@ -543,24 +622,32 @@ export default function HeroScrollExperience() {
                         : "z-10 hover:opacity-95"
                     }`}
                   >
-                    <Image
-                      src={prod.image}
-                      alt={prod.flavor}
-                      fill
-                      sizes="(max-width: 640px) 210px, (max-width: 768px) 280px, 360px"
-                      className="object-cover object-center"
-                      priority={index === 0}
-                    />
-                    {prod.isComingSoon && (
-                      <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 z-10 pointer-events-none">
-                        <span
-                          className="px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1.5"
-                          style={{ backgroundColor: `${prod.accentColor}33` }}
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.accentColor }} />
-                          Soon
-                        </span>
-                      </div>
+                    {isCenter ? (
+                      /* â”€â”€ Center card: GSAP wipe transition â”€â”€ */
+                      <WipeSlider items={ORYZO_ITEMS} activeIndex={activeIndex} />
+                    ) : (
+                      /* â”€â”€ Side thumbnails: plain image â”€â”€ */
+                      <>
+                        <Image
+                          src={prod.image}
+                          alt={prod.flavor}
+                          fill
+                          sizes="(max-width: 640px) 210px, (max-width: 768px) 280px, 360px"
+                          className="object-cover object-center"
+                          priority={index === 0}
+                        />
+                        {prod.isComingSoon && (
+                          <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 z-10 pointer-events-none">
+                            <span
+                              className="px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1.5"
+                              style={{ backgroundColor: `${prod.accentColor}33` }}
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.accentColor }} />
+                              Soon
+                            </span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </motion.div>
                 );
@@ -623,7 +710,7 @@ export default function HeroScrollExperience() {
               className="flex items-center gap-2 text-brand-black font-heading font-bold cursor-pointer hover:opacity-80 transition-opacity bg-brand-white/70 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-brand-black/20 shadow-sm"
             >
               <span className="w-2 h-2 rounded-full bg-brand-black animate-pulse" />
-              <span>Scroll down to see product in box ↓</span>
+              <span>Scroll down to see product in box â†“</span>
             </button>
           ) : (
             <div className="flex items-center gap-2 text-white/60 font-heading">
@@ -684,10 +771,11 @@ export default function HeroScrollExperience() {
             !isDocked ? "opacity-0 pointer-events-none invisible" : ""
           }`}
         >
-          <span>↑ Back to Hill</span>
+          <span>â†‘ Back to Hill</span>
         </motion.button>
       </div>
 
     </div>
   );
 }
+
