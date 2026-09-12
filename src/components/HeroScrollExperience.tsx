@@ -17,6 +17,8 @@ export interface OryzoItem {
   image: string;
   accentColor: string;
   flavorId?: string;
+  isComingSoon?: boolean;
+  comingSoonDrop?: string;
 }
 
 export const ORYZO_ITEMS: OryzoItem[] = [
@@ -27,62 +29,55 @@ export const ORYZO_ITEMS: OryzoItem[] = [
     flavor: "Original Unscented",
     price: "$19.99",
     priceNum: 19.99,
-    image: "/showcase/meow/card_clean_bean_original.jpg",
+    image: "/showcase/meow/IMG_7598.PNG",
     accentColor: "#A9D3F4",
     flavorId: "original",
   },
   {
-    id: "clean-bean-berry",
-    title1: "SO SWEET,",
-    title2: "it's berry fresh",
-    flavor: "Berry Fresh",
-    price: "$21.99",
-    priceNum: 21.99,
-    image: "/showcase/meow/card_clean_bean_berry.jpg",
-    accentColor: "#F472B6",
-    flavorId: "berry",
+    id: "cat-insurance-poster",
+    title1: "DO YOU HAVE,",
+    title2: "cat insurance?",
+    flavor: "Cat Insurance Poster",
+    price: "$24.00",
+    priceNum: 24.0,
+    image: "/showcase/meow/IMG_7614.PNG",
+    accentColor: "#EF4444",
   },
   {
-    id: "clean-bean-peach",
-    title1: "SO DELIGHTFUL,",
+    id: "coming-soon-peach",
+    title1: "IN THE LAB,",
     title2: "it's peach paradise",
     flavor: "Peach Paradise",
-    price: "$21.99",
-    priceNum: 21.99,
-    image: "/showcase/meow/card_clean_bean_peach.jpg",
-    accentColor: "#FBBF24",
-    flavorId: "peach",
+    price: "Coming Soon",
+    priceNum: 0,
+    image: "/showcase/coming_soon_peach.svg",
+    accentColor: "#F59E0B",
+    isComingSoon: true,
+    comingSoonDrop: "Drop 02",
   },
   {
-    id: "clean-bean-greentea",
-    title1: "SO NATURAL,",
-    title2: "it's fresh green tea",
-    flavor: "Fresh Green Tea",
-    price: "$21.99",
-    priceNum: 21.99,
-    image: "/showcase/meow/card_clean_bean_greentea.jpg",
-    accentColor: "#34D399",
-    flavorId: "green-tea",
+    id: "coming-soon-matcha",
+    title1: "BREWING SOON,",
+    title2: "it's matcha zen",
+    flavor: "Matcha Zen",
+    price: "Coming Soon",
+    priceNum: 0,
+    image: "/showcase/coming_soon_matcha.svg",
+    accentColor: "#10B981",
+    isComingSoon: true,
+    comingSoonDrop: "Drop 03",
   },
   {
-    id: "zen-scoop",
-    title1: "SO PRECISE,",
-    title2: "it's the zen scoop",
-    flavor: "The Zen Scoop",
-    price: "$18.00",
-    priceNum: 18.0,
-    image: "/showcase/accessories/acc_zen_scoop.jpg",
-    accentColor: "#A9D3F4",
-  },
-  {
-    id: "cloud-mat",
-    title1: "SO CLEAN,",
-    title2: "it's cloud trap",
-    flavor: "Cloud Trap Mat",
-    price: "$28.00",
-    priceNum: 28.0,
-    image: "/showcase/accessories/acc_cloud_mat.jpg",
-    accentColor: "#2B7A5D",
+    id: "coming-soon-berry",
+    title1: "NEXT DROP,",
+    title2: "it's berry fresh",
+    flavor: "Berry Fresh",
+    price: "Coming Soon",
+    priceNum: 0,
+    image: "/showcase/coming_soon_berry.svg",
+    accentColor: "#EC4899",
+    isComingSoon: true,
+    comingSoonDrop: "Drop 04",
   },
 ];
 
@@ -229,7 +224,7 @@ export default function HeroScrollExperience() {
     addToCart(
       {
         productId: item.id,
-        name: `Clean Bean - ${item.flavor}`,
+        name: item.flavorId ? `Clean Bean - ${item.flavor}` : item.flavor,
         flavor: item.flavorId
           ? {
               id: item.flavorId,
@@ -404,7 +399,7 @@ export default function HeroScrollExperience() {
             pointerEvents: isDocked ? "auto" : "none",
           }}
           transition={{ duration: 0.8, delay: isDocked ? 0.35 : 0, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute left-6 sm:left-10 md:left-14 lg:left-16 xl:left-20 top-20 sm:top-24 md:top-26 lg:top-28 z-40 max-w-[220px] sm:max-w-[280px] md:max-w-[340px] flex flex-col items-start text-left pointer-events-auto"
+          className="absolute left-6 sm:left-10 md:left-14 lg:left-16 xl:left-20 top-16 sm:top-18 md:top-20 lg:top-22 z-40 max-w-[220px] sm:max-w-[280px] md:max-w-[340px] flex flex-col items-start text-left pointer-events-auto"
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -424,22 +419,39 @@ export default function HeroScrollExperience() {
               </h1>
 
               <div className="flex items-center gap-3 mt-3.5 sm:mt-4">
-                <Link
-                  href={`/product${currentItem.flavorId ? `?flavor=${currentItem.flavorId}` : ""}`}
-                  className="px-4 sm:px-5 py-1.5 sm:py-2 bg-white text-brand-black rounded-full font-heading font-black text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_#A9D3F4]"
-                >
-                  Buy Now • {currentItem.price}
-                </Link>
+                {currentItem.isComingSoon ? (
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="px-4 sm:px-5 py-1.5 sm:py-2 rounded-full font-heading font-black text-xs sm:text-sm text-brand-black shadow-lg flex items-center gap-2 select-none"
+                      style={{ backgroundColor: currentItem.accentColor }}
+                    >
+                      <span className="w-2 h-2 rounded-full bg-brand-black animate-ping" />
+                      <span>{currentItem.comingSoonDrop || "Coming Soon"}</span>
+                    </span>
+                    <span className="text-white/70 text-xs font-mono font-medium px-2.5 py-1 bg-white/10 rounded-full backdrop-blur-sm border border-white/10">
+                      Stay Tuned
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      href={`/product${currentItem.flavorId ? `?flavor=${currentItem.flavorId}` : ""}`}
+                      className="px-4 sm:px-5 py-1.5 sm:py-2 bg-white text-brand-black rounded-full font-heading font-black text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_#A9D3F4]"
+                    >
+                      Buy Now • {currentItem.price}
+                    </Link>
 
-                <button
-                  onClick={() => handleQuickAdd(currentItem)}
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/25 hover:border-white text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer bg-black/30 backdrop-blur-sm"
-                  aria-label={`Quick add ${currentItem.flavor}`}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path d="M12 5v14M5 12h14" />
-                  </svg>
-                </button>
+                    <button
+                      onClick={() => handleQuickAdd(currentItem)}
+                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/25 hover:border-white text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer bg-black/30 backdrop-blur-sm"
+                      aria-label={`Quick add ${currentItem.flavor}`}
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
+                    </button>
+                  </>
+                )}
               </div>
             </motion.div>
           </AnimatePresence>
@@ -510,6 +522,17 @@ export default function HeroScrollExperience() {
                       className="object-cover object-center"
                       priority={index === 0}
                     />
+                    {prod.isComingSoon && (
+                      <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 z-10 pointer-events-none">
+                        <span
+                          className="px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1.5"
+                          style={{ backgroundColor: `${prod.accentColor}33` }}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.accentColor }} />
+                          Soon
+                        </span>
+                      </div>
+                    )}
                   </motion.div>
                 );
               })}
@@ -523,7 +546,7 @@ export default function HeroScrollExperience() {
               pointerEvents: isDocked ? "auto" : "none",
             }}
             transition={{ duration: 0.5, delay: isDocked ? 0.2 : 0 }}
-            className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center justify-between z-40 px-2 sm:px-6 md:px-12 lg:px-20 pointer-events-none"
+            className="absolute z-40 w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] flex items-center justify-between pointer-events-none"
           >
             <button
               onClick={(e) => {
@@ -531,7 +554,7 @@ export default function HeroScrollExperience() {
                 handlePrev();
               }}
               aria-label="Previous product"
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/60 hover:bg-white hover:text-brand-black text-white backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-xl pointer-events-auto"
+              className="-translate-x-4 sm:-translate-x-6 md:-translate-x-8 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/75 hover:bg-white hover:text-brand-black text-white backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-[0_8px_25px_rgba(0,0,0,0.6)] pointer-events-auto"
             >
               <svg className="w-4 h-4 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -544,7 +567,7 @@ export default function HeroScrollExperience() {
                 handleNext();
               }}
               aria-label="Next product"
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/60 hover:bg-white hover:text-brand-black text-white backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-xl pointer-events-auto"
+              className="translate-x-4 sm:translate-x-6 md:translate-x-8 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/75 hover:bg-white hover:text-brand-black text-white backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-[0_8px_25px_rgba(0,0,0,0.6)] pointer-events-auto"
             >
               <svg className="w-4 h-4 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

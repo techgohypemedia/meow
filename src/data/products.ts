@@ -475,6 +475,80 @@ export const PRODUCTS: Product[] = [
         comment: "Great quality spray, no mess like dry catnip flakes."
       }
     ]
+  },
+  {
+    id: "cat-insurance-poster",
+    slug: "cat-insurance-poster",
+    name: "Meow Art Print Poster",
+    subtitle: "Do You Have Cat Insurance?",
+    tagline: "Limited edition archival risograph-style art poster celebrating curious felines and modern pet aesthetics.",
+    basePrice: 24.00,
+    rating: 5.0,
+    reviewCount: 94,
+    image: "/showcase/meow/IMG_7614.PNG",
+    badge: "Collector's Edition",
+    category: "accessory",
+    description: "Bold Japanese-inspired graphic print on heavy 250gsm archival matte stock. Ships flat in a protective sleeve.",
+    longDescription: "Features the viral 'Do You Have Cat Insurance?' typography with iconic blue-eyed black cat artwork and vintage distressed risograph styling. Printed in Tokyo on museum-grade cotton rag paper with light-fast soy inks.",
+    sizes: [
+      {
+        id: "standard",
+        name: "A2 Archival Print (42 x 59.4 cm)",
+        volume: "1 Poster",
+        price: 24.00,
+        popular: true
+      }
+    ],
+    features: [
+      "250gsm heavyweight museum-grade cotton rag",
+      "Soy-based Japanese archival inks",
+      "Ships flat in rigid cardboard protector",
+      "Hand-numbered limited print run"
+    ],
+    benefits: [
+      {
+        title: "Iconic Aesthetic",
+        desc: "Turns any room or litter station into a curated gallery space.",
+        icon: "🖼️"
+      },
+      {
+        title: "Archival Quality",
+        desc: "Fade-resistant inks guaranteed vibrant for 50+ years.",
+        icon: "✨"
+      }
+    ],
+    ingredients: [
+      { name: "Recycled Cotton Rag Paper", percentage: "100%", purpose: "Heavyweight archival print substrate" }
+    ],
+    usageSteps: [
+      {
+        step: 1,
+        title: "Unpack Gently",
+        instruction: "Carefully remove the poster from its protective sleeve."
+      },
+      {
+        step: 2,
+        title: "Frame & Display",
+        instruction: "Fits standard A2 frames or hang with magnetic poster bars."
+      }
+    ],
+    faqs: [
+      {
+        question: "Does it come with a frame?",
+        answer: "The poster ships unframed in a sturdy protective sleeve so you can select the perfect frame for your space."
+      }
+    ],
+    reviews: [
+      {
+        id: "cip1",
+        author: "Mika T.",
+        rating: 5,
+        date: "1 week ago",
+        verified: true,
+        title: "Stunning print quality!",
+        comment: "The colors and details are incredible. Everyone who visits asks where I got it!"
+      }
+    ]
   }
 ];
 

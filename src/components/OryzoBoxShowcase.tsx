@@ -16,6 +16,8 @@ export interface OryzoItem {
   image: string;
   accentColor: string;
   flavorId?: string;
+  isComingSoon?: boolean;
+  comingSoonDrop?: string;
 }
 
 export const ORYZO_ITEMS: OryzoItem[] = [
@@ -26,62 +28,55 @@ export const ORYZO_ITEMS: OryzoItem[] = [
     flavor: "Original Unscented",
     price: "$19.99",
     priceNum: 19.99,
-    image: "/showcase/meow/card_clean_bean_original.jpg",
+    image: "/showcase/meow/IMG_7598.PNG",
     accentColor: "#A9D3F4",
     flavorId: "original",
   },
   {
-    id: "clean-bean-berry",
-    title1: "SO SWEET,",
-    title2: "it's berry fresh",
-    flavor: "Berry Fresh",
-    price: "$21.99",
-    priceNum: 21.99,
-    image: "/showcase/meow/card_clean_bean_berry.jpg",
-    accentColor: "#F472B6",
-    flavorId: "berry",
+    id: "cat-insurance-poster",
+    title1: "DO YOU HAVE,",
+    title2: "cat insurance?",
+    flavor: "Cat Insurance Poster",
+    price: "$24.00",
+    priceNum: 24.0,
+    image: "/showcase/meow/IMG_7614.PNG",
+    accentColor: "#EF4444",
   },
   {
-    id: "clean-bean-peach",
-    title1: "SO DELIGHTFUL,",
+    id: "coming-soon-peach",
+    title1: "IN THE LAB,",
     title2: "it's peach paradise",
     flavor: "Peach Paradise",
-    price: "$21.99",
-    priceNum: 21.99,
-    image: "/showcase/meow/card_clean_bean_peach.jpg",
-    accentColor: "#FBBF24",
-    flavorId: "peach",
+    price: "Coming Soon",
+    priceNum: 0,
+    image: "/showcase/coming_soon_peach.svg",
+    accentColor: "#F59E0B",
+    isComingSoon: true,
+    comingSoonDrop: "Drop 02",
   },
   {
-    id: "clean-bean-greentea",
-    title1: "SO NATURAL,",
-    title2: "it's fresh green tea",
-    flavor: "Fresh Green Tea",
-    price: "$21.99",
-    priceNum: 21.99,
-    image: "/showcase/meow/card_clean_bean_greentea.jpg",
-    accentColor: "#34D399",
-    flavorId: "green-tea",
+    id: "coming-soon-matcha",
+    title1: "BREWING SOON,",
+    title2: "it's matcha zen",
+    flavor: "Matcha Zen",
+    price: "Coming Soon",
+    priceNum: 0,
+    image: "/showcase/coming_soon_matcha.svg",
+    accentColor: "#10B981",
+    isComingSoon: true,
+    comingSoonDrop: "Drop 03",
   },
   {
-    id: "zen-scoop",
-    title1: "SO PRECISE,",
-    title2: "it's the zen scoop",
-    flavor: "The Zen Scoop",
-    price: "$18.00",
-    priceNum: 18.0,
-    image: "/showcase/accessories/acc_zen_scoop.jpg",
-    accentColor: "#A9D3F4",
-  },
-  {
-    id: "cloud-mat",
-    title1: "SO CLEAN,",
-    title2: "it's cloud trap",
-    flavor: "Cloud Trap Mat",
-    price: "$28.00",
-    priceNum: 28.0,
-    image: "/showcase/accessories/acc_cloud_mat.jpg",
-    accentColor: "#2B7A5D",
+    id: "coming-soon-berry",
+    title1: "NEXT DROP,",
+    title2: "it's berry fresh",
+    flavor: "Berry Fresh",
+    price: "Coming Soon",
+    priceNum: 0,
+    image: "/showcase/coming_soon_berry.svg",
+    accentColor: "#EC4899",
+    isComingSoon: true,
+    comingSoonDrop: "Drop 04",
   },
 ];
 
@@ -163,7 +158,7 @@ export default function OryzoBoxShowcase() {
     addToCart(
       {
         productId: item.id,
-        name: `Clean Bean - ${item.flavor}`,
+        name: item.flavorId ? `Clean Bean - ${item.flavor}` : item.flavor,
         flavor: item.flavorId
           ? {
               id: item.flavorId,
@@ -228,24 +223,41 @@ export default function OryzoBoxShowcase() {
 
               {/* Minimal Call to Action */}
               <div className="flex items-center gap-4 mt-6 sm:mt-8">
-                <Link
-                  href={`/product${
-                    currentItem.flavorId ? `?flavor=${currentItem.flavorId}` : ""
-                  }`}
-                  className="px-6 py-2.5 sm:py-3 bg-white text-brand-black rounded-full font-heading font-black text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_#A9D3F4]"
-                >
-                  Buy Now • {currentItem.price}
-                </Link>
+                {currentItem.isComingSoon ? (
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="px-6 py-2.5 sm:py-3 rounded-full font-heading font-black text-xs sm:text-sm text-brand-black shadow-lg flex items-center gap-2 select-none"
+                      style={{ backgroundColor: currentItem.accentColor }}
+                    >
+                      <span className="w-2 h-2 rounded-full bg-brand-black animate-ping" />
+                      <span>{currentItem.comingSoonDrop || "Coming Soon"}</span>
+                    </span>
+                    <span className="text-white/70 text-xs font-mono font-medium px-3 py-1.5 bg-white/10 rounded-full backdrop-blur-sm border border-white/10">
+                      Stay Tuned
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      href={`/product${
+                        currentItem.flavorId ? `?flavor=${currentItem.flavorId}` : ""
+                      }`}
+                      className="px-6 py-2.5 sm:py-3 bg-white text-brand-black rounded-full font-heading font-black text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_#A9D3F4]"
+                    >
+                      Buy Now • {currentItem.price}
+                    </Link>
 
-                <button
-                  onClick={() => handleQuickAdd(currentItem)}
-                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/25 hover:border-white text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                  aria-label={`Quick add ${currentItem.flavor}`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path d="M12 5v14M5 12h14" />
-                  </svg>
-                </button>
+                    <button
+                      onClick={() => handleQuickAdd(currentItem)}
+                      className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/25 hover:border-white text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                      aria-label={`Quick add ${currentItem.flavor}`}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
+                    </button>
+                  </>
+                )}
               </div>
             </motion.div>
           </AnimatePresence>
@@ -292,6 +304,17 @@ export default function OryzoBoxShowcase() {
                       className="object-cover object-center"
                       priority={index === 0}
                     />
+                    {prod.isComingSoon && (
+                      <div className="absolute top-3.5 right-3.5 z-10 pointer-events-none">
+                        <span
+                          className="px-3 py-1 rounded-full text-[10px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1.5"
+                          style={{ backgroundColor: `${prod.accentColor}33` }}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.accentColor }} />
+                          Soon
+                        </span>
+                      </div>
+                    )}
                   </motion.div>
                 );
               })}
