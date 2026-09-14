@@ -263,65 +263,51 @@ export default function OryzoBoxShowcase() {
           </AnimatePresence>
         </div>
 
-        {/* Right / Center Column: "THIS BOX" with Horizontal Sliding Cards */}
+        {/* Right / Center Column: The BOX is the clip container — images slide inside it */}
         <div className="w-full lg:w-[62%] relative flex items-center justify-center h-[48vh] sm:h-[54vh] md:h-[60vh] lg:h-[64vh] max-h-[600px]">
-          
-          {/* "THIS BOX" - Clean dashed container exactly like Oryzo.ai */}
-          <div className="absolute z-10 w-[240px] sm:w-[290px] md:w-[350px] lg:w-[390px] h-[320px] sm:h-[390px] md:h-[470px] lg:h-[520px] rounded-2xl md:rounded-3xl border-2 border-dashed border-white/40 pointer-events-none" />
 
-          {/* Horizontal Filmstrip of Pure Product Cards */}
-          <div className="relative w-full h-full flex items-center justify-center overflow-visible z-20">
-            <div className="relative flex items-center justify-center w-full">
-              {ORYZO_ITEMS.map((prod, index) => {
-                const offset = index - activeIndex;
-                const isCenter = offset === 0;
-
-                return (
-                  <motion.div
-                    key={prod.id}
-                    onClick={() => setActiveIndex(index)}
-                    animate={{
-                      x: `calc(${offset * 105}% + ${offset * 20}px)`,
-                      scale: isCenter ? 1 : 0.88,
-                      opacity: isCenter ? 1 : Math.abs(offset) === 1 ? 0.35 : 0.08,
-                    }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 280,
-                      damping: 28,
-                    }}
-                    className={`absolute w-[240px] sm:w-[290px] md:w-[350px] lg:w-[390px] h-[320px] sm:h-[390px] md:h-[470px] lg:h-[520px] rounded-2xl md:rounded-3xl overflow-hidden cursor-pointer select-none transition-shadow duration-300 ${
-                      isCenter
-                        ? "shadow-[0_25px_60px_rgba(0,0,0,0.85)] z-30"
-                        : "z-10 hover:opacity-60"
-                    }`}
-                  >
-                    <Image
-                      src={prod.image}
-                      alt={prod.flavor}
-                      fill
-                      sizes="(max-width: 768px) 300px, 420px"
-                      className="object-cover object-center"
-                      priority={index === 0}
-                    />
-                    {prod.isComingSoon && (
-                      <div className="absolute top-3.5 right-3.5 z-10 pointer-events-none">
-                        <span
-                          className="px-3 py-1 rounded-full text-[10px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1.5"
-                          style={{ backgroundColor: `${prod.accentColor}33` }}
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.accentColor }} />
-                          Soon
-                        </span>
-                      </div>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </div>
+          {/* THE BOX — fixed dashed border, clips images inside, images slide through it */}
+          <div
+            className="relative z-20 w-[240px] sm:w-[290px] md:w-[350px] lg:w-[390px] h-[320px] sm:h-[390px] md:h-[470px] lg:h-[520px] rounded-2xl md:rounded-3xl border-2 border-dashed border-white/40 overflow-hidden"
+          >
+            {/* Filmstrip: all images stacked side-by-side, shifted so active is visible */}
+            <motion.div
+              className="absolute inset-0 flex flex-row"
+              animate={{ x: `calc(${-activeIndex * (100 / ORYZO_ITEMS.length)}%)` }}
+              transition={{ type: "tween", ease: [0.76, 0, 0.24, 1], duration: 0.55 }}
+              style={{ width: `${ORYZO_ITEMS.length * 100}%` }}
+            >
+              {ORYZO_ITEMS.map((prod, index) => (
+                <div
+                  key={prod.id}
+                  className="relative flex-shrink-0 h-full"
+                  style={{ width: `${100 / ORYZO_ITEMS.length}%` }}
+                >
+                  <Image
+                    src={prod.image}
+                    alt={prod.flavor}
+                    fill
+                    sizes="(max-width: 768px) 290px, 390px"
+                    className="object-cover object-center"
+                    priority={index === 0}
+                  />
+                  {prod.isComingSoon && (
+                    <div className="absolute top-3.5 right-3.5 z-10 pointer-events-none">
+                      <span
+                        className="px-3 py-1 rounded-full text-[10px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1.5"
+                        style={{ backgroundColor: `${prod.accentColor}33` }}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.accentColor }} />
+                        Soon
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </motion.div>
           </div>
 
-          {/* Minimal Floating Navigation Arrows */}
+          {/* Minimal Floating Navigation Arrows — outside the box, over the section */}
           <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center justify-between pointer-events-none z-40 px-2 sm:px-4">
             <button
               onClick={(e) => {

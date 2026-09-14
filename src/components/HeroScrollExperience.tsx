@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -82,88 +82,146 @@ export const ORYZO_ITEMS: OryzoItem[] = [
   },
 ];
 
-// â”€â”€ Continuous filmstrip: all images joined side-by-side, GSAP slides the whole strip â”€â”€
-function WipeSlider({ items, activeIndex }: { items: typeof ORYZO_ITEMS; activeIndex: number }) {
-  const cardRef = useRef<HTMLDivElement>(null);
+// -- Film Strip Carousel: ALL cards in one continuous strip, GSAP slides the whole band --
+function FilmStripCarousel({
+  items,
+  activeIndex,
+  isMobile,
+  onSelect,
+}: {
+  items: typeof ORYZO_ITEMS;
+  activeIndex: number;
+  isMobile: boolean;
+  onSelect: (i: number) => void;
+}) {
   const stripRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const prevIndexRef = useRef(activeIndex);
 
-  useLayoutEffect(() => {
-    if (!stripRef.current || !cardRef.current) return;
+  const centerW = isMobile ? 210 : 310;
+  const centerH = isMobile ? 300 : 430;
+  const sideW = isMobile ? 110 : 155;
+  const gap = isMobile ? 14 : 20;
+  const slotW = centerW + gap * 2;
 
+  useLayoutEffect(() => {
+    if (!stripRef.current || !wrapperRef.current) return;
     const isFirst = prevIndexRef.current === activeIndex;
     prevIndexRef.current = activeIndex;
 
-    // Use the card's actual pixel width â€” strip slides exactly one card-width per step
-    const cardWidth = cardRef.current.offsetWidth;
+    const wrapperCenterX = wrapperRef.current.offsetWidth / 2;
+    const activeCenterInStrip = activeIndex * slotW + slotW / 2;
+    const translateX = wrapperCenterX - activeCenterInStrip;
 
     gsap.to(stripRef.current, {
-      x: -(activeIndex * cardWidth),
+      x: translateX,
       duration: isFirst ? 0 : 0.75,
       ease: "power3.inOut",
     });
-  }, [activeIndex]);
+  }, [activeIndex, slotW]);
 
-  // Re-snap on window resize
   useEffect(() => {
-    const handleResize = () => {
-      if (!stripRef.current || !cardRef.current) return;
-      const cardWidth = cardRef.current.offsetWidth;
-      gsap.set(stripRef.current, { x: -(prevIndexRef.current * cardWidth) });
+    const snap = () => {
+      if (!stripRef.current || !wrapperRef.current) return;
+      const wrapperCenterX = wrapperRef.current.offsetWidth / 2;
+      const activeCenterInStrip = prevIndexRef.current * slotW + slotW / 2;
+      gsap.set(stripRef.current, { x: wrapperCenterX - activeCenterInStrip });
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const activeItem = items[activeIndex];
+    window.addEventListener("resize", snap);
+    return () => window.removeEventListener("resize", snap);
+  }, [slotW]);
 
   return (
-    <div ref={cardRef} className="relative w-full h-full overflow-hidden">
-      {/* One continuous strip â€” all images joined side-by-side as one piece */}
+    <div
+      ref={wrapperRef}
+      className="relative w-full flex items-center justify-center overflow-visible"
+      style={{ height: centerH }}
+    >
       <div
         ref={stripRef}
-        className="absolute top-0 left-0 h-full flex will-change-transform"
-        style={{ width: `${items.length * 100}%` }}
+        className="absolute top-0 flex items-center will-change-transform"
+        style={{ gap, left: 0 }}
       >
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="relative h-full flex-shrink-0"
-            style={{ width: `${100 / items.length}%` }}
-          >
-            <Image
-              src={item.image}
-              alt={item.flavor}
-              fill
-              sizes="(max-width: 640px) 210px, (max-width: 768px) 280px, 360px"
-              className="object-cover object-center"
-              priority={item.id === items[0].id}
-            />
-          </div>
-        ))}
+        {items.map((item, index) => {
+          const offset = index - activeIndex;
+          const isCenter = offset === 0;
+          const abs = Math.abs(offset);
+
+          const opacity = isCenter ? 1 : abs === 1 ? 0.8 : abs === 2 ? 0.55 : 0.3;
+
+          return (
+            <div
+              key={item.id}
+              onClick={() => onSelect(index)}
+              style={{
+                width: slotW,
+                height: centerH,
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: isCenter ? "default" : "pointer",
+              }}
+            >
+              <div
+                style={{
+                  width: isCenter ? centerW : sideW,
+                  height: isCenter ? centerH : Math.round(centerH * (sideW / centerW)),
+                  borderRadius: 18,
+                  overflow: "hidden",
+                  opacity,
+                  transition:
+                    "opacity 0.5s ease, width 0.75s cubic-bezier(0.22,1,0.36,1), height 0.75s cubic-bezier(0.22,1,0.36,1)",
+                  position: "relative",
+                  boxShadow: isCenter
+                    ? "0 25px 60px rgba(0,0,0,0.85)"
+                    : "0 8px 24px rgba(0,0,0,0.45)",
+                  flexShrink: 0,
+                }}
+              >
+                <Image
+                  src={item.image}
+                  alt={item.flavor}
+                  fill
+                  sizes="(max-width: 640px) 210px, 360px"
+                  className="object-cover object-center"
+                  priority={index === 0}
+                />
+                {item.isComingSoon && (
+                  <div className="absolute top-2 right-2 z-10 pointer-events-none">
+                    <span
+                      className="px-2 py-0.5 rounded-full text-[9px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1"
+                      style={{ backgroundColor: `${item.accentColor}33` }}
+                    >
+                      <span
+                        className="w-1 h-1 rounded-full"
+                        style={{ backgroundColor: item.accentColor }}
+                      />
+                      Soon
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
-      {/* Coming Soon badge */}
-      {activeItem.isComingSoon && (
-        <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 z-10 pointer-events-none">
-          <span
-            className="px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1.5"
-            style={{ backgroundColor: `${activeItem.accentColor}33` }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: activeItem.accentColor }} />
-            Soon
-          </span>
-        </div>
-      )}
+
+      {/* Dashed box overlay sits exactly over center slot */}
+      <div
+        className="absolute pointer-events-none z-20 rounded-2xl md:rounded-3xl border border-dashed border-white/50 shadow-2xl"
+        style={{ width: centerW, height: centerH }}
+      />
     </div>
   );
 }
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
+// --------------------------------------------------------------------------------
 
 export default function HeroScrollExperience() {
   const [isMobile, setIsMobile] = useState(false);
   const [isDocked, setIsDocked] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [slideDir, setSlideDir] = useState(0); // -1 = prev, 0 = idle, 1 = next
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const isWheelDebounced = useRef(false);
   const { totalItems, openCart, addToCart } = useCart();
@@ -188,12 +246,30 @@ export default function HeroScrollExperience() {
   const currentItem = ORYZO_ITEMS[activeIndex];
 
   const handleNext = useCallback(() => {
+    setSlideDir(1);
     setActiveIndex((prev) => (prev < ORYZO_ITEMS.length - 1 ? prev + 1 : 0));
   }, []);
 
   const handlePrev = useCallback(() => {
+    setSlideDir(-1);
     setActiveIndex((prev) => (prev > 0 ? prev - 1 : ORYZO_ITEMS.length - 1));
   }, []);
+
+  const handleSelectIndex = useCallback((newIndex: number) => {
+    setActiveIndex((prev) => {
+      if (newIndex === prev) return prev;
+      setSlideDir(newIndex > prev ? 1 : -1);
+      return newIndex;
+    });
+  }, []);
+
+  // Reset tilt back to upright after slide completes
+  useEffect(() => {
+    if (slideDir !== 0) {
+      const t = setTimeout(() => setSlideDir(0), 280);
+      return () => clearTimeout(t);
+    }
+  }, [slideDir, activeIndex]);
 
   // Locked Wheel listener: scroll down triggers transition into box, then swaps products!
   const handleWheel = (e: React.WheelEvent) => {
@@ -534,7 +610,7 @@ export default function HeroScrollExperience() {
                       href={`/product${currentItem.flavorId ? `?flavor=${currentItem.flavorId}` : ""}`}
                       className="px-4 sm:px-5 py-1.5 sm:py-2 bg-white text-brand-black rounded-full font-heading font-black text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_#A9D3F4]"
                     >
-                      Buy Now â€¢ {currentItem.price}
+                      Buy Now • {currentItem.price}
                     </Link>
 
                     <button
@@ -553,128 +629,155 @@ export default function HeroScrollExperience() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Center Arena: "THIS BOX" in DEAD CENTER with small side thumbnails (matching Image 2) */}
-        <div className="relative w-full flex items-center justify-center h-[50vh] sm:h-[54vh] md:h-[60vh] max-h-[540px]">
-          
-          {/* "THIS BOX" - Centered Dashed Frame Container */}
-          <motion.div 
+        {/* Center Arena: center box + flanking side thumbnails */}
+        <div className="relative w-full flex items-center justify-center h-[50vh] sm:h-[54vh] md:h-[60vh] max-h-[540px] overflow-visible">
+
+          {/* ── Side Thumbnail Previews (outside the box: smaller, smooth sequence track, no shake) ── */}
+          {ORYZO_ITEMS.map((prod, index) => {
+            const offset = index - activeIndex;
+            const abs = Math.abs(offset);
+            const sign = Math.sign(offset);
+
+            // Responsive positioning distances
+            const baseDist = isMobile ? 165 : 250;
+            const stepDist = isMobile ? 95 : 130;
+
+            let xPos = 0;
+            let thumbScale = 0.38;
+            let thumbOpacity = 0;
+
+            if (abs === 0) {
+              // Center card: tucked smoothly behind the center box at x=0
+              xPos = 0;
+              thumbScale = 0.44;
+              thumbOpacity = 0;
+            } else if (abs === 1) {
+              xPos = sign * baseDist;
+              thumbScale = isMobile ? 0.34 : 0.38;
+              thumbOpacity = !isDocked ? 0 : 0.72;
+            } else if (abs === 2) {
+              xPos = sign * (baseDist + stepDist);
+              thumbScale = isMobile ? 0.25 : 0.28;
+              thumbOpacity = !isDocked ? 0 : 0.35;
+            } else {
+              // Further out: smoothly glides off into distance while faded
+              xPos = sign * (baseDist + stepDist * (abs - 1));
+              thumbScale = 0.20;
+              thumbOpacity = 0;
+            }
+
+            const isInteractive = isDocked && (abs === 1 || abs === 2);
+
+            return (
+              <motion.div
+                key={prod.id}
+                onClick={() => {
+                  if (isInteractive) handleSelectIndex(index);
+                }}
+                animate={{
+                  x: xPos,
+                  scale: thumbScale,
+                  opacity: thumbOpacity,
+                }}
+                transition={{
+                  duration: 0.55,
+                  ease: [0.76, 0, 0.24, 1],
+                }}
+                className={`absolute w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] h-[310px] sm:h-[370px] md:h-[430px] lg:h-[470px] rounded-2xl md:rounded-3xl overflow-hidden z-10 select-none shadow-lg border border-white/10 ${
+                  isInteractive ? "cursor-pointer pointer-events-auto hover:opacity-90 transition-opacity" : "pointer-events-none"
+                }`}
+              >
+                <Image
+                  src={prod.image}
+                  alt={prod.flavor}
+                  fill
+                  sizes="200px"
+                  className="object-cover object-center"
+                />
+                {prod.isComingSoon && (
+                  <div className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 z-10 pointer-events-none">
+                    <span
+                      className="px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded-full text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white flex items-center gap-1 shadow-md"
+                      style={{ backgroundColor: `${prod.accentColor}33` }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.accentColor }} />
+                      Soon
+                    </span>
+                  </div>
+                )}
+              </motion.div>
+            );
+          })}
+
+          {/* THE BOX: static border — does NOT move or rotate */}
+          <motion.div
             animate={{
               opacity: isDocked ? 1 : 0,
               scale: isDocked ? 1 : 0.9,
             }}
-            transition={{ duration: 0.9, delay: isDocked ? 0.35 : 0, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              opacity: isDocked ? 1 : 0,
-              visibility: isDocked ? "visible" : "hidden",
+            transition={{
+              opacity: { duration: 0.9, delay: isDocked ? 0.35 : 0, ease: [0.22, 1, 0.36, 1] },
+              scale: { duration: 0.9, delay: isDocked ? 0.35 : 0, ease: [0.22, 1, 0.36, 1] },
             }}
-            className={`absolute z-10 w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] h-[310px] sm:h-[370px] md:h-[430px] lg:h-[470px] rounded-2xl md:rounded-3xl border border-dashed border-white/50 pointer-events-none shadow-2xl ${
-              !isDocked ? "opacity-0 invisible" : ""
-            }`} 
-          />
-
-          {/* Horizontal Filmstrip: Center Card is Large, Side Cards are Reduced Thumbnails (matching Image 2) */}
-          <motion.div 
-            animate={{
-              opacity: isDocked ? 1 : 0,
-              pointerEvents: isDocked ? "auto" : "none",
-            }}
-            transition={{ duration: 0.9, delay: isDocked ? 0.4 : 0, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              opacity: isDocked ? 1 : 0,
-              visibility: isDocked ? "visible" : "hidden",
-            }}
-            className={`relative w-full h-full flex items-center justify-center overflow-visible z-20 ${
-              !isDocked ? "opacity-0 pointer-events-none invisible" : ""
-            }`}
+            style={{ visibility: isDocked ? "visible" : "hidden" }}
+            className={`relative z-20 w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] h-[310px] sm:h-[370px] md:h-[430px] lg:h-[470px] rounded-2xl md:rounded-3xl border border-dashed border-white/50 overflow-hidden shadow-2xl ${!isDocked ? "opacity-0 invisible" : ""}`}
           >
-            <div className="relative flex items-center justify-center w-full">
-              {ORYZO_ITEMS.map((prod, index) => {
-                const offset = index - activeIndex;
-                const isCenter = offset === 0;
-                const abs = Math.abs(offset);
-                const sign = Math.sign(offset);
-
-                // Side thumbnails: scaled down to ~45% and spaced out horizontally
-                const baseDist = isMobile ? 180 : 260;
-                const stepDist = isMobile ? 115 : 160;
-                const targetX = isCenter ? 0 : sign * (baseDist + (abs - 1) * stepDist);
-                const targetScale = isCenter ? 1 : (isMobile ? 0.45 : 0.48);
-                const targetOpacity = !isDocked ? 0 : (isCenter ? 1 : (abs === 1 ? 0.85 : abs === 2 ? 0.6 : 0.35));
-
-                return (
-                  <motion.div
+            {/* Tilt wrapper: absolute inset-0 = same size as box, so rotate pivots around box center */}
+            <motion.div
+              className="absolute inset-0"
+              animate={{ rotate: slideDir * 5 }}
+              transition={{ type: "spring", stiffness: 260, damping: 22, mass: 0.6 }}
+            >
+              {/* Filmstrip: only x translation — lives inside the tilt wrapper */}
+              <motion.div
+                className="absolute inset-0 flex flex-row"
+                animate={{ x: `calc(${-activeIndex * (100 / ORYZO_ITEMS.length)}%)` }}
+                transition={{ type: "tween", ease: [0.76, 0, 0.24, 1], duration: 0.55 }}
+                style={{ width: `${ORYZO_ITEMS.length * 100}%` }}
+              >
+                {ORYZO_ITEMS.map((prod, index) => (
+                  <div
                     key={prod.id}
-                    onClick={() => setActiveIndex(index)}
-                    animate={{
-                      x: targetX,
-                      scale: targetScale,
-                      opacity: targetOpacity,
-                    }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 160,
-                      damping: 24,
-                      mass: 0.8,
-                    }}
-                    className={`absolute w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] h-[310px] sm:h-[370px] md:h-[430px] lg:h-[470px] rounded-2xl md:rounded-3xl overflow-hidden cursor-pointer select-none transition-shadow duration-300 origin-center ${
-                      isCenter
-                        ? "shadow-[0_25px_60px_rgba(0,0,0,0.85)] z-30"
-                        : "z-10 hover:opacity-95"
-                    }`}
+                    className="relative flex-shrink-0 h-full"
+                    style={{ width: `${100 / ORYZO_ITEMS.length}%` }}
                   >
-                    {isCenter ? (
-                      /* â”€â”€ Center card: GSAP wipe transition â”€â”€ */
-                      <WipeSlider items={ORYZO_ITEMS} activeIndex={activeIndex} />
-                    ) : (
-                      /* â”€â”€ Side thumbnails: plain image â”€â”€ */
-                      <>
-                        <Image
-                          src={prod.image}
-                          alt={prod.flavor}
-                          fill
-                          sizes="(max-width: 640px) 210px, (max-width: 768px) 280px, 360px"
-                          className="object-cover object-center"
-                          priority={index === 0}
-                        />
-                        {prod.isComingSoon && (
-                          <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 z-10 pointer-events-none">
-                            <span
-                              className="px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1.5"
-                              style={{ backgroundColor: `${prod.accentColor}33` }}
-                            >
-                              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.accentColor }} />
-                              Soon
-                            </span>
-                          </div>
-                        )}
-                      </>
+                    <Image
+                      src={prod.image}
+                      alt={prod.flavor}
+                      fill
+                      sizes="(max-width: 640px) 230px, (max-width: 768px) 270px, 340px"
+                      className="object-cover object-center"
+                      priority={index === 0}
+                    />
+                    {prod.isComingSoon && (
+                      <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 z-10 pointer-events-none">
+                        <span
+                          className="px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1.5"
+                          style={{ backgroundColor: `${prod.accentColor}33` }}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.accentColor }} />
+                          Soon
+                        </span>
+                      </div>
                     )}
-                  </motion.div>
-                );
-              })}
-            </div>
+                  </div>
+                ))}
+              </motion.div>
+            </motion.div>
           </motion.div>
 
-          {/* Floating Navigation Arrows flanking the center preview box */}
-          <motion.div 
+          {/* Navigation arrows flanking the box */}
+          <motion.div
             animate={{
               opacity: isDocked ? 1 : 0,
               pointerEvents: isDocked ? "auto" : "none",
             }}
             transition={{ duration: 0.5, delay: isDocked ? 0.2 : 0 }}
-            style={{
-              opacity: isDocked ? 1 : 0,
-              visibility: isDocked ? "visible" : "hidden",
-            }}
-            className={`absolute z-40 w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] flex items-center justify-between pointer-events-none ${
-              !isDocked ? "opacity-0 invisible pointer-events-none" : ""
-            }`}
+            style={{ visibility: isDocked ? "visible" : "hidden" }}
+            className={`absolute z-40 w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] flex items-center justify-between pointer-events-none ${!isDocked ? "opacity-0 invisible pointer-events-none" : ""}`}
           >
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handlePrev();
-              }}
+              onClick={(e) => { e.stopPropagation(); handlePrev(); }}
               aria-label="Previous product"
               className="-translate-x-4 sm:-translate-x-6 md:-translate-x-8 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/75 hover:bg-white hover:text-brand-black text-white backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-[0_8px_25px_rgba(0,0,0,0.6)] pointer-events-auto"
             >
@@ -682,12 +785,8 @@ export default function HeroScrollExperience() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleNext();
-              }}
+              onClick={(e) => { e.stopPropagation(); handleNext(); }}
               aria-label="Next product"
               className="translate-x-4 sm:translate-x-6 md:translate-x-8 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/75 hover:bg-white hover:text-brand-black text-white backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-[0_8px_25px_rgba(0,0,0,0.6)] pointer-events-auto"
             >
