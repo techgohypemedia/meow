@@ -263,10 +263,10 @@ export default function HeroScrollExperience() {
     });
   }, []);
 
-  // Reset tilt back to upright after slide completes
+  // Reset tilt back to upright AFTER slide completes (550ms) to eliminate mid-slide jitter
   useEffect(() => {
     if (slideDir !== 0) {
-      const t = setTimeout(() => setSlideDir(0), 280);
+      const t = setTimeout(() => setSlideDir(0), 550);
       return () => clearTimeout(t);
     }
   }, [slideDir, activeIndex]);
@@ -463,32 +463,32 @@ export default function HeroScrollExperience() {
         </motion.div>
       </div>
 
-      {/* Layer 4: Global Header / Navbar (Always crisp, locked at top) */}
-      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between h-20 md:h-24 pointer-events-auto shrink-0">
-        <Link href="/" className="flex items-center cursor-pointer group h-full py-1 sm:py-1.5 shrink-0">
+      {/* Layer 4: Global Header / Navbar (Always crisp, locked at top, Oryzo.ai inspired) */}
+      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between h-16 md:h-20 pointer-events-auto shrink-0">
+        <Link href="/" className="flex items-center cursor-pointer group h-full py-1 shrink-0">
           <Image 
             src="/meowganics_logo_transparent.png" 
             alt="Meow Ganics Logo" 
             width={1776}
             height={725}
-            className="h-full w-auto max-h-[74px] sm:max-h-[82px] md:max-h-[90px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]" 
+            className="h-full w-auto max-h-[58px] sm:max-h-[66px] md:max-h-[74px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]" 
             priority
           />
         </Link>
         
-        <div className="flex items-center gap-3 md:gap-5">
+        <div className="flex items-center gap-3 md:gap-4">
           {/* Shopping Bag Icon */}
           <button
             onClick={openCart}
-            className="relative p-2 md:p-3 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer bg-brand-white text-brand-black rounded-full border-2 border-brand-black shadow-[2px_2px_0px_#111111]"
+            className="relative p-2.5 md:p-3 hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer bg-white/10 hover:bg-white/20 text-white rounded-full border border-white/20 shadow-md backdrop-blur-md"
             aria-label="Open Cart"
           >
-            <svg className="w-7 h-7 md:w-8 md:h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="w-5 h-5 md:w-5.5 md:h-5.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
-            <span className="absolute -top-1 -right-1 bg-brand-black text-brand-white text-[10px] md:text-xs font-heading font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-brand-white">
+            <span className="absolute -top-1 -right-1 bg-white text-brand-black text-[10px] md:text-xs font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-md">
               {totalItems}
             </span>
           </button>
@@ -496,9 +496,12 @@ export default function HeroScrollExperience() {
           {/* Shop Litter Button */}
           <Link
             href="/product"
-            className="hidden sm:flex items-center gap-2 bg-brand-white text-brand-black px-4 py-2 rounded-full font-heading font-bold text-xs md:text-sm border-2 border-brand-black shadow-[2px_2px_0px_#111111] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_#111111] transition-all"
+            className="hidden sm:flex items-center gap-2 bg-white text-brand-black px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-heading font-bold text-xs md:text-sm hover:scale-105 active:scale-95 transition-all shadow-md"
           >
-            Shop Litter â†’
+            <span>Shop Litter</span>
+            <svg className="w-3.5 h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
           </Link>
         </div>
       </nav>
@@ -552,127 +555,116 @@ export default function HeroScrollExperience() {
           opacity: isDocked ? 1 : 0,
           visibility: isDocked ? "visible" : "hidden",
         }}
-        className={`relative z-30 w-full flex-1 flex flex-col items-center justify-center my-auto px-4 overflow-visible ${
+        className={`relative z-30 w-full flex-1 flex flex-col justify-center items-center px-4 overflow-visible ${
           !isDocked ? "opacity-0 pointer-events-none invisible" : ""
         }`}
       >
         
-        {/* Left Headline: Compact, elegant Oryzo Typography placed in Upper-Left corner above side cards (matching Image 2) */}
-        <motion.div 
-          animate={{
-            opacity: isDocked ? 1 : 0,
-            y: isDocked ? 0 : -20,
-            pointerEvents: isDocked ? "auto" : "none",
-          }}
-          transition={{ duration: 0.8, delay: isDocked ? 0.35 : 0, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            opacity: isDocked ? 1 : 0,
-            visibility: isDocked ? "visible" : "hidden",
-          }}
-          className={`absolute left-6 sm:left-10 md:left-14 lg:left-16 xl:left-20 top-16 sm:top-18 md:top-20 lg:top-22 z-40 max-w-[220px] sm:max-w-[280px] md:max-w-[340px] flex flex-col items-start text-left pointer-events-auto ${
-            !isDocked ? "opacity-0 pointer-events-none invisible" : ""
-          }`}
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentItem.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="flex flex-col items-start w-full"
-            >
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] font-heading font-black tracking-wide leading-tight text-white uppercase drop-shadow-md">
-                <span>{currentItem.title1}</span>
-                <br />
-                <span className="text-white/60 font-bold lowercase tracking-normal">
-                  {currentItem.title2}
-                </span>
-              </h1>
+        {/* Center Arena: center box + flanking side thumbnails (Oryzo.ai gallery strip) */}
+        <div className="relative w-full flex items-center justify-center h-[310px] sm:h-[370px] md:h-[440px] lg:h-[480px] xl:h-[510px] overflow-visible">
 
-              <div className="flex items-center gap-3 mt-3.5 sm:mt-4">
-                {currentItem.isComingSoon ? (
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="px-4 sm:px-5 py-1.5 sm:py-2 rounded-full font-heading font-black text-xs sm:text-sm text-brand-black shadow-lg flex items-center gap-2 select-none"
-                      style={{ backgroundColor: currentItem.accentColor }}
-                    >
-                      <span className="w-2 h-2 rounded-full bg-brand-black animate-ping" />
-                      <span>{currentItem.comingSoonDrop || "Coming Soon"}</span>
-                    </span>
-                    <span className="text-white/70 text-xs font-mono font-medium px-2.5 py-1 bg-white/10 rounded-full backdrop-blur-sm border border-white/10">
-                      Stay Tuned
-                    </span>
-                  </div>
-                ) : (
-                  <>
-                    <Link
-                      href={`/product${currentItem.flavorId ? `?flavor=${currentItem.flavorId}` : ""}`}
-                      className="px-4 sm:px-5 py-1.5 sm:py-2 bg-white text-brand-black rounded-full font-heading font-black text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-[2px_2px_0px_#A9D3F4]"
-                    >
-                      Buy Now • {currentItem.price}
-                    </Link>
+          {/* Desktop Product Details: Positioned on top of the left corner preview image with spacing */}
+          <div
+            className="hidden md:block absolute z-40 pointer-events-auto shrink-0 max-w-[360px]"
+            style={{
+              left: "max(1.5rem, calc(50% - 510px))",
+              bottom: "calc(50% + 128px)",
+            }}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentItem.id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+                className="flex flex-col items-start text-left w-full"
+              >
+                <h1 className="flex flex-col items-start text-left">
+                  <span className="text-[10px] sm:text-xs font-mono font-bold uppercase tracking-[0.2em] text-white/50 mb-0.5 sm:mb-1">
+                    {currentItem.title1}
+                  </span>
+                  <span className="text-xl sm:text-2xl md:text-3xl font-heading font-black tracking-tight leading-tight text-white drop-shadow-md">
+                    {currentItem.title2}
+                  </span>
+                </h1>
 
-                    <button
-                      onClick={() => handleQuickAdd(currentItem)}
-                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/25 hover:border-white text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer bg-black/30 backdrop-blur-sm"
-                      aria-label={`Quick add ${currentItem.flavor}`}
-                    >
-                      <svg
-                        className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                <div className="flex items-center gap-2.5 sm:gap-3 mt-2 sm:mt-2.5">
+                  {currentItem.isComingSoon ? (
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="px-3.5 sm:px-4 py-1.5 rounded-full font-heading font-black text-xs text-brand-black shadow-lg flex items-center gap-1.5 select-none"
+                        style={{ backgroundColor: currentItem.accentColor }}
                       >
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                        <line x1="3" y1="6" x2="21" y2="6" />
-                        <path d="M16 10a4 4 0 0 1-8 0" />
-                      </svg>
-                    </button>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand-black animate-ping" />
+                        <span>{currentItem.comingSoonDrop || "Coming Soon"}</span>
+                      </span>
+                      <span className="text-white/70 text-[11px] font-mono font-medium px-2.5 py-1 bg-white/10 rounded-full backdrop-blur-sm border border-white/10">
+                        Stay Tuned
+                      </span>
+                    </div>
+                  ) : (
+                    <>
+                      <Link
+                        href={`/product${currentItem.flavorId ? `?flavor=${currentItem.flavorId}` : ""}`}
+                        className="px-4 sm:px-5 py-1.5 sm:py-2 bg-white text-brand-black rounded-full font-heading font-black text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_4px_18px_rgba(255,255,255,0.18)]"
+                      >
+                        Buy Now • {currentItem.price}
+                      </Link>
 
-        {/* Center Arena: center box + flanking side thumbnails */}
-        <div className="relative w-full flex items-center justify-center h-[50vh] sm:h-[54vh] md:h-[60vh] max-h-[540px] overflow-visible">
+                      <button
+                        onClick={() => handleQuickAdd(currentItem)}
+                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/25 hover:border-white text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-md"
+                        aria-label={`Quick add ${currentItem.flavor}`}
+                      >
+                        <svg
+                          className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                          <line x1="3" y1="6" x2="21" y2="6" />
+                          <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                      </button>
+                    </>
+                  )}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
-          {/* ── Side Thumbnail Previews (outside the box: smaller, smooth sequence track, no shake) ── */}
+          {/* ── Side Thumbnail Previews (outside the box: continuous horizontal filmstrip) ── */}
           {ORYZO_ITEMS.map((prod, index) => {
             const offset = index - activeIndex;
             const abs = Math.abs(offset);
             const sign = Math.sign(offset);
 
             // Responsive positioning distances
-            const baseDist = isMobile ? 165 : 250;
-            const stepDist = isMobile ? 95 : 130;
+            const baseDist = isMobile ? 145 : 275;
+            const stepDist = isMobile ? 90 : 175;
 
             let xPos = 0;
-            let thumbScale = 0.38;
+            const thumbScale = isMobile ? 0.38 : 0.44;
             let thumbOpacity = 0;
 
             if (abs === 0) {
               // Center card: tucked smoothly behind the center box at x=0
               xPos = 0;
-              thumbScale = 0.44;
               thumbOpacity = 0;
             } else if (abs === 1) {
               xPos = sign * baseDist;
-              thumbScale = isMobile ? 0.34 : 0.38;
-              thumbOpacity = !isDocked ? 0 : 0.72;
+              thumbOpacity = !isDocked ? 0 : 0.60;
             } else if (abs === 2) {
               xPos = sign * (baseDist + stepDist);
-              thumbScale = isMobile ? 0.25 : 0.28;
-              thumbOpacity = !isDocked ? 0 : 0.35;
+              thumbOpacity = !isDocked ? 0 : 0.28;
             } else {
               // Further out: smoothly glides off into distance while faded
               xPos = sign * (baseDist + stepDist * (abs - 1));
-              thumbScale = 0.20;
               thumbOpacity = 0;
             }
 
@@ -684,30 +676,42 @@ export default function HeroScrollExperience() {
                 onClick={() => {
                   if (isInteractive) handleSelectIndex(index);
                 }}
+                style={{ top: "50%" }}
                 animate={{
                   x: xPos,
+                  y: "-50%",
                   scale: thumbScale,
                   opacity: thumbOpacity,
                 }}
+                whileHover={isInteractive ? { scale: thumbScale * 1.05, opacity: 0.95 } : undefined}
                 transition={{
                   duration: 0.55,
                   ease: [0.76, 0, 0.24, 1],
                 }}
-                className={`absolute w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] h-[310px] sm:h-[370px] md:h-[430px] lg:h-[470px] rounded-2xl md:rounded-3xl overflow-hidden z-10 select-none shadow-lg border border-white/10 ${
-                  isInteractive ? "cursor-pointer pointer-events-auto hover:opacity-90 transition-opacity" : "pointer-events-none"
+                className={`absolute w-[220px] sm:w-[260px] md:w-[320px] lg:w-[360px] xl:w-[380px] h-[310px] sm:h-[370px] md:h-[440px] lg:h-[480px] xl:h-[510px] rounded-none overflow-hidden z-10 select-none shadow-xl border border-white/10 ${
+                  isInteractive ? "cursor-pointer pointer-events-auto" : "pointer-events-none"
                 }`}
               >
                 <Image
                   src={prod.image}
                   alt={prod.flavor}
                   fill
-                  sizes="200px"
+                  sizes="(max-width: 640px) 140px, 180px"
                   className="object-cover object-center"
+                  draggable={false}
                 />
+
+                {/* Hardware-accelerated dimming overlay (no laggy CSS filter) */}
+                <div
+                  className={`absolute inset-0 bg-black pointer-events-none transition-opacity duration-300 ${
+                    abs === 1 ? "opacity-30" : "opacity-65"
+                  }`}
+                />
+
                 {prod.isComingSoon && (
-                  <div className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 z-10 pointer-events-none">
+                  <div className="absolute top-2.5 right-2.5 z-10 pointer-events-none">
                     <span
-                      className="px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded-full text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white flex items-center gap-1 shadow-md"
+                      className="px-2 py-0.5 rounded-full text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white flex items-center gap-1 shadow-md"
                       style={{ backgroundColor: `${prod.accentColor}33` }}
                     >
                       <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.accentColor }} />
@@ -730,13 +734,13 @@ export default function HeroScrollExperience() {
               scale: { duration: 0.9, delay: isDocked ? 0.35 : 0, ease: [0.22, 1, 0.36, 1] },
             }}
             style={{ visibility: isDocked ? "visible" : "hidden" }}
-            className={`relative z-20 w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] h-[310px] sm:h-[370px] md:h-[430px] lg:h-[470px] rounded-2xl md:rounded-3xl border border-dashed border-white/50 overflow-hidden shadow-2xl ${!isDocked ? "opacity-0 invisible" : ""}`}
+            className={`relative z-20 w-[220px] sm:w-[260px] md:w-[320px] lg:w-[360px] xl:w-[380px] h-[310px] sm:h-[370px] md:h-[440px] lg:h-[480px] xl:h-[510px] rounded-none border-[1.5px] border-dashed border-white/40 overflow-hidden shadow-2xl ${!isDocked ? "opacity-0 invisible" : ""}`}
           >
             {/* Tilt wrapper: absolute inset-0 = same size as box, so rotate pivots around box center */}
             <motion.div
               className="absolute inset-0"
-              animate={{ rotate: slideDir * 5 }}
-              transition={{ type: "spring", stiffness: 260, damping: 22, mass: 0.6 }}
+              animate={{ rotate: slideDir * 3 }}
+              transition={{ type: "spring", stiffness: 200, damping: 20, mass: 0.5 }}
             >
               {/* Filmstrip: only x translation — lives inside the tilt wrapper */}
               <motion.div
@@ -755,14 +759,15 @@ export default function HeroScrollExperience() {
                       src={prod.image}
                       alt={prod.flavor}
                       fill
-                      sizes="(max-width: 640px) 230px, (max-width: 768px) 270px, 340px"
+                      sizes="(max-width: 640px) 220px, 380px"
                       className="object-cover object-center"
                       priority={index === 0}
+                      draggable={false}
                     />
                     {prod.isComingSoon && (
-                      <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 z-10 pointer-events-none">
+                      <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-10 pointer-events-none">
                         <span
-                          className="px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1.5"
+                          className="px-2 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-wider backdrop-blur-md border border-white/25 text-white shadow-xl flex items-center gap-1"
                           style={{ backgroundColor: `${prod.accentColor}33` }}
                         >
                           <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.accentColor }} />
@@ -776,60 +781,137 @@ export default function HeroScrollExperience() {
             </motion.div>
           </motion.div>
 
-          {/* Navigation arrows flanking the box */}
+          {/* Navigation arrows flanking the box: centered vertically in the middle of the box */}
           <motion.div
             animate={{
               opacity: isDocked ? 1 : 0,
               pointerEvents: isDocked ? "auto" : "none",
             }}
             transition={{ duration: 0.5, delay: isDocked ? 0.2 : 0 }}
-            style={{ visibility: isDocked ? "visible" : "hidden" }}
-            className={`absolute z-40 w-[230px] sm:w-[270px] md:w-[310px] lg:w-[340px] flex items-center justify-between pointer-events-none ${!isDocked ? "opacity-0 invisible pointer-events-none" : ""}`}
+            style={{
+              visibility: isDocked ? "visible" : "hidden",
+              top: "50%",
+              transform: "translateY(-50%)",
+            }}
+            className={`absolute z-40 w-[220px] sm:w-[260px] md:w-[320px] lg:w-[360px] xl:w-[380px] flex items-center justify-between pointer-events-none ${!isDocked ? "opacity-0 invisible pointer-events-none" : ""}`}
           >
             <button
               onClick={(e) => { e.stopPropagation(); handlePrev(); }}
               aria-label="Previous product"
-              className="-translate-x-4 sm:-translate-x-6 md:-translate-x-8 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/75 hover:bg-white hover:text-brand-black text-white backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-[0_8px_25px_rgba(0,0,0,0.6)] pointer-events-auto"
+              className="-translate-x-1/2 w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-black/80 hover:bg-white hover:text-brand-black text-white backdrop-blur-md border border-white/25 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-[0_8px_25px_rgba(0,0,0,0.6)] pointer-events-auto"
             >
-              <svg className="w-4 h-4 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); handleNext(); }}
               aria-label="Next product"
-              className="translate-x-4 sm:translate-x-6 md:translate-x-8 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/75 hover:bg-white hover:text-brand-black text-white backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-[0_8px_25px_rgba(0,0,0,0.6)] pointer-events-auto"
+              className="translate-x-1/2 w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-black/80 hover:bg-white hover:text-brand-black text-white backdrop-blur-md border border-white/25 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-[0_8px_25px_rgba(0,0,0,0.6)] pointer-events-auto"
             >
-              <svg className="w-4 h-4 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </motion.div>
 
         </div>
+
+        {/* Mobile Product Details: Placed in bottom of box in middle with spacing */}
+        <div className="md:hidden z-40 pointer-events-auto shrink-0 w-full max-w-[320px] mt-4 sm:mt-5 flex flex-col items-center text-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentItem.id}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              className="flex flex-col items-center text-center w-full"
+            >
+              <h1 className="flex flex-col items-center text-center">
+                <span className="text-[10px] sm:text-xs font-mono font-bold uppercase tracking-[0.2em] text-white/50 mb-0.5 sm:mb-1">
+                  {currentItem.title1}
+                </span>
+                <span className="text-xl sm:text-2xl font-heading font-black tracking-tight leading-tight text-white drop-shadow-md">
+                  {currentItem.title2}
+                </span>
+              </h1>
+
+              <div className="flex items-center justify-center gap-2.5 mt-2">
+                {currentItem.isComingSoon ? (
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="px-3.5 py-1.5 rounded-full font-heading font-black text-xs text-brand-black shadow-lg flex items-center gap-1.5 select-none"
+                      style={{ backgroundColor: currentItem.accentColor }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand-black animate-ping" />
+                      <span>{currentItem.comingSoonDrop || "Coming Soon"}</span>
+                    </span>
+                    <span className="text-white/70 text-[11px] font-mono font-medium px-2.5 py-1 bg-white/10 rounded-full backdrop-blur-sm border border-white/10">
+                      Stay Tuned
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      href={`/product${currentItem.flavorId ? `?flavor=${currentItem.flavorId}` : ""}`}
+                      className="px-4 py-1.5 bg-white text-brand-black rounded-full font-heading font-black text-xs hover:scale-105 active:scale-95 transition-all shadow-[0_4px_18px_rgba(255,255,255,0.18)]"
+                    >
+                      Buy Now • {currentItem.price}
+                    </Link>
+
+                    <button
+                      onClick={() => handleQuickAdd(currentItem)}
+                      className="w-8 h-8 rounded-full border border-white/25 hover:border-white text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-md"
+                      aria-label={`Quick add ${currentItem.flavor}`}
+                    >
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <path d="M16 10a4 4 0 0 1-8 0" />
+                      </svg>
+                    </button>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </motion.div>
 
       {/* Layer 7: Bottom Navigation & Swap Indicators (Locked cleanly at the bottom) */}
-      <div className="relative z-30 max-w-7xl mx-auto w-full pb-4 sm:pb-6 px-6 sm:px-10 flex items-center justify-between text-xs text-white/50 pointer-events-auto">
+      <div className="relative z-30 max-w-7xl mx-auto w-full pb-3 sm:pb-4 px-4 sm:px-8 md:px-12 flex items-center justify-between text-xs text-white/50 pointer-events-auto shrink-0">
         {/* Scroll hint on Hero / Swap hint in Box */}
         <div className="flex items-center">
           {!isDocked ? (
             <button
               onClick={() => setIsDocked(true)}
-              className="flex items-center gap-2 text-brand-black font-heading font-bold cursor-pointer hover:opacity-80 transition-opacity bg-brand-white/70 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-brand-black/20 shadow-sm"
+              className="flex items-center gap-2 text-brand-black font-heading font-bold cursor-pointer hover:opacity-90 transition-all bg-brand-white/80 backdrop-blur-sm px-3.5 sm:px-4 py-1.5 rounded-full border border-brand-black/20 shadow-sm text-xs"
             >
               <span className="w-2 h-2 rounded-full bg-brand-black animate-pulse" />
-              <span>Scroll down to see product in box â†“</span>
+              <span className="hidden sm:inline">Scroll down to see product in box</span>
+              <span className="sm:hidden">Explore Box</span>
+              <svg className="w-3.5 h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
             </button>
           ) : (
-            <div className="flex items-center gap-2 text-white/60 font-heading">
+            <div className="hidden sm:flex items-center gap-2 text-white/60 font-heading text-xs">
               <span className="w-1.5 h-1.5 rounded-full bg-[#A9D3F4] animate-pulse" />
               <span>Scroll or use arrows to swap</span>
             </div>
           )}
         </div>
 
-        {/* Swap Indicator Dots & Product Counter when docked */}
+        {/* Oryzo-style Scroll Cue & Indicator Dots */}
         <motion.div 
           animate={{
             opacity: isDocked ? 1 : 0,
@@ -840,23 +922,33 @@ export default function HeroScrollExperience() {
             opacity: isDocked ? 1 : 0,
             visibility: isDocked ? "visible" : "hidden",
           }}
-          className={`flex items-center gap-3 ${
+          className={`flex items-center gap-2.5 sm:gap-4 ${
             !isDocked ? "opacity-0 pointer-events-none invisible" : ""
           }`}
         >
-          <div className="flex items-center gap-1.5">
+          {/* Circular Down Chevron Pill matching Oryzo */}
+          <div className="hidden md:flex items-center gap-2 text-white/50 text-[10px] font-mono tracking-widest uppercase select-none">
+            <span className="w-4.5 h-4.5 rounded-full border border-white/20 flex items-center justify-center text-white/70">
+              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+            <span>Scroll to continue</span>
+          </div>
+
+          <div className="flex items-center gap-1.5 md:pl-3 md:border-l md:border-white/15">
             {ORYZO_ITEMS.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setActiveIndex(i)}
+                onClick={() => handleSelectIndex(i)}
                 className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  i === activeIndex ? "w-6 bg-white" : "w-1.5 bg-white/20 hover:bg-white/50"
+                  i === activeIndex ? "w-5 sm:w-6 bg-white" : "w-1.5 bg-white/25 hover:bg-white/50"
                 }`}
                 aria-label={`Go to product ${i + 1}`}
               />
             ))}
           </div>
-          <span className="hidden sm:inline-block font-mono text-[11px] text-white/40">
+          <span className="font-mono text-[10px] sm:text-[11px] text-white/40">
             {activeIndex + 1} / {ORYZO_ITEMS.length}
           </span>
         </motion.div>
@@ -876,11 +968,15 @@ export default function HeroScrollExperience() {
             setActiveIndex(0);
             setIsDocked(false);
           }}
-          className={`hover:text-white text-white/60 transition-colors cursor-pointer text-[11px] flex items-center gap-1 font-heading font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/10 ${
+          className={`hover:text-white text-white/60 transition-colors cursor-pointer text-[10px] sm:text-[11px] flex items-center gap-1 font-heading font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 px-2.5 sm:px-3.5 py-1.5 rounded-full border border-white/10 ${
             !isDocked ? "opacity-0 pointer-events-none invisible" : ""
           }`}
         >
-          <span>â†‘ Back to Hill</span>
+          <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+          <span className="hidden sm:inline">Back to Hill</span>
+          <span className="sm:hidden">Top</span>
         </motion.button>
       </div>
 
