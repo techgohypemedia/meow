@@ -222,7 +222,8 @@ export default function HeroScrollExperience() {
   const [isDocked, setIsDocked] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [slideDir, setSlideDir] = useState(0); // -1 = prev, 0 = idle, 1 = next
-  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const touchCooldownRef = useRef(false);
   const isWheelDebounced = useRef(false);
   const { totalItems, openCart, addToCart } = useCart();
 
@@ -303,53 +304,80 @@ export default function HeroScrollExperience() {
     }
   };
 
-  // Touch Swipe handlers
+  // Touch Swipe handlers with ref-based tracking & cooldown to ensure exactly 1 item slides per swipe
   const onTouchStart = (e: React.TouchEvent) => {
-    setTouchStart({
-      x: e.targetTouches[0].clientX,
-      y: e.targetTouches[0].clientY,
-    });
+    if (e.touches && e.touches.length > 0) {
+      touchStartRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+    }
   };
 
   const onTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStart) return;
-    const touchEnd = {
-      x: e.changedTouches[0].clientX,
-      y: e.changedTouches[0].clientY,
-    };
-    const diffX = touchStart.x - touchEnd.x;
-    const diffY = touchStart.y - touchEnd.y;
+    if (!touchStartRef.current || touchCooldownRef.current) {
+      touchStartRef.current = null;
+      return;
+    }
 
-    if (Math.abs(diffY) > 40 && Math.abs(diffY) > Math.abs(diffX)) {
-      // Vertical swipe
-      if (diffY > 40) {
-        // Swiped UP -> Move into box / next product
+    const touchEnd = e.changedTouches?.[0];
+    if (!touchEnd) {
+      touchStartRef.current = null;
+      return;
+    }
+
+    const diffX = touchStartRef.current.x - touchEnd.clientX;
+    const diffY = touchStartRef.current.y - touchEnd.clientY;
+    touchStartRef.current = null; // Instantly consume the touch start
+
+    const minSwipeDist = 30;
+
+    // Check if primarily horizontal or vertical swipe
+    if (Math.abs(diffX) >= Math.abs(diffY)) {
+      // Horizontal swipe
+      if (Math.abs(diffX) > minSwipeDist) {
+        touchCooldownRef.current = true;
+        setTimeout(() => {
+          touchCooldownRef.current = false;
+        }, 450);
+
         if (!isDocked) {
           setIsDocked(true);
-        } else {
-          handleNext();
-        }
-      } else if (diffY < -40) {
-        // Swiped DOWN -> Previous product / back to hill
-        if (isDocked) {
-          if (activeIndex > 0) {
-            handlePrev();
-          } else {
-            setIsDocked(false);
-          }
-        }
-      }
-    } else if (Math.abs(diffX) > 40) {
-      // Horizontal swipe
-      if (isDocked) {
-        if (diffX > 40) {
+        } else if (diffX > 0) {
+          // Swiped Left -> Next image (consistent with right arrow)
           handleNext();
         } else {
+          // Swiped Right -> Prev image (consistent with left arrow)
           handlePrev();
         }
       }
+    } else {
+      // Vertical swipe
+      if (Math.abs(diffY) > minSwipeDist) {
+        touchCooldownRef.current = true;
+        setTimeout(() => {
+          touchCooldownRef.current = false;
+        }, 450);
+
+        if (diffY > 0) {
+          // Swiped UP -> Move into box / next product
+          if (!isDocked) {
+            setIsDocked(true);
+          } else {
+            handleNext();
+          }
+        } else {
+          // Swiped DOWN -> Previous product / back to hill
+          if (isDocked) {
+            if (activeIndex > 0) {
+              handlePrev();
+            } else {
+              setIsDocked(false);
+            }
+          }
+        }
+      }
     }
-    setTouchStart(null);
   };
 
   // Keyboard navigation
@@ -544,8 +572,6 @@ export default function HeroScrollExperience() {
 
       {/* Layer 6: Main Showcase Arena matching Oryzo.ai layout */}
       <motion.div 
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
         animate={{
           opacity: isDocked ? 1 : 0,
           pointerEvents: isDocked ? "auto" : "none",
