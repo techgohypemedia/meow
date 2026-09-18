@@ -23,49 +23,6 @@ export interface OryzoItem {
 
 export const ORYZO_ITEMS: OryzoItem[] = [
   {
-    id: "cat-insurance-poster",
-    title1: "DO YOU HAVE,",
-    title2: "cat insurance?",
-    flavor: "Cat Insurance Poster",
-    price: "$24.00",
-    priceNum: 24.0,
-    image: "/showcase/meow/IMG_7614.PNG",
-    accentColor: "#EF4444",
-  },
-  {
-    id: "peach-paradise",
-    title1: "IN THE LAB,",
-    title2: "it's peach paradise",
-    flavor: "Peach Paradise",
-    price: "$19.99",
-    priceNum: 19.99,
-    image: "/showcase/meow/IMG_7598.PNG",
-    accentColor: "#F59E0B",
-    flavorId: "peach",
-  },
-  {
-    id: "matcha-zen",
-    title1: "BREWING FRESH,",
-    title2: "it's matcha zen",
-    flavor: "Matcha Zen",
-    price: "$19.99",
-    priceNum: 19.99,
-    image: "/showcase/meow/IMG_7614.PNG",
-    accentColor: "#10B981",
-    flavorId: "matcha",
-  },
-  {
-    id: "berry-fresh",
-    title1: "SWEET EXTRACT,",
-    title2: "it's berry fresh",
-    flavor: "Berry Fresh",
-    price: "$19.99",
-    priceNum: 19.99,
-    image: "/showcase/meow/IMG_7614.PNG",
-    accentColor: "#EC4899",
-    flavorId: "berry",
-  },
-  {
     id: "clean-bean-original",
     title1: "SO FLUSHABLE,",
     title2: "it's pure routine",
@@ -76,12 +33,25 @@ export const ORYZO_ITEMS: OryzoItem[] = [
     accentColor: "#A9D3F4",
     flavorId: "original",
   },
+  {
+    id: "cat-insurance-poster",
+    title1: "DO YOU HAVE,",
+    title2: "cat insurance?",
+    flavor: "Cat Insurance Poster",
+    price: "$24.00",
+    priceNum: 24.0,
+    image: "/showcase/meow/IMG_7614.PNG",
+    accentColor: "#EF4444",
+  },
 ];
 
 export type ShowcaseStage = "carousel" | "focus" | "details";
+export type IntroPhase = "hero" | "spotlight" | "stabilizing" | "minimizing" | "docked";
 
 export default function HeroScrollExperience() {
   const [isMobile, setIsMobile] = useState(false);
+  const [introPhase, setIntroPhase] = useState<IntroPhase>("hero");
+  const [rotationDeg, setRotationDeg] = useState(0);
   const [isDocked, setIsDocked] = useState(false);
   const [stage, setStage] = useState<ShowcaseStage>("carousel");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -91,6 +61,8 @@ export default function HeroScrollExperience() {
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const touchCooldownRef = useRef(false);
   const isWheelDebounced = useRef(false);
+  const introTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const introSubTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { totalItems, openCart, addToCart } = useCart();
 
   useEffect(() => {
@@ -110,66 +82,120 @@ export default function HeroScrollExperience() {
     };
   }, []);
 
+  // Dedicated reliable state-machine for intro progression
+  // stabilizing (500ms upright rest) -> minimizing (1350ms smooth shrink) -> docked (slide arrives)
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (introPhase === "stabilizing") {
+      timer = setTimeout(() => {
+        setIntroPhase("minimizing");
+      }, 500);
+    } else if (introPhase === "minimizing") {
+      timer = setTimeout(() => {
+        setIntroPhase("docked");
+        setIsDocked(true);
+        setStage("carousel");
+      }, 1350);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [introPhase]);
+
   const currentItem = ORYZO_ITEMS[activeIndex] || ORYZO_ITEMS[0];
   // Total steps: Carousel slides (5) + Focus step (1) + Product details (1)
   const TOTAL_SLIDES = ORYZO_ITEMS.length;
 
-  const handleNext = useCallback(() => {
-    if (!isDocked) {
+  const handleSlideNext = useCallback(() => {
+    if (introPhase !== "docked") {
+      setIntroPhase("docked");
       setIsDocked(true);
-      setStage("carousel");
+    }
+    setSlideDir(1);
+    setActiveIndex((prev) => (prev < ORYZO_ITEMS.length - 1 ? prev + 1 : 0));
+  }, [introPhase]);
+
+  const handleSlidePrev = useCallback(() => {
+    if (introPhase !== "docked") {
+      setIntroPhase("docked");
+      setIsDocked(true);
+    }
+    setSlideDir(-1);
+    setActiveIndex((prev) => (prev > 0 ? prev - 1 : ORYZO_ITEMS.length - 1));
+  }, [introPhase]);
+
+  const handleNext = useCallback(() => {
+    if (introPhase === "stabilizing" || introPhase === "minimizing") return;
+
+    // Step 0 -> Step 1: Hero to Center Spotlight
+    if (introPhase === "hero") {
+      setIntroPhase("spotlight");
+      setRotationDeg(0);
+      isWheelDebounced.current = true;
+      setTimeout(() => {
+        isWheelDebounced.current = false;
+      }, 1050);
+      return;
+    }
+
+    // Direct trigger: Complete rotation, trigger stabilizing -> minimizing -> docked
+    if (introPhase === "spotlight" || (!isDocked && introPhase !== "docked")) {
+      setRotationDeg(360);
+      setIntroPhase("stabilizing");
+      isWheelDebounced.current = true;
+      setTimeout(() => {
+        isWheelDebounced.current = false;
+      }, 2200);
       return;
     }
 
     if (stage === "carousel") {
-      if (activeIndex < ORYZO_ITEMS.length - 1) {
-        setSlideDir(1);
-        setActiveIndex((prev) => prev + 1);
-      } else {
-        // Step 2: Transition from Carousel Dashed Frame to Center Focus (Image 2)
-        setStage("focus");
-      }
-    } else if (stage === "focus") {
-      // Step 3: Transition from Center Focus to Full Screen Details (Image 3)
+      // ON SCROLL DOWN: The current active slide box expands to become its full-screen product details!
       setStage("details");
     }
-  }, [isDocked, stage, activeIndex]);
+  }, [introPhase, isDocked, stage]);
 
   const handlePrev = useCallback(() => {
-    if (stage === "details") {
-      // Step 3 -> Step 2: Return to Center Focus (Image 2)
-      setStage("focus");
-      return;
-    }
+    if (introPhase === "stabilizing" || introPhase === "minimizing") return;
 
-    if (stage === "focus") {
-      // Step 2 -> Step 1: Return to Carousel last slide (Image 1)
+    if (stage === "details" || stage === "focus") {
+      // Return from Full Screen Details back to Carousel at CURRENT active slide
       setStage("carousel");
-      setActiveIndex(ORYZO_ITEMS.length - 1);
-      setSlideDir(-1);
       return;
     }
 
     if (isDocked && stage === "carousel") {
-      if (activeIndex > 0) {
-        setSlideDir(-1);
-        setActiveIndex((prev) => prev - 1);
-      } else {
-        // Step 1 -> Hill
-        setIsDocked(false);
-      }
+      // Return from Carousel to Center Spotlight
+      setIsDocked(false);
+      setIntroPhase("spotlight");
+      setRotationDeg(360);
+      isWheelDebounced.current = true;
+      setTimeout(() => {
+        isWheelDebounced.current = false;
+      }, 1050);
+    } else if (introPhase === "spotlight") {
+      // Return from Center Spotlight to Hero Hill
+      setRotationDeg(0);
+      setIntroPhase("hero");
+      isWheelDebounced.current = true;
+      setTimeout(() => {
+        isWheelDebounced.current = false;
+      }, 1050);
     }
-  }, [stage, isDocked, activeIndex]);
+  }, [introPhase, stage, isDocked]);
 
   const handleSelectIndex = useCallback((newIndex: number) => {
-    setIsDocked(true);
+    if (introPhase !== "docked") {
+      setIntroPhase("docked");
+      setIsDocked(true);
+    }
     setStage("carousel");
     setActiveIndex((prev) => {
       if (newIndex === prev) return prev;
       setSlideDir(newIndex > prev ? 1 : -1);
       return newIndex;
     });
-  }, []);
+  }, [introPhase]);
 
   useEffect(() => {
     if (slideDir !== 0) {
@@ -178,9 +204,46 @@ export default function HeroScrollExperience() {
     }
   }, [slideDir, activeIndex]);
 
-  // Locked Wheel listener with calibrated scroll pacing
+  // Continuous Wheel listener: rot scroll -> stable pause -> smooth slow minimization -> slide arrives
   const handleWheel = (e: React.WheelEvent) => {
     if (isWheelDebounced.current) return;
+    if (introPhase === "stabilizing" || introPhase === "minimizing") return;
+
+    // In spotlight, smoothly complete 360 rotation on scroll down without getting stuck
+    if (introPhase === "spotlight") {
+      if (e.deltaY > 8) {
+        setRotationDeg(360);
+        setIntroPhase("stabilizing");
+        isWheelDebounced.current = true;
+        setTimeout(() => {
+          isWheelDebounced.current = false;
+        }, 2200);
+      } else if (e.deltaY < -8) {
+        setRotationDeg(0);
+        setIntroPhase("hero");
+        isWheelDebounced.current = true;
+        setTimeout(() => {
+          isWheelDebounced.current = false;
+        }, 1050);
+      }
+      return;
+    }
+
+    // Trackpad Horizontal Swipe (e.g. 2-finger swipe left/right on laptop trackpad)
+    if (stage === "carousel" && Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 16) {
+      isWheelDebounced.current = true;
+
+      if (e.deltaX > 0) {
+        handleSlideNext();
+      } else {
+        handleSlidePrev();
+      }
+
+      setTimeout(() => {
+        isWheelDebounced.current = false;
+      }, 450);
+      return;
+    }
 
     if (Math.abs(e.deltaY) > 18) {
       isWheelDebounced.current = true;
@@ -191,14 +254,19 @@ export default function HeroScrollExperience() {
         handlePrev();
       }
 
-      const cooldown = !isDocked ? 950 : stage !== "carousel" ? 850 : 580;
+      const cooldown =
+        introPhase !== "docked"
+          ? 1800
+          : stage !== "carousel"
+          ? 900
+          : 600;
       setTimeout(() => {
         isWheelDebounced.current = false;
       }, cooldown);
     }
   };
 
-  // Touch handlers with matching pacing
+  // Touch handlers with matching scroll rotation scrubbing
   const onTouchStart = (e: React.TouchEvent) => {
     if (e.touches && e.touches.length > 0) {
       touchStartRef.current = {
@@ -209,7 +277,11 @@ export default function HeroScrollExperience() {
   };
 
   const onTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStartRef.current || touchCooldownRef.current) {
+    if (!touchStartRef.current || touchCooldownRef.current || isWheelDebounced.current) {
+      touchStartRef.current = null;
+      return;
+    }
+    if (introPhase === "stabilizing" || introPhase === "minimizing") {
       touchStartRef.current = null;
       return;
     }
@@ -224,20 +296,51 @@ export default function HeroScrollExperience() {
     const diffY = touchStartRef.current.y - touchEnd.clientY;
     touchStartRef.current = null;
 
+    if (introPhase === "spotlight") {
+      if (diffY > 10) {
+        setRotationDeg((prev) => {
+          const next = Math.min(360, prev + diffY * 0.9);
+          if (next >= 360) {
+            setIntroPhase("stabilizing");
+            isWheelDebounced.current = true;
+            setTimeout(() => {
+              isWheelDebounced.current = false;
+            }, 2200);
+            return 360;
+          }
+          return next;
+        });
+      } else if (diffY < -10) {
+        setRotationDeg((prev) => {
+          if (prev > 20) return Math.max(0, prev + diffY * 0.9);
+          setIntroPhase("hero");
+          isWheelDebounced.current = true;
+          setTimeout(() => {
+            isWheelDebounced.current = false;
+          }, 1050);
+          return 0;
+        });
+      }
+      return;
+    }
+
     const minSwipeDist = 28;
-    const touchCooldownTime = stage !== "carousel" ? 750 : 450;
+    const touchCooldownTime =
+      introPhase !== "docked" ? 1800 : stage !== "carousel" ? 800 : 480;
 
     if (Math.abs(diffX) >= Math.abs(diffY)) {
+      // Horizontal swipe: change slides in carousel
       if (Math.abs(diffX) > minSwipeDist) {
         touchCooldownRef.current = true;
         setTimeout(() => {
           touchCooldownRef.current = false;
         }, touchCooldownTime);
 
-        if (diffX > 0) handleNext();
-        else handlePrev();
+        if (diffX > 0) handleSlideNext();
+        else handleSlidePrev();
       }
     } else {
+      // Vertical swipe: open/close full-screen product details
       if (Math.abs(diffY) > minSwipeDist) {
         touchCooldownRef.current = true;
         setTimeout(() => {
@@ -250,18 +353,26 @@ export default function HeroScrollExperience() {
     }
   };
 
+  // Keep latest action handlers in ref for keyboard navigation
+  const actionsRef = useRef({ handleNext, handlePrev, handleSlideNext, handleSlidePrev });
+  actionsRef.current = { handleNext, handlePrev, handleSlideNext, handleSlidePrev };
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-        handleNext();
-      } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-        handlePrev();
+      if (e.key === "ArrowRight") {
+        actionsRef.current.handleSlideNext();
+      } else if (e.key === "ArrowLeft") {
+        actionsRef.current.handleSlidePrev();
+      } else if (e.key === "ArrowDown") {
+        actionsRef.current.handleNext();
+      } else if (e.key === "ArrowUp") {
+        actionsRef.current.handlePrev();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleNext, handlePrev]);
+  }, []);
 
   // Quick add to cart
   const handleQuickAdd = (item: OryzoItem) => {
@@ -300,39 +411,147 @@ export default function HeroScrollExperience() {
     handleQuickAdd(cleanBeanItem);
   };
 
+  // Mouse / Pointer drag support for laptop/desktop
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.button !== 0) return;
+    touchStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+    };
+  };
+
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (!touchStartRef.current || touchCooldownRef.current || isWheelDebounced.current) {
+      touchStartRef.current = null;
+      return;
+    }
+    if (introPhase === "stabilizing" || introPhase === "minimizing") {
+      touchStartRef.current = null;
+      return;
+    }
+
+    const diffX = touchStartRef.current.x - e.clientX;
+    const diffY = touchStartRef.current.y - e.clientY;
+    touchStartRef.current = null;
+
+    const minSwipeDist = 32;
+    const touchCooldownTime =
+      introPhase !== "docked" ? 1800 : stage !== "carousel" ? 800 : 480;
+
+    if (Math.abs(diffX) >= Math.abs(diffY)) {
+      if (Math.abs(diffX) > minSwipeDist) {
+        touchCooldownRef.current = true;
+        setTimeout(() => {
+          touchCooldownRef.current = false;
+        }, touchCooldownTime);
+
+        if (diffX > 0) actionsRef.current.handleSlideNext();
+        else actionsRef.current.handleSlidePrev();
+      }
+    } else {
+      if (Math.abs(diffY) > minSwipeDist) {
+        touchCooldownRef.current = true;
+        setTimeout(() => {
+          touchCooldownRef.current = false;
+        }, touchCooldownTime);
+
+        if (diffY > 0) actionsRef.current.handleNext();
+        else actionsRef.current.handlePrev();
+      }
+    }
+  };
+
   return (
     <div
       onWheel={handleWheel}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
       className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#111317] select-none flex flex-col justify-between"
     >
       {/* Layer 0: Sky Blue Hero Background (Crossfades away on scroll) */}
       <motion.div
-        animate={{ opacity: isDocked ? 0 : 1 }}
-        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+        animate={{ opacity: introPhase === "hero" ? 1 : 0 }}
+        transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
         className="absolute inset-0 bg-brand-blue pointer-events-none z-0"
       />
 
       {/* Layer 0.5: Rich Oryzo-Style Warm Dark Background Gradient */}
       <motion.div
         animate={{
-          opacity: isDocked ? (stage !== "carousel" ? 1 : 0.85) : 0,
+          opacity: introPhase === "hero" ? 0 : stage !== "carousel" ? 1 : 0.88,
         }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
         className="absolute inset-0 bg-gradient-to-r from-[#241711] via-[#161311] to-[#0c0d0f] pointer-events-none z-0"
       />
 
-      {/* Layer 1: Ambient Background Color Glow (Left Warm Espresso Bloom) */}
+      {/* ── Dynamic End-to-End Aurora Edge & Corner Aura (No border lines, full screen bleed) ── */}
+      <motion.div
+        animate={{
+          opacity: introPhase === "spotlight" || introPhase === "stabilizing" ? 1 : 0,
+        }}
+        transition={{ duration: 0.85, ease: "easeInOut" }}
+        className="fixed inset-0 pointer-events-none z-35 overflow-hidden"
+      >
+        <motion.div
+          animate={{
+            filter: [
+              "hue-rotate(0deg) brightness(1.05)",
+              "hue-rotate(180deg) brightness(1.25)",
+              "hue-rotate(360deg) brightness(1.05)",
+            ],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+          className="relative w-full h-full"
+        >
+          {/* Top-Left Ambient Aurora Corner */}
+          <div className="absolute -top-24 -left-24 w-80 sm:w-96 md:w-[32rem] h-80 sm:h-96 md:h-[32rem] rounded-full bg-gradient-to-br from-[#f59e0b] via-[#ff5500] to-transparent blur-[70px] sm:blur-[95px] opacity-45" />
+
+          {/* Top-Right Ambient Aurora Corner */}
+          <div className="absolute -top-24 -right-24 w-80 sm:w-96 md:w-[32rem] h-80 sm:h-96 md:h-[32rem] rounded-full bg-gradient-to-bl from-[#00f2fe] via-[#4facfe] to-transparent blur-[70px] sm:blur-[95px] opacity-40" />
+
+          {/* Bottom-Right Ambient Aurora Corner */}
+          <div className="absolute -bottom-24 -right-24 w-80 sm:w-96 md:w-[32rem] h-80 sm:h-96 md:h-[32rem] rounded-full bg-gradient-to-tl from-[#a855f7] via-[#ec4899] to-transparent blur-[70px] sm:blur-[95px] opacity-45" />
+
+          {/* Bottom-Left Ambient Aurora Corner */}
+          <div className="absolute -bottom-24 -left-24 w-80 sm:w-96 md:w-[32rem] h-80 sm:h-96 md:h-[32rem] rounded-full bg-gradient-to-tr from-[#f43f5e] via-[#fb923c] to-transparent blur-[70px] sm:blur-[95px] opacity-45" />
+
+          {/* End-to-End Top Edge Aurora Halo */}
+          <div className="absolute top-0 inset-x-0 h-28 bg-gradient-to-b from-[#f59e0b]/20 via-[#00f2fe]/15 to-transparent blur-xl opacity-60" />
+
+          {/* End-to-End Bottom Edge Aurora Halo */}
+          <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-[#f43f5e]/25 via-[#a855f7]/20 to-transparent blur-xl opacity-65" />
+
+          {/* End-to-End Left Edge Aurora Halo */}
+          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#ff5500]/20 to-transparent blur-xl opacity-50" />
+
+          {/* End-to-End Right Edge Aurora Halo */}
+          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#a855f7]/20 to-transparent blur-xl opacity-50" />
+        </motion.div>
+      </motion.div>
+
+      {/* Layer 1: Ambient Background Color Glow (Left Warm Espresso Bloom, disabled in spotlight to preserve dark studio) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <motion.div
           animate={{
             backgroundColor: stage !== "carousel" ? "#4a2a19" : currentItem.accentColor,
-            opacity: isDocked ? (stage === "details" ? 0.35 : stage === "focus" ? 0.45 : 0.3) : 0.05,
+            opacity:
+              introPhase === "hero"
+                ? 0.05
+                : introPhase === "spotlight" || introPhase === "stabilizing"
+                ? 0
+                : stage === "details"
+                ? 0.35
+                : 0.25,
             x: stage !== "carousel" ? "-20vw" : "0vw",
-            scale: stage === "details" ? 1.4 : stage === "focus" ? 1.25 : 1.0,
+            scale: stage === "details" ? 1.4 : 1.0,
           }}
-          transition={{ duration: 0.9, ease: "easeOut" }}
+          transition={{ duration: 1.1, ease: "easeOut" }}
           className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[75vw] h-[80vh] rounded-full blur-[180px]"
         />
       </div>
@@ -340,10 +559,10 @@ export default function HeroScrollExperience() {
       {/* Layer 2: White Wave Curve Hill */}
       <motion.div
         animate={{
-          opacity: isDocked ? 0 : 1,
-          y: isDocked ? 60 : 0,
+          opacity: introPhase === "hero" ? 1 : 0,
+          y: introPhase === "hero" ? 0 : 80,
         }}
-        transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
         className="absolute bottom-0 left-0 w-full h-[36vh] z-10 pointer-events-none overflow-hidden"
       >
         <div className="relative w-full h-full">
@@ -361,10 +580,10 @@ export default function HeroScrollExperience() {
       <div className="absolute inset-0 px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 z-30 pointer-events-none overflow-visible flex items-end justify-end">
         <motion.div
           animate={{
-            opacity: isDocked ? 0 : 1,
-            y: isDocked ? 50 : 0,
+            opacity: introPhase === "hero" ? 1 : 0,
+            y: introPhase === "hero" ? 0 : 70,
           }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
           className="w-1/2 flex justify-end items-end pb-[calc(24vh-6px)] sm:pb-[calc(25vh-6px)] md:pb-[calc(26vh-6px)] lg:pb-[calc(26.5vh-6px)] pointer-events-none pr-1 sm:pr-4 md:pr-10 lg:pr-16 xl:pr-20"
         >
           <div className="w-[260px] sm:w-[340px] md:w-[420px] lg:w-[520px] xl:w-[640px] 2xl:w-[740px] aspect-[16/9] relative pointer-events-auto hover:scale-105 transition-transform duration-300">
@@ -374,14 +593,14 @@ export default function HeroScrollExperience() {
       </div>
 
       {/* Layer 4: Global Header / Navbar */}
-      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between h-16 md:h-20 pointer-events-auto shrink-0">
-        <Link href="/" className="flex items-center cursor-pointer group h-full py-1 shrink-0">
+      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between h-20 sm:h-24 md:h-28 pointer-events-auto shrink-0 pt-2 sm:pt-3">
+        <Link href="/" className="flex items-center cursor-pointer group h-full py-0.5 shrink-0">
           <Image
             src="/meowganics_logo_transparent.png"
             alt="Meow Ganics Logo"
             width={1776}
             height={725}
-            className="h-full w-auto max-h-[58px] sm:max-h-[66px] md:max-h-[74px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]"
+            className="h-full w-auto max-h-[80px] sm:max-h-[96px] md:max-h-[110px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]"
             priority
           />
         </Link>
@@ -411,14 +630,15 @@ export default function HeroScrollExperience() {
             </span>
           </button>
 
-          {/* Shop Litter Button (Directly triggers Full Screen Product Stage) */}
+          {/* Shop Litter Button */}
           <button
             onClick={() => {
+              setIntroPhase("docked");
               setIsDocked(true);
               setStage("details");
             }}
             className={`flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-heading font-bold text-xs md:text-sm hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer ${
-              stage === "details"
+              stage === "details" && isDocked
                 ? "bg-[#A9D3F4] text-brand-black ring-2 ring-white/50"
                 : "bg-white text-brand-black"
             }`}
@@ -431,29 +651,91 @@ export default function HeroScrollExperience() {
         </div>
       </nav>
 
-      {/* Layer 5: Initial Product Bag on Hill */}
+      {/* Layer 5: Hero Product Bag with 3-Step Choreography: Hill -> Center Spotlight -> Minimizes into Slide Frame */}
       <div className="absolute inset-0 z-40 pointer-events-none flex items-center justify-center pt-4 sm:pt-6">
         <motion.div
           animate={{
-            x: isDocked ? "0vw" : (isMobile ? "-23vw" : "-24vw"),
-            y: isDocked ? "0vh" : (isMobile ? "18vh" : "12vh"),
-            scale: isDocked ? (isMobile ? 0.78 : 0.92) : (isMobile ? 0.72 : 0.92),
-            opacity: isDocked ? 0 : 1,
-            pointerEvents: isDocked ? "none" : "auto",
+            x:
+              introPhase === "hero"
+                ? isMobile
+                  ? "-23vw"
+                  : "-24vw"
+                : "0vw",
+            y:
+              introPhase === "hero"
+                ? isMobile
+                  ? "18vh"
+                  : "12vh"
+                : "0vh",
+            rotate:
+              introPhase === "hero"
+                ? 0
+                : introPhase === "spotlight"
+                ? rotationDeg
+                : 360,
+            scale:
+              introPhase === "hero"
+                ? isMobile
+                  ? 0.72
+                  : 0.92
+                : introPhase === "spotlight" || introPhase === "stabilizing"
+                ? isMobile
+                  ? 0.96
+                  : 1.20
+                : 0,
+            opacity:
+              introPhase === "hero" || introPhase === "spotlight" || introPhase === "stabilizing"
+                ? 1
+                : 0,
+            pointerEvents: introPhase === "hero" ? "auto" : "none",
           }}
           transition={{
-            x: { duration: 1.1, ease: [0.22, 1, 0.36, 1] },
-            y: { duration: 1.1, ease: [0.22, 1, 0.36, 1] },
-            scale: { duration: 1.1, ease: [0.22, 1, 0.36, 1] },
-            opacity: { duration: 0.45, delay: isDocked ? 0.75 : 0, ease: "easeOut" },
+            x: {
+              duration: introPhase === "spotlight" ? 0.95 : 0.7,
+              ease: [0.22, 1, 0.36, 1],
+            },
+            y: {
+              duration: introPhase === "spotlight" ? 0.95 : 0.7,
+              ease: [0.22, 1, 0.36, 1],
+            },
+            rotate: {
+              duration: 0.85,
+              ease: [0.22, 1, 0.36, 1],
+            },
+            scale: {
+              duration: introPhase === "minimizing" ? 1.4 : 0.95,
+              ease: [0.22, 1, 0.36, 1],
+            },
+            opacity: {
+              duration: introPhase === "minimizing" ? 1.3 : 0.45,
+              ease: "easeOut",
+            },
           }}
           className="relative w-[58vw] sm:w-[64vw] md:w-auto h-[36vh] sm:h-[40vh] md:h-[44vh] max-w-[260px] sm:max-w-[320px] md:max-w-none max-h-[330px] sm:max-h-[360px] md:max-h-[400px] aspect-[926/1004] origin-center flex items-center justify-center pointer-events-auto"
         >
+          {/* ── Studio Ambient Spotlight Bloom behind the Product Bag ── */}
+          <motion.div
+            animate={{
+              opacity: introPhase === "spotlight" || introPhase === "stabilizing" ? 1 : 0,
+              scale: introPhase === "spotlight" || introPhase === "stabilizing" ? 1 : 0.7,
+            }}
+            transition={{
+              duration: 0.7,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="absolute -inset-16 sm:-inset-24 md:-inset-32 rounded-full pointer-events-none z-0 flex items-center justify-center"
+          >
+            {/* Warm Studio Spotlight Glow with Organic Falloff */}
+            <div className="w-full h-full rounded-full bg-[radial-gradient(circle,rgba(255,90,30,0.3)_0%,rgba(60,25,12,0.15)_45%,transparent_70%)] blur-3xl" />
+          </motion.div>
+
           <div
             onClick={() => {
-              if (!isDocked) setIsDocked(true);
+              if (introPhase === "hero") handleNext();
             }}
-            className="animate-float drop-shadow-[0_20px_30px_rgba(0,0,0,0.25)] w-full h-full block relative cursor-pointer hover:scale-105 transition-transform"
+            className={`${
+              introPhase === "hero" ? "animate-float cursor-pointer hover:scale-105" : ""
+            } drop-shadow-[0_25px_45px_rgba(0,0,0,0.4)] w-full h-full block relative z-10 transition-transform`}
           >
             <Image
               src="/product-bag.png"
@@ -475,20 +757,16 @@ export default function HeroScrollExperience() {
           ══════════════════════════════════════════════════════════════════════════════════════ */}
       <motion.div
         animate={{
-          opacity: isDocked ? 1 : 0,
-          pointerEvents: isDocked ? "auto" : "none",
+          opacity: introPhase === "docked" || introPhase === "minimizing" ? 1 : 0,
+          scale: introPhase === "docked" || introPhase === "minimizing" ? 1 : 0.94,
+          pointerEvents: introPhase === "docked" ? "auto" : "none",
         }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        style={{
-          visibility: isDocked ? "visible" : "hidden",
-        }}
-        className={`relative z-30 w-full flex-1 flex flex-col justify-center items-center overflow-visible ${
-          !isDocked ? "opacity-0 pointer-events-none invisible" : ""
-        }`}
+        transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+        className="absolute inset-0 z-30 w-full h-full flex flex-col justify-center items-center overflow-visible"
       >
         <div className="relative w-full h-full flex items-center justify-center overflow-visible">
 
-          {/* ── Side Thumbnail Previews (Visible ONLY in Stage 1: Carousel) ── */}
+          {/* ── Side Thumbnail Previews (Visible in Stage 1: Carousel when slide is active) ── */}
           {ORYZO_ITEMS.map((prod, index) => {
             const offset = index - activeIndex;
             const abs = Math.abs(offset);
@@ -500,22 +778,23 @@ export default function HeroScrollExperience() {
             let xPos = 0;
             const thumbScale = isMobile ? 0.38 : 0.44;
             let thumbOpacity = 0;
+            const isSlideVisible = introPhase === "docked" || introPhase === "minimizing";
 
             if (abs === 0) {
               xPos = 0;
               thumbOpacity = 0;
             } else if (abs === 1) {
               xPos = sign * baseDist;
-              thumbOpacity = isDocked && stage === "carousel" ? 0.6 : 0;
+              thumbOpacity = isSlideVisible && stage === "carousel" ? 0.6 : 0;
             } else if (abs === 2) {
               xPos = sign * (baseDist + stepDist);
-              thumbOpacity = isDocked && stage === "carousel" ? 0.28 : 0;
+              thumbOpacity = isSlideVisible && stage === "carousel" ? 0.28 : 0;
             } else {
               xPos = sign * (baseDist + stepDist * (abs - 1));
               thumbOpacity = 0;
             }
 
-            const isInteractive = isDocked && stage === "carousel" && (abs === 1 || abs === 2);
+            const isInteractive = introPhase === "docked" && stage === "carousel" && (abs === 1 || abs === 2);
 
             return (
               <motion.div
@@ -524,16 +803,22 @@ export default function HeroScrollExperience() {
                   if (isInteractive) handleSelectIndex(index);
                 }}
                 style={{ top: "50%" }}
-                animate={{
-                  x: xPos,
+                initial={{
+                  x: sign * (baseDist + 220),
                   y: "-50%",
-                  scale: thumbScale,
+                  scale: 0.25,
+                  opacity: 0,
+                }}
+                animate={{
+                  x: isSlideVisible ? xPos : sign * (baseDist + 220),
+                  y: "-50%",
+                  scale: isSlideVisible ? thumbScale : 0.25,
                   opacity: thumbOpacity,
                 }}
                 whileHover={isInteractive ? { scale: thumbScale * 1.05, opacity: 0.95 } : undefined}
                 transition={{
-                  duration: 0.55,
-                  ease: [0.76, 0, 0.24, 1],
+                  duration: 0.95,
+                  ease: [0.16, 1, 0.3, 1],
                 }}
                 className={`absolute w-[220px] sm:w-[260px] md:w-[320px] lg:w-[360px] xl:w-[380px] h-[310px] sm:h-[370px] md:h-[440px] lg:h-[480px] xl:h-[510px] rounded-none overflow-hidden z-10 select-none shadow-xl border border-white/10 ${
                   isInteractive ? "cursor-pointer pointer-events-auto" : "pointer-events-none"
@@ -556,10 +841,10 @@ export default function HeroScrollExperience() {
             );
           })}
 
-          {/* ── THE MORPHING BOX CONTAINER (Sequence: Step 1 -> Step 2 -> Step 3) ──
+          {/* ── THE MORPHING BOX CONTAINER (Sequence: Carousel Box -> Full Screen Expansion -> Details) ──
               Step 1: 380px dashed box (Carousel)
-              Step 2: Box EXPANDS OUTWARDS to Full Screen (100vw × 100vh) with Centered Image (Focus)
-              Step 3: Product image glides from center to the right & left glass card reveals (Details) ── */}
+              Step 2: Box EXPANDS OUTWARDS to Full Screen (100vw × 100vh) slowly and smoothly on scroll
+              Step 3: Full background image captures the screen, transparent glass reveals on left, details stagger in ── */}
           <motion.div
             animate={{
               width: stage !== "carousel" ? "100vw" : isMobile ? 220 : 380,
@@ -567,38 +852,40 @@ export default function HeroScrollExperience() {
               borderRadius: 0,
             }}
             transition={{
-              duration: 1.15,
+              duration: 1.2,
               ease: [0.16, 1, 0.3, 1],
             }}
             style={{
-              overflow: stage === "carousel" ? "hidden" : "visible",
+              overflow: "hidden",
             }}
-            className="relative z-20 flex items-center justify-center pointer-events-auto"
+            className="relative z-20 flex items-center justify-center origin-center shrink-0 pointer-events-auto"
           >
-            {/* Dashed Border Layer: Shrinks/reduces inwards in a minus sequence when entering focus mode */}
+            {/* Dashed Border Layer: Smoothly reduces size and fades away when entering focus/details mode */}
             <motion.div
               animate={{
                 opacity: stage === "carousel" ? 1 : 0,
                 scale: stage === "carousel" ? 1 : 0.88,
               }}
               transition={{
-                duration: 0.55,
-                ease: [0.22, 1, 0.36, 1],
+                duration: 0.75,
+                ease: [0.16, 1, 0.3, 1],
               }}
               className="absolute inset-0 border-[1.5px] border-dashed border-white/40 pointer-events-none z-30"
             />
 
-            {/* Step 1: Carousel Filmstrip with Original 3D Spring Tilt */}
+            {/* Step 1: Carousel Filmstrip (When in Carousel stage) */}
             <motion.div
               className="absolute inset-0 pointer-events-none"
-              animate={{ rotate: stage === "carousel" ? slideDir * 3 : 0 }}
+              animate={{
+                rotate: stage === "carousel" ? slideDir * 3 : 0,
+                opacity: stage === "carousel" ? 1 : 0,
+              }}
               transition={{ type: "spring", stiffness: 200, damping: 20, mass: 0.5 }}
             >
               <motion.div
                 className="absolute inset-0 flex flex-row pointer-events-auto"
                 animate={{
                   x: `calc(${-activeIndex * (100 / ORYZO_ITEMS.length)}%)`,
-                  opacity: stage === "carousel" ? 1 : 0,
                 }}
                 transition={{ type: "tween", ease: [0.76, 0, 0.24, 1], duration: 0.55 }}
                 style={{
@@ -621,152 +908,150 @@ export default function HeroScrollExperience() {
                       priority={index === 0 || index === ORYZO_ITEMS.length - 1}
                       draggable={false}
                     />
-                    </div>
-                  ))}
+                  </div>
+                ))}
               </motion.div>
             </motion.div>
 
-            {/* Step 2 & Step 3: Clean Product Centerpiece Visual
-                - Step 2 (focus): Centered upright in the exact middle
-                - Step 3 (details): On desktop glides to RIGHT (x: 18vw), on mobile shifts UP (y: -18vh, scale: 0.65)
-                Both forward and backward transitions are perfectly symmetric & responsive */}
+            {/* Step 2 & Step 3: THE IMAGE EXPANDS SLOWLY & SMOOTHLY TO CAPTURE THE FULL SCREEN */}
             <motion.div
               animate={{
                 opacity: stage !== "carousel" ? 1 : 0,
-                x: stage === "details" ? (isMobile ? "0vw" : "18vw") : "0vw",
-                y: stage === "details" ? (isMobile ? "-18vh" : "0vh") : "0vh",
-                scale: stage === "details" ? (isMobile ? 0.65 : 1.0) : 1.0,
               }}
               transition={{
-                duration: 1.15,
+                duration: 0.85,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="absolute inset-0 flex items-center justify-center pointer-events-none z-30"
+              className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-hidden"
             >
-              <div className="relative h-[48vh] sm:h-[58vh] md:h-[72vh] max-h-[500px] aspect-[974/1536] drop-shadow-[0_25px_60px_rgba(0,0,0,0.85)] flex items-center justify-center">
-                <div className="w-full h-full relative flex items-center justify-center">
-                  <Image
-                    src="/showcase/meow/IMG_7598.PNG"
-                    alt="Clean Bean Original Tofu Cat Litter"
-                    fill
-                    sizes="(max-width: 768px) 240px, 520px"
-                    className="object-contain object-center"
-                    priority
-                  />
-                </div>
-              </div>
+              <Image
+                src={currentItem.image}
+                alt={currentItem.flavor}
+                fill
+                sizes="100vw"
+                className="object-cover object-center w-full h-full"
+                priority
+              />
+              {/* Subtle cinematic left vignette for the glass card */}
+              <motion.div
+                animate={{ opacity: stage === "details" ? 1 : 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-black/10 pointer-events-none"
+              />
             </motion.div>
 
-            {/* Step 3: Left Side (Desktop) / Bottom Sheet (Mobile) Product Panel */}
+            {/* Step 3: Left Side (Desktop) / Lower-Center (Mobile) Product Panel */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{
                 opacity: stage === "details" ? 1 : 0,
-                x: isMobile ? "-50%" : stage === "details" ? 0 : -50,
-                y: isMobile ? (stage === "details" ? 0 : 25) : 0,
+                x: isMobile ? "-50%" : stage === "details" ? 0 : -40,
+                y: isMobile ? (stage === "details" ? 0 : 20) : "-50%",
                 pointerEvents: stage === "details" ? "auto" : "none",
               }}
               transition={{
                 duration: stage === "details" ? 0.85 : 0.45,
-                delay: stage === "details" ? 0.15 : 0,
+                delay: stage === "details" ? 0.35 : 0,
                 ease: [0.16, 1, 0.3, 1],
               }}
               style={{
                 left: isMobile ? "50%" : "max(2.5rem, calc(50% - 580px))",
-                bottom: isMobile ? "max(4.8rem, 9.5vh)" : "auto",
-                top: isMobile ? "auto" : "auto",
+                bottom: isMobile ? "calc(6.5rem + env(safe-area-inset-bottom, 0px))" : "auto",
+                top: isMobile ? "auto" : "50%",
                 position: "absolute",
                 zIndex: 45,
               }}
-              className={`w-[calc(100vw-1.5rem)] max-w-[360px] sm:max-w-[420px] lg:max-w-[460px] xl:max-w-[480px] p-3.5 sm:p-6 md:p-8 shrink-0 flex flex-col justify-between ${
+              className={`w-[calc(100vw-2.5rem)] max-w-[340px] sm:max-w-[420px] lg:max-w-[460px] xl:max-w-[480px] p-4.5 sm:p-7 md:p-8 shrink-0 flex flex-col justify-between ${
                 stage !== "details" ? "pointer-events-none" : ""
               }`}
             >
-              {/* Frosted Glass Background Layer */}
+              {/* 1. Transparent Frosted Glass Background Layer (Appears First) */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{
                   opacity: stage === "details" ? 1 : 0,
-                  scale: stage === "details" ? 1 : 0.96,
+                  scale: stage === "details" ? 1 : 0.95,
                 }}
                 transition={{
-                  duration: stage === "details" ? 0.85 : 0.4,
-                  delay: stage === "details" ? 0.32 : 0,
+                  duration: stage === "details" ? 0.75 : 0.35,
+                  delay: stage === "details" ? 0.35 : 0,
                   ease: [0.16, 1, 0.3, 1],
                 }}
                 className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/[0.13] backdrop-blur-2xl border border-white/20 shadow-[0_30px_70px_rgba(0,0,0,0.7)] pointer-events-none transition-colors duration-300"
               />
 
-              {/* Content Layer */}
+              {/* 2. Content Layer (Staggered Entry after the transparent glass appears) */}
               <div className="relative z-10">
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{
                     opacity: stage === "details" ? 1 : 0,
-                    y: stage === "details" ? 0 : 10,
+                    y: stage === "details" ? 0 : 12,
                   }}
                   transition={{
-                    duration: 0.7,
-                    delay: stage === "details" ? 0.15 : 0,
+                    duration: 0.65,
+                    delay: stage === "details" ? 0.55 : 0,
                     ease: [0.16, 1, 0.3, 1],
                   }}
                   className="mb-0.5"
                 >
                   <span className="text-[9px] sm:text-xs font-mono font-bold uppercase tracking-[0.2em] text-[#A9D3F4]">
-                    Elevate Your Routine
+                    {currentItem.title1}
                   </span>
                 </motion.div>
 
                 <motion.h1
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{
                     opacity: stage === "details" ? 1 : 0,
-                    y: stage === "details" ? 0 : 10,
+                    y: stage === "details" ? 0 : 12,
                   }}
                   transition={{
-                    duration: 0.7,
-                    delay: stage === "details" ? 0.22 : 0,
+                    duration: 0.65,
+                    delay: stage === "details" ? 0.68 : 0,
                     ease: [0.16, 1, 0.3, 1],
                   }}
                   className="text-xl sm:text-3xl md:text-[42px] font-heading font-black tracking-tight text-white mb-1 sm:mb-3 leading-tight drop-shadow-md"
                 >
-                  CLEAN BEAN
+                  {currentItem.id === "clean-bean-original" ? "CLEAN BEAN" : currentItem.flavor.toUpperCase()}
                 </motion.h1>
 
                 <motion.p
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{
                     opacity: stage === "details" ? 1 : 0,
-                    y: stage === "details" ? 0 : 10,
+                    y: stage === "details" ? 0 : 12,
                   }}
                   transition={{
-                    duration: 0.7,
-                    delay: stage === "details" ? 0.28 : 0,
+                    duration: 0.65,
+                    delay: stage === "details" ? 0.78 : 0,
                     ease: [0.16, 1, 0.3, 1],
                   }}
                   className="text-[10.5px] sm:text-xs md:text-base text-white/80 font-sans font-normal leading-snug mb-1.5 sm:mb-5 line-clamp-2 sm:line-clamp-none"
                 >
-                  100% natural tofu cat litter made from food-grade soybean fiber. Fast clumping, 99.9% dust-free, and flushable.
+                  {currentItem.id === "clean-bean-original"
+                    ? "100% natural tofu cat litter made from food-grade soybean fiber. Fast clumping, 99.9% dust-free, and flushable."
+                    : "Official Meow Ganics vintage art poster. High quality archival print on heavy matte paper."}
                 </motion.p>
               </div>
 
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: stage === "details" ? 1 : 0 }}
-                transition={{ duration: 0.5, delay: stage === "details" ? 0.35 : 0 }}
+                transition={{ duration: 0.5, delay: stage === "details" ? 0.88 : 0 }}
                 className="relative z-10 border-t border-dashed border-white/20 w-full my-1 sm:my-3"
               />
 
-              {/* Price & Add to Cart */}
+              {/* Price & Add to Cart (Staggers in at the end) */}
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{
                   opacity: stage === "details" ? 1 : 0,
-                  y: stage === "details" ? 0 : 10,
+                  y: stage === "details" ? 0 : 12,
                 }}
                 transition={{
-                  duration: 0.7,
-                  delay: stage === "details" ? 0.38 : 0,
+                  duration: 0.65,
+                  delay: stage === "details" ? 0.95 : 0,
                   ease: [0.16, 1, 0.3, 1],
                 }}
                 className="relative z-10 flex items-center justify-between gap-3 sm:gap-4 pt-0.5"
@@ -776,12 +1061,12 @@ export default function HeroScrollExperience() {
                     Price
                   </span>
                   <span className="text-lg sm:text-3xl md:text-4xl font-heading font-black text-white tracking-tight">
-                    $19.99
+                    {currentItem.price}
                   </span>
                 </div>
 
                 <button
-                  onClick={handleProductDetailsAddToCart}
+                  onClick={() => handleQuickAdd(currentItem)}
                   className={`flex-1 py-2 sm:py-3.5 px-3.5 sm:px-6 rounded-full font-heading font-black text-xs sm:text-sm md:text-base flex items-center justify-center gap-1.5 sm:gap-2 hover:scale-105 active:scale-95 transition-all shadow-[0_8px_25px_rgba(255,255,255,0.22)] cursor-pointer ${
                     addedAnimation
                       ? "bg-[#2B7A5D] text-white"
@@ -807,14 +1092,14 @@ export default function HeroScrollExperience() {
             </motion.div>
           </motion.div>
 
-          {/* ── Carousel Mini-Headline on Top Left (Visible only in stage === 'carousel') ── */}
+          {/* ── Carousel Mini-Headline on Left Center (Visible only in stage === 'carousel') ── */}
           <div
-            className={`hidden md:block absolute z-40 pointer-events-auto shrink-0 max-w-[360px] transition-opacity duration-500 ${
+            className={`hidden md:block absolute z-40 pointer-events-auto shrink-0 max-w-[360px] -translate-y-1/2 transition-opacity duration-500 ${
               stage !== "carousel" ? "opacity-0 pointer-events-none" : "opacity-100"
             }`}
             style={{
-              left: "max(1.5rem, calc(50% - 510px))",
-              bottom: "calc(50% + 128px)",
+              left: "max(2.5rem, calc(50% - 540px))",
+              top: "50%",
             }}
           >
             <AnimatePresence mode="wait">
@@ -839,32 +1124,59 @@ export default function HeroScrollExperience() {
                   <div className="flex items-center gap-2.5 sm:gap-3 mt-2 sm:mt-2.5">
                     <button
                       onClick={() => {
-                        setStage("details");
+                        if (!currentItem.isComingSoon) {
+                          setStage("details");
+                        }
                       }}
-                      className="px-4 sm:px-5 py-1.5 sm:py-2 bg-white text-brand-black rounded-full font-heading font-black text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_4px_18px_rgba(255,255,255,0.18)] cursor-pointer"
+                      className={`px-4 sm:px-5 py-1.5 sm:py-2 rounded-full font-heading font-black text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_4px_18px_rgba(255,255,255,0.18)] cursor-pointer ${
+                        currentItem.isComingSoon
+                          ? "bg-white/20 text-white border border-white/30 cursor-default"
+                          : "bg-white text-brand-black"
+                      }`}
                     >
-                      Buy Now • {currentItem.price}
+                      {currentItem.isComingSoon
+                        ? `${currentItem.comingSoonDrop || "Next Drop"} • Coming Soon`
+                        : `Buy Now • ${currentItem.price}`}
                     </button>
 
-                    <button
-                      onClick={() => handleQuickAdd(currentItem)}
-                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/25 hover:border-white text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-md"
-                      aria-label={`Quick add ${currentItem.flavor}`}
-                    >
-                      <svg
-                        className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                    {!currentItem.isComingSoon && (
+                      <button
+                        onClick={() => handleQuickAdd(currentItem)}
+                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/25 hover:border-white text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-md"
+                        aria-label={`Quick add ${currentItem.flavor}`}
                       >
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                        <line x1="3" y1="6" x2="21" y2="6" />
-                        <path d="M16 10a4 4 0 0 1-8 0" />
+                        <svg
+                          className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                          <line x1="3" y1="6" x2="21" y2="6" />
+                          <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Subtle Swipe & Scroll Gesture Hint */}
+                  <div className="flex items-center gap-2 mt-3 pt-2.5 border-t border-white/10 text-white/60 text-[11px] font-mono select-none">
+                    <span className="flex items-center gap-1 text-white/80 font-semibold">
+                      <svg className="w-3.5 h-3.5 text-[#A9D3F4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                       </svg>
-                    </button>
+                      Swipe ⇄
+                    </span>
+                    <span className="text-white/30">•</span>
+                    <span className="flex items-center gap-1 text-white/80 font-semibold">
+                      <svg className="w-3.5 h-3.5 text-[#A9D3F4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                      </svg>
+                      Scroll ↕
+                    </span>
                   </div>
                 </motion.div>
               )}
@@ -874,23 +1186,20 @@ export default function HeroScrollExperience() {
           {/* ── Navigation arrows flanking the box in Carousel mode ── */}
           <motion.div
             animate={{
-              opacity: isDocked && stage === "carousel" ? 1 : 0,
+              opacity: (introPhase === "docked" || introPhase === "minimizing" || isDocked) && stage === "carousel" ? 1 : 0,
               pointerEvents: isDocked && stage === "carousel" ? "auto" : "none",
             }}
-            transition={{ duration: 0.4, delay: isDocked ? 0.2 : 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
             style={{
-              visibility: isDocked && stage === "carousel" ? "visible" : "hidden",
               top: "50%",
               transform: "translateY(-50%)",
             }}
-            className={`absolute z-40 w-[220px] sm:w-[260px] md:w-[320px] lg:w-[360px] xl:w-[380px] flex items-center justify-between pointer-events-none ${
-              !isDocked || stage !== "carousel" ? "opacity-0 invisible pointer-events-none" : ""
-            }`}
+            className="absolute z-40 w-[220px] sm:w-[260px] md:w-[320px] lg:w-[360px] xl:w-[380px] flex items-center justify-between pointer-events-none"
           >
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                handlePrev();
+                handleSlidePrev();
               }}
               aria-label="Previous product"
               className="-translate-x-1/2 w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-black/80 hover:bg-white hover:text-brand-black text-white backdrop-blur-md border border-white/25 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-[0_8px_25px_rgba(0,0,0,0.6)] pointer-events-auto"
@@ -902,7 +1211,7 @@ export default function HeroScrollExperience() {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                handleNext();
+                handleSlideNext();
               }}
               aria-label="Next product"
               className="translate-x-1/2 w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-black/80 hover:bg-white hover:text-brand-black text-white backdrop-blur-md border border-white/25 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-95 shadow-[0_8px_25px_rgba(0,0,0,0.6)] pointer-events-auto"
@@ -913,63 +1222,78 @@ export default function HeroScrollExperience() {
             </button>
           </motion.div>
 
-        </div>
+          {/* ── Mobile Carousel Headline & CTA: Positioned cleanly below the centered card ── */}
+          {stage === "carousel" && (
+            <div
+              style={{
+                top: "calc(50% + 168px)",
+              }}
+              className="md:hidden absolute z-40 pointer-events-auto w-full max-w-[340px] px-4 flex flex-col items-center text-center"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentItem.id}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.22, ease: "easeOut" }}
+                  className="flex flex-col items-center text-center w-full"
+                >
+                  <h1 className="flex flex-col items-center text-center">
+                    <span className="text-[11px] sm:text-xs font-mono font-bold uppercase tracking-[0.2em] text-white/60 mb-0.5 sm:mb-1">
+                      {currentItem.title1}
+                    </span>
+                    <span className="text-2xl sm:text-3xl font-heading font-black tracking-tight leading-tight text-white drop-shadow-md">
+                      {currentItem.title2}
+                    </span>
+                  </h1>
 
-        {/* Mobile Carousel Details: Bottom */}
-        {stage === "carousel" && (
-          <div className="md:hidden z-40 pointer-events-auto shrink-0 w-full max-w-[320px] mt-4 sm:mt-5 flex flex-col items-center text-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentItem.id}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.22, ease: "easeOut" }}
-                className="flex flex-col items-center text-center w-full"
-              >
-                <h1 className="flex flex-col items-center text-center">
-                  <span className="text-[10px] sm:text-xs font-mono font-bold uppercase tracking-[0.2em] text-white/50 mb-0.5 sm:mb-1">
-                    {currentItem.title1}
-                  </span>
-                  <span className="text-xl sm:text-2xl font-heading font-black tracking-tight leading-tight text-white drop-shadow-md">
-                    {currentItem.title2}
-                  </span>
-                </h1>
-
-                <div className="flex items-center justify-center gap-2.5 mt-2">
-                  <button
-                    onClick={() => {
-                      setStage("details");
-                    }}
-                    className="px-4 py-1.5 bg-white text-brand-black rounded-full font-heading font-black text-xs hover:scale-105 active:scale-95 transition-all shadow-[0_4px_18px_rgba(255,255,255,0.18)] cursor-pointer"
-                  >
-                    Buy Now • {currentItem.price}
-                  </button>
-
-                  <button
-                    onClick={() => handleQuickAdd(currentItem)}
-                    className="w-8 h-8 rounded-full border border-white/25 hover:border-white text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-md"
-                    aria-label={`Quick add ${currentItem.flavor}`}
-                  >
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                  <div className="flex items-center justify-center gap-3 mt-2.5 sm:mt-3">
+                    <button
+                      onClick={() => {
+                        if (!currentItem.isComingSoon) {
+                          setStage("details");
+                        }
+                      }}
+                      className={`px-5 py-2 sm:px-6 sm:py-2.5 rounded-full font-heading font-black text-sm sm:text-base hover:scale-105 active:scale-95 transition-all shadow-[0_4px_18px_rgba(255,255,255,0.18)] cursor-pointer ${
+                        currentItem.isComingSoon
+                          ? "bg-white/20 text-white border border-white/30 cursor-default"
+                          : "bg-white text-brand-black"
+                      }`}
                     >
-                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                      <line x1="3" y1="6" x2="21" y2="6" />
-                      <path d="M16 10a4 4 0 0 1-8 0" />
-                    </svg>
-                  </button>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        )}
+                      {currentItem.isComingSoon
+                        ? `${currentItem.comingSoonDrop || "Next Drop"} • Coming Soon`
+                        : `Buy Now • ${currentItem.price}`}
+                    </button>
+
+                    {!currentItem.isComingSoon && (
+                      <button
+                        onClick={() => handleQuickAdd(currentItem)}
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/25 hover:border-white text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-md"
+                        aria-label={`Quick add ${currentItem.flavor}`}
+                      >
+                        <svg
+                          className="w-4 h-4 sm:w-4.5 sm:h-4.5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                          <line x1="3" y1="6" x2="21" y2="6" />
+                          <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          )}
+
+        </div>
       </motion.div>
 
       {/* ══════════════════════════════════════════════════════════════════════════════════════
@@ -978,9 +1302,9 @@ export default function HeroScrollExperience() {
       <div className="relative z-40 max-w-7xl mx-auto w-full pb-3 sm:pb-4 px-4 sm:px-8 md:px-12 flex items-center justify-between text-xs text-white/50 pointer-events-auto shrink-0">
         {/* Left Action / Stage indicator */}
         <div className="flex items-center">
-          {!isDocked ? (
+          {introPhase === "hero" ? (
             <button
-              onClick={() => setIsDocked(true)}
+              onClick={handleNext}
               className="flex items-center gap-2 text-brand-black font-heading font-bold cursor-pointer hover:opacity-90 transition-all bg-brand-white/80 backdrop-blur-sm px-3.5 sm:px-4 py-1.5 rounded-full border border-brand-black/20 shadow-sm text-xs"
             >
               <span className="w-2 h-2 rounded-full bg-brand-black animate-pulse" />
@@ -990,53 +1314,66 @@ export default function HeroScrollExperience() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
             </button>
-          ) : stage === "details" ? (
-            <div className="flex items-center gap-2 text-white/80 font-heading text-xs">
+          ) : introPhase === "spotlight" ? (
+            <button
+              onClick={handleNext}
+              className="flex items-center gap-2 text-white font-heading font-bold cursor-pointer hover:opacity-90 transition-all bg-white/15 backdrop-blur-sm px-3.5 sm:px-4 py-1.5 rounded-full border border-white/20 shadow-sm text-xs"
+            >
               <span className="w-2 h-2 rounded-full bg-[#A9D3F4] animate-pulse" />
-              <span>Product Details • Clean Bean Original</span>
+              <span>Scroll down to continue</span>
+              <svg className="w-3.5 h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </button>
+          ) : stage === "details" ? (
+            <div className="flex items-center gap-2 text-white/80 font-heading text-xs truncate max-w-[180px] sm:max-w-none">
+              <span className="w-2 h-2 rounded-full bg-[#A9D3F4] animate-pulse shrink-0" />
+              <span className="truncate">{currentItem.flavor}</span>
             </div>
           ) : stage === "focus" ? (
             <div className="flex items-center gap-2 text-white/80 font-heading text-xs">
               <span className="w-2 h-2 rounded-full bg-[#A9D3F4] animate-pulse" />
-              <span>Focus • Scroll again for Details</span>
+              <span>Focus • Scroll for Details</span>
             </div>
           ) : (
-            <div className="hidden sm:flex items-center gap-2 text-white/60 font-heading text-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#A9D3F4] animate-pulse" />
-              <span>Scroll or swipe to continue</span>
+            <div className="flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 backdrop-blur-md text-white/90 text-[11px] sm:text-xs font-heading font-medium tracking-wide shadow-sm transition-all select-none">
+              <span className="w-2 h-2 rounded-full bg-[#A9D3F4] animate-pulse shrink-0 shadow-[0_0_8px_#A9D3F4]" />
+              <span className="flex items-center gap-1.5">
+                <span>Swipe</span>
+                <span className="text-white/60 font-mono text-[10px]">⇄</span>
+                <span className="text-white/40">•</span>
+                <span>Scroll</span>
+                <span className="text-white/60 font-mono text-[10px]">↕</span>
+              </span>
             </div>
           )}
         </div>
 
-        {/* Center/Right Navigation Dots & Step Counter (7 Steps Total) */}
+        {/* Center/Right Navigation Dots & Step Counter */}
         <motion.div
           animate={{
-            opacity: isDocked ? 1 : 0,
-            pointerEvents: isDocked ? "auto" : "none",
+            opacity: introPhase === "docked" || introPhase === "minimizing" || isDocked ? 1 : 0,
+            pointerEvents: introPhase === "docked" || isDocked ? "auto" : "none",
           }}
           transition={{ duration: 0.5 }}
-          style={{
-            opacity: isDocked ? 1 : 0,
-            visibility: isDocked ? "visible" : "hidden",
-          }}
-          className={`flex items-center gap-2.5 sm:gap-4 ${
-            !isDocked ? "opacity-0 pointer-events-none invisible" : ""
-          }`}
+          className="flex items-center gap-2.5 sm:gap-4"
         >
-          {/* Scroll cue matching Oryzo */}
-          <div
-            onClick={handleNext}
-            className="hidden md:flex items-center gap-2 text-white/50 text-[10px] font-mono tracking-widest uppercase select-none cursor-pointer hover:text-white transition-colors"
-          >
-            <span className="w-4.5 h-4.5 rounded-full border border-white/20 flex items-center justify-center text-white/70">
-              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </span>
-            <span>{stage === "details" ? "Product Ready" : "Scroll to continue"}</span>
-          </div>
+          {/* Scroll & Swipe cue matching Oryzo - shown only when not in final details mode */}
+          {stage !== "details" && (
+            <div
+              onClick={handleNext}
+              className="hidden md:flex items-center gap-2 text-white/75 text-[10px] sm:text-[11px] font-mono tracking-wider uppercase select-none cursor-pointer hover:text-white transition-colors bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1 rounded-full backdrop-blur-sm"
+            >
+              <span className="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-white/80">
+                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+              <span>Scroll ↕ or Swipe ⇄</span>
+            </div>
+          )}
 
-          {/* Dots for the 5 carousel slides */}
+          {/* Dots for the carousel slides */}
           <div className="flex items-center gap-1.5 md:pl-3 md:border-l md:border-white/15">
             {ORYZO_ITEMS.map((_, i) => {
               const isSelected = stage === "carousel" ? activeIndex === i : i === ORYZO_ITEMS.length - 1;
@@ -1068,21 +1405,25 @@ export default function HeroScrollExperience() {
         {/* Back to top hill button */}
         <motion.button
           animate={{
-            opacity: isDocked ? 1 : 0,
-            pointerEvents: isDocked ? "auto" : "none",
+            opacity: introPhase === "docked" ? 1 : 0,
+            pointerEvents: introPhase === "docked" ? "auto" : "none",
           }}
           transition={{ duration: 0.5 }}
           style={{
-            opacity: isDocked ? 1 : 0,
-            visibility: isDocked ? "visible" : "hidden",
+            visibility: introPhase === "docked" ? "visible" : "hidden",
           }}
           onClick={() => {
             setStage("carousel");
             setActiveIndex(0);
             setIsDocked(false);
+            setIntroPhase("spotlight");
+            if (introTimeoutRef.current) clearTimeout(introTimeoutRef.current);
+            introTimeoutRef.current = setTimeout(() => {
+              setIntroPhase("hero");
+            }, 500);
           }}
           className={`hover:text-white text-white/60 transition-colors cursor-pointer text-[10px] sm:text-[11px] flex items-center gap-1 font-heading font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 px-2.5 sm:px-3.5 py-1.5 rounded-full border border-white/10 ${
-            !isDocked ? "opacity-0 pointer-events-none invisible" : ""
+            introPhase !== "docked" ? "opacity-0 pointer-events-none invisible" : ""
           }`}
         >
           <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
