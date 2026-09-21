@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import InteractiveCat from "./InteractiveCat";
+import HeroBackground from "./HeroBackground";
 import { useCart } from "@/context/CartContext";
 
 export interface OryzoItem {
@@ -107,19 +108,13 @@ export default function HeroScrollExperience() {
   const TOTAL_SLIDES = ORYZO_ITEMS.length;
 
   const handleSlideNext = useCallback(() => {
-    if (introPhase !== "docked") {
-      setIntroPhase("docked");
-      setIsDocked(true);
-    }
+    if (introPhase !== "docked") return;
     setSlideDir(1);
     setActiveIndex((prev) => (prev < ORYZO_ITEMS.length - 1 ? prev + 1 : 0));
   }, [introPhase]);
 
   const handleSlidePrev = useCallback(() => {
-    if (introPhase !== "docked") {
-      setIntroPhase("docked");
-      setIsDocked(true);
-    }
+    if (introPhase !== "docked") return;
     setSlideDir(-1);
     setActiveIndex((prev) => (prev > 0 ? prev - 1 : ORYZO_ITEMS.length - 1));
   }, [introPhase]);
@@ -185,10 +180,7 @@ export default function HeroScrollExperience() {
   }, [introPhase, stage, isDocked]);
 
   const handleSelectIndex = useCallback((newIndex: number) => {
-    if (introPhase !== "docked") {
-      setIntroPhase("docked");
-      setIsDocked(true);
-    }
+    if (introPhase !== "docked") return;
     setStage("carousel");
     setActiveIndex((prev) => {
       if (newIndex === prev) return prev;
@@ -229,8 +221,8 @@ export default function HeroScrollExperience() {
       return;
     }
 
-    // Trackpad Horizontal Swipe (e.g. 2-finger swipe left/right on laptop trackpad)
-    if (stage === "carousel" && Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 16) {
+    // Trackpad Horizontal Swipe (e.g. 2-finger swipe left/right on laptop trackpad) - only in docked carousel
+    if (introPhase === "docked" && stage === "carousel" && Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 16) {
       isWheelDebounced.current = true;
 
       if (e.deltaX > 0) {
@@ -329,8 +321,8 @@ export default function HeroScrollExperience() {
       introPhase !== "docked" ? 1800 : stage !== "carousel" ? 800 : 480;
 
     if (Math.abs(diffX) >= Math.abs(diffY)) {
-      // Horizontal swipe: change slides in carousel
-      if (Math.abs(diffX) > minSwipeDist) {
+      // Horizontal swipe: change slides in carousel (only when docked)
+      if (introPhase === "docked" && Math.abs(diffX) > minSwipeDist) {
         touchCooldownRef.current = true;
         setTimeout(() => {
           touchCooldownRef.current = false;
@@ -361,9 +353,9 @@ export default function HeroScrollExperience() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") {
-        actionsRef.current.handleSlideNext();
+        if (introPhase === "docked") actionsRef.current.handleSlideNext();
       } else if (e.key === "ArrowLeft") {
-        actionsRef.current.handleSlidePrev();
+        if (introPhase === "docked") actionsRef.current.handleSlidePrev();
       } else if (e.key === "ArrowDown") {
         actionsRef.current.handleNext();
       } else if (e.key === "ArrowUp") {
@@ -372,7 +364,7 @@ export default function HeroScrollExperience() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [introPhase]);
 
   // Quick add to cart
   const handleQuickAdd = (item: OryzoItem) => {
@@ -439,7 +431,7 @@ export default function HeroScrollExperience() {
       introPhase !== "docked" ? 1800 : stage !== "carousel" ? 800 : 480;
 
     if (Math.abs(diffX) >= Math.abs(diffY)) {
-      if (Math.abs(diffX) > minSwipeDist) {
+      if (introPhase === "docked" && Math.abs(diffX) > minSwipeDist) {
         touchCooldownRef.current = true;
         setTimeout(() => {
           touchCooldownRef.current = false;
@@ -468,31 +460,44 @@ export default function HeroScrollExperience() {
       onTouchEnd={onTouchEnd}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
-      className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#111317] select-none flex flex-col justify-between"
+      className={`fixed inset-0 w-screen h-screen overflow-hidden select-none flex flex-col justify-between transition-colors duration-700 ${
+        introPhase === "hero" ? "bg-[#FEF8EA]" : "bg-[#111317]"
+      }`}
     >
-      {/* Layer 0: Sky Blue Hero Background (Crossfades away on scroll) */}
+      {/* Layer 0: Cream Hero Background with Brick Accents & Litter Pile */}
       <motion.div
+        initial={{ opacity: 1 }}
         animate={{ opacity: introPhase === "hero" ? 1 : 0 }}
-        transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute inset-0 bg-brand-blue pointer-events-none z-0"
-      />
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        className={`absolute inset-0 overflow-hidden z-0 ${
+          introPhase === "hero" ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0 invisible"
+        }`}
+      >
+        <HeroBackground />
+      </motion.div>
 
       {/* Layer 0.5: Rich Oryzo-Style Warm Dark Background Gradient */}
       <motion.div
+        initial={{ opacity: 0 }}
         animate={{
           opacity: introPhase === "hero" ? 0 : stage !== "carousel" ? 1 : 0.88,
         }}
         transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute inset-0 bg-gradient-to-r from-[#241711] via-[#161311] to-[#0c0d0f] pointer-events-none z-0"
+        className={`absolute inset-0 bg-gradient-to-r from-[#241711] via-[#161311] to-[#0c0d0f] pointer-events-none z-0 ${
+          introPhase === "hero" ? "opacity-0 invisible pointer-events-none" : ""
+        }`}
       />
 
       {/* ── Dynamic End-to-End Aurora Edge & Corner Aura (No border lines, full screen bleed) ── */}
       <motion.div
+        initial={{ opacity: 0 }}
         animate={{
           opacity: introPhase === "spotlight" || introPhase === "stabilizing" ? 1 : 0,
         }}
         transition={{ duration: 0.85, ease: "easeInOut" }}
-        className="fixed inset-0 pointer-events-none z-35 overflow-hidden"
+        className={`fixed inset-0 pointer-events-none z-35 overflow-hidden ${
+          introPhase === "hero" ? "opacity-0 invisible pointer-events-none" : ""
+        }`}
       >
         <motion.div
           animate={{
@@ -536,7 +541,7 @@ export default function HeroScrollExperience() {
       </motion.div>
 
       {/* Layer 1: Ambient Background Color Glow (Left Warm Espresso Bloom, disabled in spotlight to preserve dark studio) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      <div className={`absolute inset-0 pointer-events-none overflow-hidden z-0 ${introPhase === "hero" ? "hidden" : ""}`}>
         <motion.div
           animate={{
             backgroundColor: stage !== "carousel" ? "#4a2a19" : currentItem.accentColor,
@@ -556,60 +561,30 @@ export default function HeroScrollExperience() {
         />
       </div>
 
-      {/* Layer 2: White Wave Curve Hill */}
-      <motion.div
-        animate={{
-          opacity: introPhase === "hero" ? 1 : 0,
-          y: introPhase === "hero" ? 0 : 80,
-        }}
-        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute bottom-0 left-0 w-full h-[36vh] z-10 pointer-events-none overflow-hidden"
-      >
-        <div className="relative w-full h-full">
-          <Image
-            src="/white_curve_transparent.svg"
-            alt="Wave Curve Mask"
-            fill
-            className="object-fill object-bottom"
-            priority
-          />
-        </div>
-      </motion.div>
-
-      {/* Layer 3: Interactive Cat on Right Hill */}
-      <div className="absolute inset-0 px-4 sm:px-8 md:px-12 lg:px-16 xl:px-24 z-30 pointer-events-none overflow-visible flex items-end justify-end">
-        <motion.div
-          animate={{
-            opacity: introPhase === "hero" ? 1 : 0,
-            y: introPhase === "hero" ? 0 : 70,
-          }}
-          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-          className="w-1/2 flex justify-end items-end pb-[calc(24vh-6px)] sm:pb-[calc(25vh-6px)] md:pb-[calc(26vh-6px)] lg:pb-[calc(26.5vh-6px)] pointer-events-none pr-1 sm:pr-4 md:pr-10 lg:pr-16 xl:pr-20"
-        >
-          <div className="w-[260px] sm:w-[340px] md:w-[420px] lg:w-[520px] xl:w-[640px] 2xl:w-[740px] aspect-[16/9] relative pointer-events-auto hover:scale-105 transition-transform duration-300">
-            <InteractiveCat />
-          </div>
-        </motion.div>
-      </div>
-
       {/* Layer 4: Global Header / Navbar */}
-      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between h-20 sm:h-24 md:h-28 pointer-events-auto shrink-0 pt-2 sm:pt-3">
-        <Link href="/" className="flex items-center cursor-pointer group h-full py-0.5 shrink-0">
+      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between min-h-[86px] sm:min-h-[96px] md:min-h-[110px] pointer-events-auto shrink-0 pt-2 sm:pt-3">
+        {/* Left Aligned Big Logo */}
+        <Link href="/" className="flex items-center cursor-pointer group shrink-0">
           <Image
             src="/meowganics_logo_transparent.png"
             alt="Meow Ganics Logo"
             width={1776}
             height={725}
-            className="h-full w-auto max-h-[80px] sm:max-h-[96px] md:max-h-[110px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]"
+            className="w-[200px] xs:w-[215px] sm:w-[235px] md:w-[260px] lg:w-[290px] h-auto max-h-[86px] sm:max-h-[96px] md:max-h-[108px] lg:max-h-[120px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_3px_8px_rgba(0,0,0,0.1)]"
             priority
           />
         </Link>
 
-        <div className="flex items-center gap-3 md:gap-4">
+        {/* Right Actions: Cart & Shop Litter */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Shopping Bag Icon */}
           <button
             onClick={openCart}
-            className="relative p-2.5 md:p-3 hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer bg-white/10 hover:bg-white/20 text-white rounded-full border border-white/20 shadow-md backdrop-blur-md"
+            className={`relative p-2 sm:p-2.5 md:p-3 hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer rounded-full border shadow-sm ${
+              introPhase === "hero"
+                ? "bg-black/5 hover:bg-black/10 text-black border-black/20"
+                : "bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-md"
+            }`}
             aria-label="Open Cart"
           >
             <svg
@@ -625,7 +600,13 @@ export default function HeroScrollExperience() {
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
-            <span className="absolute -top-1 -right-1 bg-white text-brand-black text-[10px] md:text-xs font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-md">
+            <span
+              className={`absolute -top-1 -right-1 text-[10px] md:text-xs font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-md ${
+                introPhase === "hero"
+                  ? "bg-black text-white"
+                  : "bg-white text-brand-black"
+              }`}
+            >
               {totalItems}
             </span>
           </button>
@@ -637,8 +618,10 @@ export default function HeroScrollExperience() {
               setIsDocked(true);
               setStage("details");
             }}
-            className={`flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-heading font-bold text-xs md:text-sm hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer ${
-              stage === "details" && isDocked
+            className={`hidden xs:flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full font-heading font-bold text-xs md:text-sm hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer ${
+              introPhase === "hero"
+                ? "bg-black text-white hover:bg-black/85"
+                : stage === "details" && isDocked
                 ? "bg-[#A9D3F4] text-brand-black ring-2 ring-white/50"
                 : "bg-white text-brand-black"
             }`}
@@ -658,14 +641,14 @@ export default function HeroScrollExperience() {
             x:
               introPhase === "hero"
                 ? isMobile
-                  ? "-23vw"
-                  : "-24vw"
+                  ? "-32vw"
+                  : "-28vw"
                 : "0vw",
             y:
               introPhase === "hero"
                 ? isMobile
-                  ? "18vh"
-                  : "12vh"
+                  ? "30vh"
+                  : "18vh"
                 : "0vh",
             rotate:
               introPhase === "hero"
@@ -676,12 +659,12 @@ export default function HeroScrollExperience() {
             scale:
               introPhase === "hero"
                 ? isMobile
-                  ? 0.72
-                  : 0.92
+                  ? 0.70
+                  : 1.0
                 : introPhase === "spotlight" || introPhase === "stabilizing"
                 ? isMobile
-                  ? 0.96
-                  : 1.20
+                  ? 1.10
+                  : 1.30
                 : 0,
             opacity:
               introPhase === "hero" || introPhase === "spotlight" || introPhase === "stabilizing"
@@ -711,7 +694,7 @@ export default function HeroScrollExperience() {
               ease: "easeOut",
             },
           }}
-          className="relative w-[58vw] sm:w-[64vw] md:w-auto h-[36vh] sm:h-[40vh] md:h-[44vh] max-w-[260px] sm:max-w-[320px] md:max-w-none max-h-[330px] sm:max-h-[360px] md:max-h-[400px] aspect-[926/1004] origin-center flex items-center justify-center pointer-events-auto"
+          className="relative w-[44vw] sm:w-[36vw] md:w-[26vw] lg:w-[22vw] max-w-[190px] sm:max-w-[270px] md:max-w-[300px] lg:max-w-[330px] aspect-[926/1004] origin-center flex items-center justify-center pointer-events-auto"
         >
           {/* ── Studio Ambient Spotlight Bloom behind the Product Bag ── */}
           <motion.div
@@ -735,7 +718,7 @@ export default function HeroScrollExperience() {
             }}
             className={`${
               introPhase === "hero" ? "animate-float cursor-pointer hover:scale-105" : ""
-            } drop-shadow-[0_25px_45px_rgba(0,0,0,0.4)] w-full h-full block relative z-10 transition-transform`}
+            } drop-shadow-[0_20px_35px_rgba(0,0,0,0.35)] w-full h-full block relative z-10 transition-transform`}
           >
             <Image
               src="/product-bag.png"
@@ -746,6 +729,11 @@ export default function HeroScrollExperience() {
               priority
             />
           </div>
+
+          {/* Floor contact shadow for bag in hero mode */}
+          {introPhase === "hero" && (
+            <div className="absolute -bottom-2 inset-x-4 h-3.5 bg-black/35 blur-sm rounded-full pointer-events-none z-0" />
+          )}
         </motion.div>
       </div>
 
@@ -756,13 +744,16 @@ export default function HeroScrollExperience() {
           Step 3 (stage === 'details'): Opens full screen, product moves right, left glass reveals (Image 3)
           ══════════════════════════════════════════════════════════════════════════════════════ */}
       <motion.div
+        initial={{ opacity: 0 }}
         animate={{
           opacity: introPhase === "docked" || introPhase === "minimizing" ? 1 : 0,
           scale: introPhase === "docked" || introPhase === "minimizing" ? 1 : 0.94,
           pointerEvents: introPhase === "docked" ? "auto" : "none",
         }}
         transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute inset-0 z-30 w-full h-full flex flex-col justify-center items-center overflow-visible"
+        className={`absolute inset-0 z-30 w-full h-full flex flex-col justify-center items-center overflow-visible ${
+          introPhase !== "docked" && introPhase !== "minimizing" ? "opacity-0 pointer-events-none invisible" : ""
+        }`}
       >
         <div className="relative w-full h-full flex items-center justify-center overflow-visible">
 
@@ -1185,6 +1176,7 @@ export default function HeroScrollExperience() {
 
           {/* ── Navigation arrows flanking the box in Carousel mode ── */}
           <motion.div
+            initial={{ opacity: 0 }}
             animate={{
               opacity: (introPhase === "docked" || introPhase === "minimizing" || isDocked) && stage === "carousel" ? 1 : 0,
               pointerEvents: isDocked && stage === "carousel" ? "auto" : "none",
@@ -1194,7 +1186,9 @@ export default function HeroScrollExperience() {
               top: "50%",
               transform: "translateY(-50%)",
             }}
-            className="absolute z-40 w-[220px] sm:w-[260px] md:w-[320px] lg:w-[360px] xl:w-[380px] flex items-center justify-between pointer-events-none"
+            className={`absolute z-40 w-[220px] sm:w-[260px] md:w-[320px] lg:w-[360px] xl:w-[380px] flex items-center justify-between pointer-events-none ${
+              introPhase !== "docked" && introPhase !== "minimizing" ? "opacity-0 invisible pointer-events-none" : ""
+            }`}
           >
             <button
               onClick={(e) => {
@@ -1299,22 +1293,31 @@ export default function HeroScrollExperience() {
       {/* ══════════════════════════════════════════════════════════════════════════════════════
           LAYER 7: BOTTOM CONTROLS & CONTINUOUS SCROLL STATUS BAR
           ══════════════════════════════════════════════════════════════════════════════════════ */}
-      <div className="relative z-40 max-w-7xl mx-auto w-full pb-3 sm:pb-4 px-4 sm:px-8 md:px-12 flex items-center justify-between text-xs text-white/50 pointer-events-auto shrink-0">
+      {/* ── Fixed Center-Bottom Explore Button (Hero Mode) ── */}
+      {introPhase === "hero" && (
+        <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 inset-x-0 mx-auto w-fit z-50 flex items-center justify-center pointer-events-auto">
+          <button
+            onClick={handleNext}
+            className="flex items-center gap-2 text-brand-black font-heading font-bold cursor-pointer hover:scale-105 active:scale-95 transition-all bg-brand-white/90 hover:bg-brand-white backdrop-blur-md px-4 sm:px-5 py-2 rounded-full border border-brand-black/20 shadow-md text-xs sm:text-sm"
+          >
+            <span className="w-2 h-2 rounded-full bg-brand-black animate-pulse" />
+            <span>Scroll down to explore collection</span>
+            <svg className="w-3.5 h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════════════════════
+          LAYER 7: BOTTOM CONTROLS & CONTINUOUS SCROLL STATUS BAR (Spotlight / Carousel Modes)
+          ══════════════════════════════════════════════════════════════════════════════════════ */}
+      <div className={`relative z-40 max-w-7xl mx-auto w-full px-4 sm:px-8 md:px-12 flex items-center justify-between text-xs text-white/50 pointer-events-auto shrink-0 pb-3 sm:pb-4 transition-all duration-300 ${
+        introPhase === "hero" ? "opacity-0 pointer-events-none" : "opacity-100"
+      }`}>
         {/* Left Action / Stage indicator */}
         <div className="flex items-center">
-          {introPhase === "hero" ? (
-            <button
-              onClick={handleNext}
-              className="flex items-center gap-2 text-brand-black font-heading font-bold cursor-pointer hover:opacity-90 transition-all bg-brand-white/80 backdrop-blur-sm px-3.5 sm:px-4 py-1.5 rounded-full border border-brand-black/20 shadow-sm text-xs"
-            >
-              <span className="w-2 h-2 rounded-full bg-brand-black animate-pulse" />
-              <span className="hidden sm:inline">Scroll down to explore collection</span>
-              <span className="sm:hidden">Explore Box</span>
-              <svg className="w-3.5 h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </button>
-          ) : introPhase === "spotlight" ? (
+          {introPhase === "spotlight" ? (
             <button
               onClick={handleNext}
               className="flex items-center gap-2 text-white font-heading font-bold cursor-pointer hover:opacity-90 transition-all bg-white/15 backdrop-blur-sm px-3.5 sm:px-4 py-1.5 rounded-full border border-white/20 shadow-sm text-xs"
