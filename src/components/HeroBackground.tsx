@@ -37,18 +37,19 @@ export default function HeroBackground() {
         <div className="w-16 sm:w-22 h-3 sm:h-4 bg-[#F4EBD8] rounded-[3px] ml-5" />
       </div>
 
-      {/* ── Seamless Taller White Floor Base (Generous white stage) ── */}
-      <div className="absolute bottom-0 inset-x-0 h-[22vh] sm:h-[24vh] md:h-[26vh] bg-white z-0" />
+      {/* ── Seamless White Floor Base ── */}
+      <div className="absolute bottom-0 inset-x-0 h-[12vh] sm:h-[14vh] md:h-[16vh] bg-white z-0" />
 
-      {/* ── Complete Bottom Artwork (Cover End-to-End Layout Elevated on Taller White Floor) ── */}
-      <div className="absolute bottom-[16vh] sm:bottom-[18vh] md:bottom-[20vh] inset-x-0 w-full flex justify-center items-end pointer-events-none z-10 overflow-hidden">
-        <div className="relative w-full aspect-[1672/755] min-h-[240px] max-h-[64vh] sm:max-h-[66vh] md:max-h-[68vh]">
+      {/* ── Complete Bottom Artwork (Cover End-to-End Layout Elevated on White Floor) ── */}
+      <div className="absolute bottom-[8vh] sm:bottom-[10vh] md:bottom-[12vh] inset-x-0 w-full flex justify-center items-end pointer-events-none z-10 overflow-hidden">
+        <div className="relative w-full aspect-[1672/755] min-h-[260px] sm:min-h-[320px] md:min-h-[380px] max-h-[66vh] sm:max-h-[68vh] md:max-h-[72vh]">
           <Image
             src="/bottom_scene_end_to_end.png"
             alt="Blue Litter Hills & Peeking Cat"
             fill
             sizes="100vw"
-            className="object-cover object-bottom w-full h-full"
+            className="object-cover w-full h-full"
+            style={{ objectPosition: "58% bottom" }}
             priority
           />
         </div>

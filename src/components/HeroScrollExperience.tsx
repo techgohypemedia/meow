@@ -562,7 +562,7 @@ export default function HeroScrollExperience() {
       </div>
 
       {/* Layer 4: Global Header / Navbar */}
-      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between min-h-[86px] sm:min-h-[96px] md:min-h-[110px] pointer-events-auto shrink-0 pt-2 sm:pt-3">
+      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between min-h-[86px] sm:min-h-[100px] md:min-h-[118px] pointer-events-auto shrink-0 pt-2 sm:pt-3">
         {/* Left Aligned Big Logo */}
         <Link href="/" className="flex items-center cursor-pointer group shrink-0">
           <Image
@@ -570,7 +570,7 @@ export default function HeroScrollExperience() {
             alt="Meow Ganics Logo"
             width={1776}
             height={725}
-            className="w-[200px] xs:w-[215px] sm:w-[235px] md:w-[260px] lg:w-[290px] h-auto max-h-[86px] sm:max-h-[96px] md:max-h-[108px] lg:max-h-[120px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_3px_8px_rgba(0,0,0,0.1)]"
+            className="w-[200px] xs:w-[215px] sm:w-[240px] md:w-[300px] lg:w-[340px] xl:w-[370px] h-auto max-h-[86px] sm:max-h-[96px] md:max-h-[120px] lg:max-h-[136px] xl:max-h-[148px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_3px_8px_rgba(0,0,0,0.1)]"
             priority
           />
         </Link>
@@ -580,15 +580,15 @@ export default function HeroScrollExperience() {
           {/* Shopping Bag Icon */}
           <button
             onClick={openCart}
-            className={`relative p-2 sm:p-2.5 md:p-3 hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer rounded-full border shadow-sm ${
+            className={`relative p-2.5 sm:p-3 hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer rounded-full border shadow-lg ${
               introPhase === "hero"
-                ? "bg-black/5 hover:bg-black/10 text-black border-black/20"
+                ? "bg-white hover:bg-white/90 text-brand-black border-black/15 shadow-[0_4px_16px_rgba(0,0,0,0.18)]"
                 : "bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-md"
             }`}
             aria-label="Open Cart"
           >
             <svg
-              className="w-5 h-5 md:w-5.5 md:h-5.5"
+              className="w-5 h-5"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -601,7 +601,7 @@ export default function HeroScrollExperience() {
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
             <span
-              className={`absolute -top-1 -right-1 text-[10px] md:text-xs font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-md ${
+              className={`absolute -top-1 -right-1 text-[10px] font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-md ${
                 introPhase === "hero"
                   ? "bg-black text-white"
                   : "bg-white text-brand-black"
@@ -641,14 +641,14 @@ export default function HeroScrollExperience() {
             x:
               introPhase === "hero"
                 ? isMobile
-                  ? "-32vw"
-                  : "-28vw"
+                  ? "-24vw"
+                  : "-34vw"
                 : "0vw",
             y:
               introPhase === "hero"
                 ? isMobile
                   ? "30vh"
-                  : "18vh"
+                  : "22vh"
                 : "0vh",
             rotate:
               introPhase === "hero"
@@ -660,7 +660,7 @@ export default function HeroScrollExperience() {
               introPhase === "hero"
                 ? isMobile
                   ? 0.70
-                  : 1.0
+                  : 0.90
                 : introPhase === "spotlight" || introPhase === "stabilizing"
                 ? isMobile
                   ? 1.10
