@@ -461,7 +461,7 @@ export default function HeroScrollExperience() {
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       className={`fixed inset-0 w-screen h-screen overflow-hidden select-none flex flex-col justify-between transition-colors duration-700 ${
-        introPhase === "hero" ? "bg-[#FEF8EA]" : "bg-[#111317]"
+        introPhase === "hero" ? "bg-[#FEFAEF]" : "bg-[#111317]"
       }`}
     >
       {/* Layer 0: Cream Hero Background with Brick Accents & Litter Pile */}
@@ -641,8 +641,8 @@ export default function HeroScrollExperience() {
             x:
               introPhase === "hero"
                 ? isMobile
-                  ? "-24vw"
-                  : "-28vw"
+                  ? "-32vw"
+                  : "-34vw"
                 : "0vw",
             y:
               introPhase === "hero"
@@ -905,32 +905,31 @@ export default function HeroScrollExperience() {
             </motion.div>
 
             {/* Step 2 & Step 3: THE IMAGE EXPANDS SLOWLY & SMOOTHLY TO CAPTURE THE FULL SCREEN */}
-            {stage !== "carousel" && (
+            <motion.div
+              animate={{
+                opacity: stage !== "carousel" ? 1 : 0,
+              }}
+              transition={{
+                duration: 0.85,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-hidden"
+            >
+              <Image
+                src={currentItem.image}
+                alt={currentItem.flavor}
+                fill
+                sizes="100vw"
+                className="object-cover object-center w-full h-full"
+                priority
+              />
+              {/* Subtle cinematic left vignette for the glass card */}
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  duration: 0.85,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-hidden"
-              >
-                <Image
-                  src={currentItem.image}
-                  alt={currentItem.flavor}
-                  fill
-                  sizes="100vw"
-                  className="object-cover object-center w-full h-full"
-                />
-                {/* Subtle cinematic left vignette for the glass card */}
-                <motion.div
-                  animate={{ opacity: stage === "details" ? 1 : 0 }}
-                  transition={{ duration: 0.7, ease: "easeOut" }}
-                  className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-black/10 pointer-events-none"
-                />
-              </motion.div>
-            )}
+                animate={{ opacity: stage === "details" ? 1 : 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-black/10 pointer-events-none"
+              />
+            </motion.div>
 
             {/* Step 3: Left Side (Desktop) / Lower-Center (Mobile) Product Panel */}
             <motion.div
