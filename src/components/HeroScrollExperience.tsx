@@ -641,8 +641,8 @@ export default function HeroScrollExperience() {
             x:
               introPhase === "hero"
                 ? isMobile
-                  ? "-32vw"
-                  : "-34vw"
+                  ? "-26vw"
+                  : "-26vw"
                 : "0vw",
             y:
               introPhase === "hero"

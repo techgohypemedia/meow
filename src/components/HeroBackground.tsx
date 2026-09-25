@@ -42,9 +42,9 @@ export default function HeroBackground() {
 
       {/* ── Complete Hero Artwork (Blue Litter Hills, Peeking Cat & White Floor) ── */}
       <div className="absolute -bottom-[8vh] sm:-bottom-[10vh] md:-bottom-[12vh] inset-x-0 w-full flex justify-center items-end pointer-events-none z-10 overflow-hidden">
-        <div className="relative w-full aspect-[1672/941] min-h-[260px] sm:min-h-[320px] md:min-h-[380px] max-h-[85vh] sm:max-h-[88vh] md:max-h-[92vh]">
+        <div className="relative w-full aspect-[1755/896] min-h-[260px] sm:min-h-[320px] md:min-h-[380px] max-h-[85vh] sm:max-h-[88vh] md:max-h-[92vh]">
           <Image
-            src="/image.png"
+            src="/ChatGPT Image Sep 25, 2026, 06_00_24 PM.png"
             alt="Meow Ganics Litter Hills & Peeking Cat"
             fill
             sizes="100vw"
