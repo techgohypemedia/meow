@@ -562,15 +562,15 @@ export default function HeroScrollExperience() {
       </div>
 
       {/* Layer 4: Global Header / Navbar */}
-      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between min-h-[86px] sm:min-h-[100px] md:min-h-[118px] pointer-events-auto shrink-0 pt-2 sm:pt-3">
-        {/* Left Aligned Big Logo */}
+      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between min-h-[64px] sm:min-h-[72px] md:min-h-[80px] pointer-events-auto shrink-0 pt-2 sm:pt-3">
+        {/* Left Aligned Clean Logo */}
         <Link href="/" className="flex items-center cursor-pointer group shrink-0">
           <Image
             src="/meowganics_logo_transparent.png"
             alt="Meow Ganics Logo"
             width={1776}
             height={725}
-            className="w-[200px] xs:w-[215px] sm:w-[240px] md:w-[300px] lg:w-[340px] xl:w-[370px] h-auto max-h-[86px] sm:max-h-[96px] md:max-h-[120px] lg:max-h-[136px] xl:max-h-[148px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_3px_8px_rgba(0,0,0,0.1)]"
+            className="w-[125px] xs:w-[140px] sm:w-[155px] md:w-[175px] lg:w-[190px] h-auto max-h-[42px] sm:max-h-[48px] md:max-h-[52px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_2px_4px_rgba(0,0,0,0.08)]"
             priority
           />
         </Link>
@@ -647,8 +647,8 @@ export default function HeroScrollExperience() {
             y:
               introPhase === "hero"
                 ? isMobile
-                  ? "30vh"
-                  : "22vh"
+                  ? "26vh"
+                  : "18vh"
                 : "0vh",
             rotate:
               introPhase === "hero"
@@ -659,8 +659,8 @@ export default function HeroScrollExperience() {
             scale:
               introPhase === "hero"
                 ? isMobile
-                  ? 0.70
-                  : 0.90
+                  ? 0.76
+                  : 0.95
                 : introPhase === "spotlight" || introPhase === "stabilizing"
                 ? isMobile
                   ? 1.10
@@ -694,7 +694,7 @@ export default function HeroScrollExperience() {
               ease: "easeOut",
             },
           }}
-          className="relative w-[44vw] sm:w-[36vw] md:w-[26vw] lg:w-[22vw] max-w-[190px] sm:max-w-[270px] md:max-w-[300px] lg:max-w-[330px] aspect-[926/1004] origin-center flex items-center justify-center pointer-events-auto"
+          className="relative w-[38vw] sm:w-[30vw] md:w-[22vw] lg:w-[19vw] max-w-[160px] sm:max-w-[220px] md:max-w-[250px] lg:max-w-[280px] aspect-[1086/1448] origin-center flex items-center justify-center pointer-events-auto"
         >
           {/* ── Studio Ambient Spotlight Bloom behind the Product Bag ── */}
           <motion.div
