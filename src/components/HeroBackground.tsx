@@ -41,8 +41,23 @@ export default function HeroBackground() {
       <div className="absolute bottom-0 inset-x-0 h-[4vh] sm:h-[6vh] md:h-[8vh] bg-white z-0" />
 
       {/* ── Complete Hero Artwork (Blue Litter Hills, Peeking Cat & White Floor) ── */}
-      <div className="absolute bottom-0 inset-x-0 w-full flex justify-center items-end pointer-events-none z-10 overflow-hidden">
-        <div className="relative w-full aspect-[1920/920] min-h-[260px] sm:min-h-[300px] md:min-h-[340px] max-h-[66vh] sm:max-h-[70vh] md:max-h-[74vh]">
+      {/* Mobile view (< md: 768px): Uses the vertical portrait artwork */}
+      <div className="md:hidden absolute bottom-0 inset-x-0 w-full flex justify-center items-end pointer-events-none z-10 overflow-hidden">
+        <div className="relative w-full aspect-[941/1672] min-h-[320px] max-h-[78vh]">
+          <Image
+            src="/hero-cat-hills-mobile.png"
+            alt="Meow Ganics Litter Hills & Peeking Cat Mobile"
+            fill
+            sizes="100vw"
+            className="object-cover object-bottom w-full h-full"
+            priority
+          />
+        </div>
+      </div>
+
+      {/* Desktop & Tablet view (>= md: 768px): Uses the landscape artwork */}
+      <div className="hidden md:flex absolute bottom-0 inset-x-0 w-full justify-center items-end pointer-events-none z-10 overflow-hidden">
+        <div className="relative w-full aspect-[1672/941] min-h-[300px] md:min-h-[340px] max-h-[66vh] md:max-h-[74vh]">
           <Image
             src="/hero-cat-hills.png"
             alt="Meow Ganics Litter Hills & Peeking Cat"

@@ -647,8 +647,8 @@ export default function HeroScrollExperience() {
             y:
               introPhase === "hero"
                 ? isMobile
-                  ? "26vh"
-                  : "18vh"
+                  ? "24vh"
+                  : "16vh"
                 : "0vh",
             rotate:
               introPhase === "hero"
@@ -659,8 +659,8 @@ export default function HeroScrollExperience() {
             scale:
               introPhase === "hero"
                 ? isMobile
-                  ? 0.76
-                  : 0.95
+                  ? 0.74
+                  : 0.92
                 : introPhase === "spotlight" || introPhase === "stabilizing"
                 ? isMobile
                   ? 1.10
