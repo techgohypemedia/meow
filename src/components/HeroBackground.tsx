@@ -43,7 +43,7 @@ export default function HeroBackground() {
       {/* ── Complete Hero Artwork (Blue Litter Hills, Peeking Cat & White Floor) ── */}
       {/* Mobile view (< md: 768px): Uses the vertical portrait artwork */}
       <div className="md:hidden absolute bottom-0 inset-x-0 w-full flex justify-center items-end pointer-events-none z-10 overflow-hidden">
-        <div className="relative w-full aspect-[941/1672] min-h-[320px] max-h-[78vh]">
+        <div className="relative w-full max-w-[480px] aspect-[941/1672] min-h-[320px]">
           <Image
             src="/hero-cat-hills-mobile.png"
             alt="Meow Ganics Litter Hills & Peeking Cat Mobile"
