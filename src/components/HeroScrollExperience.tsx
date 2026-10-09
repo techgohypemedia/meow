@@ -58,8 +58,11 @@ export default function HeroScrollExperience() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [slideDir, setSlideDir] = useState(0); // -1 = prev, 0 = idle, 1 = next
   const [addedAnimation, setAddedAnimation] = useState(false);
+  const [pullProgress, setPullProgress] = useState(0); // 0 to 90px pull down distance
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0); // horizontal drag in carousel mode
 
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const touchCooldownRef = useRef(false);
   const isWheelDebounced = useRef(false);
   const introTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -103,19 +106,19 @@ export default function HeroScrollExperience() {
   }, []);
 
   // Dedicated reliable state-machine for intro progression
-  // stabilizing (500ms upright rest) -> minimizing (1350ms smooth shrink) -> docked (slide arrives)
+  // stabilizing (350ms upright rest) -> minimizing (900ms smooth shrink) -> docked (slide arrives)
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (introPhase === "stabilizing") {
       timer = setTimeout(() => {
         setIntroPhase("minimizing");
-      }, 500);
+      }, 350);
     } else if (introPhase === "minimizing") {
       timer = setTimeout(() => {
         setIntroPhase("docked");
         setIsDocked(true);
         setStage("carousel");
-      }, 1350);
+      }, 950);
     }
     return () => {
       if (timer) clearTimeout(timer);
@@ -147,7 +150,7 @@ export default function HeroScrollExperience() {
       isWheelDebounced.current = true;
       setTimeout(() => {
         isWheelDebounced.current = false;
-      }, 1050);
+      }, 650);
       return;
     }
 
@@ -157,7 +160,7 @@ export default function HeroScrollExperience() {
       isWheelDebounced.current = true;
       setTimeout(() => {
         isWheelDebounced.current = false;
-      }, 1200);
+      }, 750);
       return;
     }
 
@@ -183,14 +186,14 @@ export default function HeroScrollExperience() {
       isWheelDebounced.current = true;
       setTimeout(() => {
         isWheelDebounced.current = false;
-      }, 1050);
+      }, 650);
     } else if (introPhase === "spotlight") {
       // Return from Center Spotlight to Hero Hill
       setIntroPhase("hero");
       isWheelDebounced.current = true;
       setTimeout(() => {
         isWheelDebounced.current = false;
-      }, 1050);
+      }, 650);
     }
   }, [introPhase, stage, isDocked]);
 
@@ -223,13 +226,13 @@ export default function HeroScrollExperience() {
         isWheelDebounced.current = true;
         setTimeout(() => {
           isWheelDebounced.current = false;
-        }, 1200);
+        }, 750);
       } else if (e.deltaY < -8) {
         setIntroPhase("hero");
         isWheelDebounced.current = true;
         setTimeout(() => {
           isWheelDebounced.current = false;
-        }, 1050);
+        }, 650);
       }
       return;
     }
@@ -246,7 +249,7 @@ export default function HeroScrollExperience() {
 
       setTimeout(() => {
         isWheelDebounced.current = false;
-      }, 450);
+      }, 350);
       return;
     }
 
@@ -261,85 +264,148 @@ export default function HeroScrollExperience() {
 
       const cooldown =
         introPhase !== "docked"
-          ? 1800
+          ? 650
           : stage !== "carousel"
-          ? 900
-          : 600;
+          ? 450
+          : 380;
       setTimeout(() => {
         isWheelDebounced.current = false;
       }, cooldown);
     }
   };
 
-  // Touch handlers with matching scroll rotation scrubbing
+  // Touch handlers with real-time drag tracking & pull-to-refresh
   const onTouchStart = (e: React.TouchEvent) => {
     if (e.touches && e.touches.length > 0) {
       touchStartRef.current = {
         x: e.touches[0].clientX,
         y: e.touches[0].clientY,
+        time: Date.now(),
       };
+      setDragOffset(0);
+      if (!isRefreshing) setPullProgress(0);
+    }
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || isRefreshing || touchCooldownRef.current) return;
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = currentX - touchStartRef.current.x;
+    const diffY = currentY - touchStartRef.current.y;
+
+    // 1. Pull down to refresh gesture in Hero phase (drag down from top)
+    if (introPhase === "hero" && diffY > 0 && Math.abs(diffY) > Math.abs(diffX)) {
+      const pull = Math.min(Math.pow(diffY, 0.82) * 1.4, 90);
+      setPullProgress(pull);
+      return;
+    }
+
+    // 2. Interactive horizontal drag in Carousel phase
+    if (introPhase === "docked" && stage === "carousel" && Math.abs(diffX) > Math.abs(diffY)) {
+      setDragOffset(diffX * 0.75);
+      return;
     }
   };
 
   const onTouchEnd = (e: React.TouchEvent) => {
+    // 1. Handle Pull-To-Refresh completion in Hero phase
+    if (introPhase === "hero" && pullProgress > 0) {
+      if (pullProgress >= 50) {
+        setIsRefreshing(true);
+        setPullProgress(65);
+        touchStartRef.current = null;
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+        return;
+      } else {
+        setPullProgress(0);
+      }
+    }
+
+    // 2. Handle interactive horizontal drag in Carousel phase
+    if (introPhase === "docked" && stage === "carousel" && dragOffset !== 0) {
+      const currentDrag = dragOffset;
+      setDragOffset(0);
+      if (Math.abs(currentDrag) > 30) {
+        touchCooldownRef.current = true;
+        setTimeout(() => {
+          touchCooldownRef.current = false;
+        }, 360);
+
+        if (currentDrag < 0) {
+          handleSlideNext();
+        } else {
+          handleSlidePrev();
+        }
+        touchStartRef.current = null;
+        return;
+      }
+    }
+
     if (!touchStartRef.current || touchCooldownRef.current || isWheelDebounced.current) {
       touchStartRef.current = null;
+      setDragOffset(0);
       return;
     }
     if (introPhase === "stabilizing" || introPhase === "minimizing") {
       touchStartRef.current = null;
+      setDragOffset(0);
       return;
     }
 
     const touchEnd = e.changedTouches?.[0];
     if (!touchEnd) {
       touchStartRef.current = null;
+      setDragOffset(0);
       return;
     }
 
     const diffX = touchStartRef.current.x - touchEnd.clientX;
     const diffY = touchStartRef.current.y - touchEnd.clientY;
     touchStartRef.current = null;
+    setDragOffset(0);
+
+    // Fast-swipe handling with responsive thresholds
+    const minSwipeDist = 24;
 
     if (introPhase === "spotlight") {
       if (diffY > 10) {
         setIntroPhase("minimizing");
-        isWheelDebounced.current = true;
+        touchCooldownRef.current = true;
         setTimeout(() => {
-          isWheelDebounced.current = false;
-        }, 1200);
+          touchCooldownRef.current = false;
+        }, 600);
       } else if (diffY < -10) {
         setIntroPhase("hero");
-        isWheelDebounced.current = true;
+        touchCooldownRef.current = true;
         setTimeout(() => {
-          isWheelDebounced.current = false;
-        }, 1050);
+          touchCooldownRef.current = false;
+        }, 600);
       }
       return;
     }
 
-    const minSwipeDist = 28;
-    const touchCooldownTime =
-      introPhase !== "docked" ? 1800 : stage !== "carousel" ? 800 : 480;
-
     if (Math.abs(diffX) >= Math.abs(diffY)) {
-      // Horizontal swipe: change slides in carousel (only when docked)
-      if (introPhase === "docked" && Math.abs(diffX) > minSwipeDist) {
+      // Horizontal swipe fallback
+      if (introPhase === "docked" && stage === "carousel" && Math.abs(diffX) > minSwipeDist) {
         touchCooldownRef.current = true;
         setTimeout(() => {
           touchCooldownRef.current = false;
-        }, touchCooldownTime);
+        }, 360);
 
         if (diffX > 0) handleSlideNext();
         else handleSlidePrev();
       }
     } else {
-      // Vertical swipe: open/close full-screen product details
+      // Vertical swipe: stage transitions
       if (Math.abs(diffY) > minSwipeDist) {
+        const cooldownTime = introPhase !== "docked" ? 600 : stage !== "carousel" ? 380 : 420;
         touchCooldownRef.current = true;
         setTimeout(() => {
           touchCooldownRef.current = false;
-        }, touchCooldownTime);
+        }, cooldownTime);
 
         if (diffY > 0) handleNext();
         else handlePrev();
@@ -407,14 +473,17 @@ export default function HeroScrollExperience() {
 
   // Mouse / Pointer drag support for laptop/desktop
   const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === "touch") return; // Touch events handle mobile
     if (e.button !== 0) return;
     touchStartRef.current = {
       x: e.clientX,
       y: e.clientY,
+      time: Date.now(),
     };
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
+    if (e.pointerType === "touch") return;
     if (!touchStartRef.current || touchCooldownRef.current || isWheelDebounced.current) {
       touchStartRef.current = null;
       return;
@@ -428,9 +497,9 @@ export default function HeroScrollExperience() {
     const diffY = touchStartRef.current.y - e.clientY;
     touchStartRef.current = null;
 
-    const minSwipeDist = 32;
+    const minSwipeDist = 28;
     const touchCooldownTime =
-      introPhase !== "docked" ? 1800 : stage !== "carousel" ? 800 : 480;
+      introPhase !== "docked" ? 650 : stage !== "carousel" ? 400 : 360;
 
     if (Math.abs(diffX) >= Math.abs(diffY)) {
       if (introPhase === "docked" && Math.abs(diffX) > minSwipeDist) {
@@ -459,6 +528,7 @@ export default function HeroScrollExperience() {
     <div
       onWheel={handleWheel}
       onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
@@ -466,6 +536,47 @@ export default function HeroScrollExperience() {
         introPhase === "hero" ? "bg-[#FEFAEF]" : "bg-[#111317]"
       }`}
     >
+      {/* ── Native-Feel Pull-To-Refresh Indicator (Mobile Hero Mode) ── */}
+      {(pullProgress > 0 || isRefreshing) && introPhase === "hero" && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{
+            opacity: 1,
+            y: pullProgress,
+          }}
+          transition={{ type: "spring", stiffness: 400, damping: 28 }}
+          className="fixed top-2 inset-x-0 mx-auto w-fit z-[100] pointer-events-none flex items-center justify-center"
+        >
+          <div className="flex items-center gap-2.5 bg-white/95 text-brand-black backdrop-blur-xl px-4 py-2 rounded-full shadow-[0_10px_35px_rgba(0,0,0,0.18)] border border-brand-black/15 text-xs font-heading font-bold">
+            <div
+              className={`w-4 h-4 flex items-center justify-center transition-transform duration-150 ${
+                isRefreshing ? "animate-spin" : ""
+              }`}
+              style={{
+                transform: !isRefreshing ? `rotate(${Math.min(pullProgress * 3.5, 180)}deg)` : undefined,
+              }}
+            >
+              {isRefreshing ? (
+                <svg className="w-3.5 h-3.5 text-brand-black" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                </svg>
+              ) : (
+                <svg className="w-3.5 h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              )}
+            </div>
+            <span>
+              {isRefreshing
+                ? "Refreshing..."
+                : pullProgress >= 50
+                ? "Release to refresh"
+                : "Pull down to refresh"}
+            </span>
+          </div>
+        </motion.div>
+      )}
       {/* Layer 0: Cream Hero Background with Brick Accents & Litter Pile */}
       <motion.div
         initial={{ opacity: 1 }}
@@ -833,9 +944,13 @@ export default function HeroScrollExperience() {
               <motion.div
                 className="absolute inset-0 flex flex-row pointer-events-auto"
                 animate={{
-                  x: `calc(${-activeIndex * (100 / ORYZO_ITEMS.length)}%)`,
+                  x: `calc(${-activeIndex * (100 / ORYZO_ITEMS.length)}% + ${dragOffset}px)`,
                 }}
-                transition={{ type: "tween", ease: [0.76, 0, 0.24, 1], duration: 0.55 }}
+                transition={
+                  dragOffset !== 0
+                    ? { duration: 0 }
+                    : { type: "spring", stiffness: 260, damping: 28 }
+                }
                 style={{
                   width: `${ORYZO_ITEMS.length * 100}%`,
                   pointerEvents: stage === "carousel" ? "auto" : "none",
