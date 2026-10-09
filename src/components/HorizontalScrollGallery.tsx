@@ -240,7 +240,7 @@ export default function HorizontalScrollGallery() {
       className="relative w-full h-[560vh] bg-[#0E1822] text-brand-white select-none z-30"
     >
       {/* Sticky Fullscreen Stage */}
-      <div className="sticky top-0 h-screen max-h-screen w-full overflow-hidden flex flex-col justify-between pt-3.5 sm:pt-6 md:pt-8 pb-2 sm:pb-3 md:pb-4 px-3.5 sm:px-8 md:px-12">
+      <div className="sticky top-0 h-[100dvh] max-h-[100dvh] w-full overflow-hidden flex flex-col justify-between pt-3.5 sm:pt-6 md:pt-8 pb-[max(0.5rem,calc(env(safe-area-inset-bottom,0px)+0.25rem))] sm:pb-3 md:pb-4 px-3.5 sm:px-8 md:px-12">
         {/* Ambient Brand Lighting */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute -left-[10%] top-[20%] w-[50vw] h-[55vh] rounded-full bg-[#A9D3F4]/15 blur-[140px]" />

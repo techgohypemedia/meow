@@ -87,10 +87,12 @@ export default function HeroScrollExperience() {
     ? (viewport.height / 2) - (0.395 * mobileArtworkWidth)
     : "27.5vh";
 
-  // Responsive Carousel Card Dimensions (Enlarged banner for mobile view)
+  // Responsive Carousel Card Dimensions (Enlarged banner for mobile view, tuned for mobile viewport height)
   const isTablet = viewport.width ? viewport.width >= 640 && viewport.width < 1024 : false;
-  const cardWidth = !isMobile ? 380 : isTablet ? 340 : (viewport.width ? Math.min(Math.round(viewport.width * 0.76), 295) : 285);
-  const cardHeight = !isMobile ? 510 : isTablet ? 455 : Math.round(cardWidth * (510 / 380));
+  const rawCardWidth = !isMobile ? 380 : isTablet ? 340 : (viewport.width ? Math.min(Math.round(viewport.width * 0.74), 280) : 270);
+  const maxMobileCardHeight = viewport.height ? Math.round(viewport.height * 0.42) : 330;
+  const cardWidth = !isMobile ? 380 : isTablet ? 340 : rawCardWidth;
+  const cardHeight = !isMobile ? 510 : isTablet ? 455 : Math.min(Math.round(cardWidth * (510 / 380)), maxMobileCardHeight);
 
   // Lock body scroll to power the smooth choreographed steps
   useEffect(() => {
@@ -460,7 +462,7 @@ export default function HeroScrollExperience() {
       onTouchEnd={onTouchEnd}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
-      className={`fixed inset-0 w-screen h-screen overflow-hidden select-none flex flex-col justify-between transition-colors duration-700 ${
+      className={`fixed inset-0 w-full h-[100dvh] max-h-[100dvh] overflow-hidden select-none flex flex-col justify-between transition-colors duration-700 ${
         introPhase === "hero" ? "bg-[#FEFAEF]" : "bg-[#111317]"
       }`}
     >
@@ -793,7 +795,7 @@ export default function HeroScrollExperience() {
           <motion.div
             animate={{
               width: stage !== "carousel" ? "100vw" : cardWidth,
-              height: stage !== "carousel" ? "100vh" : cardHeight,
+              height: stage !== "carousel" ? "100dvh" : cardHeight,
               y: stage !== "carousel" ? 0 : isMobile ? -20 : 0,
               borderRadius: 0,
             }}
@@ -902,7 +904,7 @@ export default function HeroScrollExperience() {
               }}
               style={{
                 left: isMobile ? "50%" : "max(2.5rem, calc(50% - 580px))",
-                bottom: isMobile ? "calc(6.5rem + env(safe-area-inset-bottom, 0px))" : "auto",
+                bottom: isMobile ? "calc(4.5rem + env(safe-area-inset-bottom, 0px))" : "auto",
                 top: isMobile ? "auto" : "50%",
                 position: "absolute",
                 zIndex: 45,
@@ -1251,7 +1253,7 @@ export default function HeroScrollExperience() {
           ══════════════════════════════════════════════════════════════════════════════════════ */}
       {/* ── Fixed Center-Bottom Explore Button (Hero Mode) ── */}
       {introPhase === "hero" && (
-        <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 inset-x-0 mx-auto w-fit z-50 flex items-center justify-center pointer-events-auto">
+        <div className="absolute bottom-[max(1rem,env(safe-area-inset-bottom,0px))] sm:bottom-6 md:bottom-8 inset-x-0 mx-auto w-fit z-50 flex items-center justify-center pointer-events-auto">
           <button
             onClick={handleNext}
             className="flex items-center gap-2 text-brand-black font-heading font-bold cursor-pointer hover:scale-105 active:scale-95 transition-all bg-brand-white/90 hover:bg-brand-white backdrop-blur-md px-4 sm:px-5 py-2 rounded-full border border-brand-black/20 shadow-md text-xs sm:text-sm"
@@ -1268,7 +1270,7 @@ export default function HeroScrollExperience() {
       {/* ══════════════════════════════════════════════════════════════════════════════════════
           LAYER 7: BOTTOM CONTROLS & CONTINUOUS SCROLL STATUS BAR (Spotlight / Carousel Modes)
           ══════════════════════════════════════════════════════════════════════════════════════ */}
-      <div className={`relative z-40 max-w-7xl mx-auto w-full px-4 sm:px-8 md:px-12 flex items-center justify-between text-xs text-white/50 pointer-events-auto shrink-0 pb-3 sm:pb-4 transition-all duration-300 ${
+      <div className={`relative z-40 max-w-7xl mx-auto w-full px-4 sm:px-8 md:px-12 flex items-center justify-between text-xs text-white/50 pointer-events-auto shrink-0 pb-[max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.25rem))] sm:pb-4 transition-all duration-300 ${
         introPhase === "hero" ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}>
         {/* Left Action / Stage indicator */}

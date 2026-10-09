@@ -185,7 +185,7 @@ export default function OryzoBoxShowcase() {
       onWheel={handleWheel}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
-      className="relative w-full h-screen bg-[#111317] text-white flex flex-col justify-between overflow-hidden select-none px-6 sm:px-10 md:px-16"
+      className="relative w-full h-[100dvh] max-h-[100dvh] bg-[#111317] text-white flex flex-col justify-between overflow-hidden select-none px-6 sm:px-10 md:px-16 pb-[max(1rem,env(safe-area-inset-bottom,0px))]"
     >
       {/* Ambient background glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
