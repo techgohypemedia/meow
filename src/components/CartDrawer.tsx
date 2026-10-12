@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import { PRODUCTS } from "@/data/products";
+import CartIcon from "@/components/CartIcon";
 
 export default function CartDrawer() {
   const {
@@ -61,7 +62,7 @@ export default function CartDrawer() {
               <div className="px-6 py-4 md:py-5 bg-[#EBF4FC] border-b-[3px] border-brand-black flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-brand-white border-[3px] border-brand-black flex items-center justify-center shadow-[2px_2px_0px_#111111]">
-                    <span className="text-xl">🐱</span>
+                    <CartIcon className="w-5 h-5 text-brand-black" />
                   </div>
                   <div>
                     <h2 className="font-heading text-2xl font-bold tracking-tight text-brand-black">

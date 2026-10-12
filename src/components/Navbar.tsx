@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useCart } from "@/context/CartContext";
+import CartIcon from "@/components/CartIcon";
 
 interface NavbarProps {
   theme?: "blue" | "light";
@@ -71,22 +72,8 @@ export default function Navbar({ theme = "blue" }: NavbarProps) {
           className="relative p-2 md:p-3 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer bg-brand-white rounded-2xl border-[3px] border-brand-black shadow-[3px_3px_0px_#111111]"
           aria-label={`Open Cart with ${totalItems} items`}
         >
-          {/* Doodle Cat Cart Icon */}
-          <svg
-            className="w-7 h-7 md:w-8 md:h-8"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 20c-5.2 0-8.2-3.8-8.2-7.8 0-2.2.6-3.8 1.2-4.8L5.2 4.2l4.2 3.2c.8-.3 1.7-.4 2.6-.4s1.8.1 2.6.4l4.2-3.2.2 3.2c.6 1 1.2 2.6 1.2 4.8 0 4-3 7.8-8.2 7.8Z" />
-            <circle cx="8.5" cy="12.5" r="1.3" fill="currentColor" />
-            <circle cx="15.5" cy="12.5" r="1.3" fill="currentColor" />
-            <polygon points="12,14.5 11,16 13,16" fill="currentColor" stroke="none" />
-            <path d="M3.2 12l2.6.5M3.2 14.5l2.6-.5M20.8 12l-2.6.5M20.8 14.5l-2.6-.5" />
-          </svg>
+          {/* Doodle Style Cart Icon */}
+          <CartIcon className="w-7 h-7 md:w-8 md:h-8 text-brand-black" />
 
           {/* Badge Counter */}
           <span className="absolute -top-2 -right-2 bg-brand-black text-brand-white text-[11px] md:text-xs font-heading font-black min-w-[22px] h-[22px] px-1 rounded-full flex items-center justify-center border-2 border-brand-white shadow-[1px_1px_0px_#111111] animate-in zoom-in">

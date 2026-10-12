@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import CartIcon from "@/components/CartIcon";
 
 export interface OryzoItem {
   id: string;
@@ -252,21 +253,7 @@ export default function OryzoBoxShowcase() {
                       className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/25 hover:border-white text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
                       aria-label={`Quick add ${currentItem.flavor}`}
                     >
-                      <svg
-                        className="w-4 h-4 sm:w-4.5 sm:h-4.5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M12 20c-5.2 0-8.2-3.8-8.2-7.8 0-2.2.6-3.8 1.2-4.8L5.2 4.2l4.2 3.2c.8-.3 1.7-.4 2.6-.4s1.8.1 2.6.4l4.2-3.2.2 3.2c.6 1 1.2 2.6 1.2 4.8 0 4-3 7.8-8.2 7.8Z" />
-                        <circle cx="8.5" cy="12.5" r="1.3" fill="currentColor" />
-                        <circle cx="15.5" cy="12.5" r="1.3" fill="currentColor" />
-                        <polygon points="12,14.5 11,16 13,16" fill="currentColor" stroke="none" />
-                        <path d="M3.2 12l2.6.5M3.2 14.5l2.6-.5M20.8 12l-2.6.5M20.8 14.5l-2.6-.5" />
-                      </svg>
+                      <CartIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                     </button>
                   </>
                 )}

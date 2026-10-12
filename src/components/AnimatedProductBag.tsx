@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import CartIcon from "@/components/CartIcon";
 
 export default function AnimatedProductBag({ staticHero = false }: { staticHero?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -215,21 +216,7 @@ export default function AnimatedProductBag({ staticHero = false }: { staticHero?
                 className="bg-white text-brand-black border-2 border-brand-black w-10 h-10 sm:w-12 sm:h-12 rounded-full font-bold text-sm md:text-base hover:bg-brand-black/5 shadow-[2px_2px_0px_#111111] transition-colors flex items-center justify-center group shrink-0 cursor-pointer"
                 aria-label={`Add ${t.subtitle} to cart`}
               >
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M12 20c-5.2 0-8.2-3.8-8.2-7.8 0-2.2.6-3.8 1.2-4.8L5.2 4.2l4.2 3.2c.8-.3 1.7-.4 2.6-.4s1.8.1 2.6.4l4.2-3.2.2 3.2c.6 1 1.2 2.6 1.2 4.8 0 4-3 7.8-8.2 7.8Z" />
-                  <circle cx="8.5" cy="12.5" r="1.3" fill="currentColor" />
-                  <circle cx="15.5" cy="12.5" r="1.3" fill="currentColor" />
-                  <polygon points="12,14.5 11,16 13,16" fill="currentColor" stroke="none" />
-                  <path d="M3.2 12l2.6.5M3.2 14.5l2.6-.5M20.8 12l-2.6.5M20.8 14.5l-2.6-.5" />
-                </svg>
+                <CartIcon className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
               </button>
             </motion.div>
           </motion.div>

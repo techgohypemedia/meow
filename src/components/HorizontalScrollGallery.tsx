@@ -10,6 +10,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import CartIcon from "@/components/CartIcon";
 import {
   ScrollReelTestimonials,
   ScrollReelTestimonial,
@@ -343,9 +344,10 @@ export default function HorizontalScrollGallery() {
                         </span>
                         <button
                           onClick={() => handleQuickAdd(activeItem)}
-                          className="px-4 sm:px-6 py-1.5 sm:py-2.5 bg-brand-blue text-brand-black font-heading font-black text-xs sm:text-sm rounded-full border-2 border-brand-black shadow-[2px_2px_0px_#111111] sm:shadow-[3px_3px_0px_#111111] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                          className="px-4 sm:px-6 py-1.5 sm:py-2.5 bg-brand-blue text-brand-black font-heading font-black text-xs sm:text-sm rounded-full border-2 border-brand-black shadow-[2px_2px_0px_#111111] sm:shadow-[3px_3px_0px_#111111] hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
                         >
-                          Add to Bag +
+                          <CartIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-black" />
+                          <span>Add to Bag</span>
                         </button>
                       </div>
                     </motion.div>

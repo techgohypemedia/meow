@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useCart } from "@/context/CartContext";
+import CartIcon from "@/components/CartIcon";
 
 export default function ProductPage() {
   const { totalItems, openCart, addToCart } = useCart();
@@ -78,22 +79,8 @@ export default function ProductPage() {
             className="relative p-2.5 md:p-3 hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer bg-white/10 hover:bg-white/20 text-white rounded-full border border-white/20 shadow-md backdrop-blur-md"
             aria-label="Open Cart"
           >
-            {/* Doodle Cat Cart Icon */}
-            <svg
-              className="w-5 h-5 md:w-5.5 md:h-5.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 20c-5.2 0-8.2-3.8-8.2-7.8 0-2.2.6-3.8 1.2-4.8L5.2 4.2l4.2 3.2c.8-.3 1.7-.4 2.6-.4s1.8.1 2.6.4l4.2-3.2.2 3.2c.6 1 1.2 2.6 1.2 4.8 0 4-3 7.8-8.2 7.8Z" />
-              <circle cx="8.5" cy="12.5" r="1.3" fill="currentColor" />
-              <circle cx="15.5" cy="12.5" r="1.3" fill="currentColor" />
-              <polygon points="12,14.5 11,16 13,16" fill="currentColor" stroke="none" />
-              <path d="M3.2 12l2.6.5M3.2 14.5l2.6-.5M20.8 12l-2.6.5M20.8 14.5l-2.6-.5" />
-            </svg>
+            {/* Doodle Style Cart Icon */}
+            <CartIcon className="w-6 h-6 md:w-6.5 md:h-6.5" />
             <span className="absolute -top-1 -right-1 bg-white text-brand-black text-[10px] md:text-xs font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-md">
               {totalItems}
             </span>
@@ -169,21 +156,7 @@ export default function ProductPage() {
                   : "bg-white text-brand-black hover:bg-white/95"
               }`}
             >
-              <svg
-                className="w-4 h-4 sm:w-5 sm:h-5 shrink-0"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 20c-5.2 0-8.2-3.8-8.2-7.8 0-2.2.6-3.8 1.2-4.8L5.2 4.2l4.2 3.2c.8-.3 1.7-.4 2.6-.4s1.8.1 2.6.4l4.2-3.2.2 3.2c.6 1 1.2 2.6 1.2 4.8 0 4-3 7.8-8.2 7.8Z" />
-                <circle cx="8.5" cy="12.5" r="1.3" fill="currentColor" />
-                <circle cx="15.5" cy="12.5" r="1.3" fill="currentColor" />
-                <polygon points="12,14.5 11,16 13,16" fill="currentColor" stroke="none" />
-                <path d="M3.2 12l2.6.5M3.2 14.5l2.6-.5M20.8 12l-2.6.5M20.8 14.5l-2.6-.5" />
-              </svg>
+              <CartIcon className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
               <span>
                 {addedAnimation
                   ? "Added to Cart! 🐾"
