@@ -49,14 +49,14 @@ export default function ProductPage() {
       </div>
 
       {/* Layer 2: Global Header / Navbar */}
-      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between h-20 sm:h-24 md:h-28 shrink-0 pt-2 sm:pt-3">
+      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between min-h-[108px] xs:min-h-[118px] sm:min-h-[96px] md:min-h-[112px] shrink-0 pt-2.5 sm:pt-3">
         <Link href="/" className="flex items-center cursor-pointer group h-full py-0.5 shrink-0">
           <Image
             src="/meowganics_logo_transparent.png"
             alt="Meow Ganics Logo"
             width={1776}
             height={725}
-            className="h-full w-auto max-h-[80px] sm:max-h-[96px] md:max-h-[110px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]"
+            className="w-[72vw] xs:w-[74vw] max-w-[315px] sm:max-w-none sm:w-auto h-auto max-h-[114px] xs:max-h-[126px] sm:max-h-[96px] md:max-h-[110px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]"
             priority
           />
         </Link>

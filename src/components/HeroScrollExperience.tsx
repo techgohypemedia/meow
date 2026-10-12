@@ -625,7 +625,7 @@ export default function HeroScrollExperience() {
       </div>
 
       {/* Layer 4: Global Header / Navbar */}
-      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between min-h-[80px] sm:min-h-[88px] md:min-h-[96px] pointer-events-auto shrink-0 pt-2 sm:pt-3">
+      <nav className="relative z-50 px-4 sm:px-8 md:px-12 flex items-center justify-between min-h-[108px] xs:min-h-[118px] sm:min-h-[88px] md:min-h-[96px] pointer-events-auto shrink-0 pt-2.5 sm:pt-3">
         {/* Left Aligned Clean Logo */}
         <Link href="/" className="flex items-center cursor-pointer group shrink-0">
           <Image
@@ -633,7 +633,7 @@ export default function HeroScrollExperience() {
             alt="Meow Ganics Logo"
             width={1776}
             height={725}
-            className="w-[215px] xs:w-[235px] sm:w-[260px] md:w-[285px] lg:w-[310px] h-auto max-h-[76px] sm:max-h-[84px] md:max-h-[92px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_2px_6px_rgba(0,0,0,0.10)]"
+            className="w-[72vw] xs:w-[74vw] max-w-[315px] sm:max-w-none sm:w-[260px] md:w-[285px] lg:w-[310px] h-auto max-h-[114px] xs:max-h-[126px] sm:max-h-[84px] md:max-h-[92px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_2px_6px_rgba(0,0,0,0.10)]"
             priority
           />
         </Link>

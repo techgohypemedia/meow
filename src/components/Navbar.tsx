@@ -21,7 +21,7 @@ export default function Navbar({ theme = "blue" }: NavbarProps) {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className="w-full z-50 px-6 py-3 md:px-12 flex items-center justify-between h-20 md:h-24 bg-brand-blue"
+      className="w-full z-50 px-4 sm:px-6 py-2.5 sm:py-3 md:px-12 flex items-center justify-between min-h-[96px] sm:min-h-[96px] md:min-h-[96px] bg-brand-blue"
     >
       {/* Brand Logo */}
       <Link href="/" className="flex items-center cursor-pointer group h-full py-1 sm:py-1.5 shrink-0">
@@ -30,7 +30,7 @@ export default function Navbar({ theme = "blue" }: NavbarProps) {
           alt="Meow Ganics Logo"
           width={1776}
           height={725}
-          className="h-full w-auto max-h-[74px] sm:max-h-[82px] md:max-h-[90px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_2px_4px_rgba(0,0,0,0.08)]"
+          className="w-[72vw] xs:w-[74vw] max-w-[315px] sm:max-w-none sm:w-auto h-auto max-h-[114px] xs:max-h-[126px] sm:max-h-[82px] md:max-h-[90px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_2px_4px_rgba(0,0,0,0.08)]"
           priority
         />
       </Link>
