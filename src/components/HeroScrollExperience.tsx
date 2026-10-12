@@ -85,7 +85,7 @@ export default function HeroScrollExperience() {
   const mobileArtworkWidth = viewport.width ? Math.min(viewport.width, 480) : 390;
   // In mockup: Bag rests on the white floor at the bottom-left beside the cat
   const mobileHeroX = viewport.width ? -0.23 * mobileArtworkWidth : "-23vw";
-  const mobileHeroY = viewport.height ? 0.315 * viewport.height : "31.5vh";
+  const mobileHeroY = viewport.height ? 0.265 * viewport.height : "26.5vh";
 
   // Responsive Carousel Card Dimensions (Enlarged banner for mobile view, tuned for mobile viewport height)
   const isTablet = viewport.width ? viewport.width >= 640 && viewport.width < 1024 : false;
@@ -1384,14 +1384,15 @@ export default function HeroScrollExperience() {
           ══════════════════════════════════════════════════════════════════════════════════════ */}
       {/* ── Fixed Center-Bottom Explore Button (Hero Mode) ── */}
       {introPhase === "hero" && (
-        <div className="absolute bottom-[max(1rem,env(safe-area-inset-bottom,0px))] sm:bottom-6 md:bottom-8 inset-x-0 mx-auto w-fit z-50 flex items-center justify-center pointer-events-auto">
+        <div className="absolute bottom-[max(0.4rem,env(safe-area-inset-bottom,0px))] sm:bottom-6 md:bottom-8 inset-x-0 mx-auto w-fit z-50 flex items-center justify-center pointer-events-auto">
           <button
             onClick={handleNext}
-            className="flex items-center gap-2 text-brand-black font-heading font-bold cursor-pointer hover:scale-105 active:scale-95 transition-all bg-brand-white/90 hover:bg-brand-white backdrop-blur-md px-4 sm:px-5 py-2 rounded-full border border-brand-black/20 shadow-md text-xs sm:text-sm"
+            className="flex items-center gap-1.5 sm:gap-2 text-brand-black font-heading font-bold cursor-pointer hover:scale-105 active:scale-95 transition-all bg-brand-white/90 hover:bg-brand-white backdrop-blur-md px-3 sm:px-5 py-1 sm:py-2 rounded-full border border-brand-black/20 shadow-md text-[10.5px] sm:text-sm"
           >
-            <span className="w-2 h-2 rounded-full bg-brand-black animate-pulse" />
-            <span>Scroll down to explore collection</span>
-            <svg className="w-3.5 h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-brand-black animate-pulse" />
+            <span className="sm:hidden">Scroll to explore</span>
+            <span className="hidden sm:inline">Scroll down to explore collection</span>
+            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
           </button>
