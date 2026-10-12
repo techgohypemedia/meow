@@ -647,9 +647,9 @@ export default function HeroScrollExperience() {
             }`}
             aria-label="Open Cart"
           >
-            {/* Mobile view (< sm): Doodle Style Cat Symbol */}
+            {/* Doodle Style Cat Cart Icon (Used Everywhere) */}
             <svg
-              className="w-5 h-5 sm:hidden"
+              className="w-5 h-5 sm:w-5.5 sm:h-5.5"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -662,21 +662,6 @@ export default function HeroScrollExperience() {
               <circle cx="15.5" cy="12.5" r="1.3" fill="currentColor" />
               <polygon points="12,14.5 11,16 13,16" fill="currentColor" stroke="none" />
               <path d="M3.2 12l2.6.5M3.2 14.5l2.6-.5M20.8 12l-2.6.5M20.8 14.5l-2.6-.5" />
-            </svg>
-
-            {/* Desktop view (>= sm): Shopping Bag Icon */}
-            <svg
-              className="hidden sm:block w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
 
             <span
@@ -1154,14 +1139,18 @@ export default function HeroScrollExperience() {
                 >
                   <svg
                     className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 shrink-0"
+                    viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2.5"
-                    viewBox="0 0 24 24"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <path d="M16 10a4 4 0 0 1-8 0" />
+                    <path d="M12 20c-5.2 0-8.2-3.8-8.2-7.8 0-2.2.6-3.8 1.2-4.8L5.2 4.2l4.2 3.2c.8-.3 1.7-.4 2.6-.4s1.8.1 2.6.4l4.2-3.2.2 3.2c.6 1 1.2 2.6 1.2 4.8 0 4-3 7.8-8.2 7.8Z" />
+                    <circle cx="8.5" cy="12.5" r="1.3" fill="currentColor" />
+                    <circle cx="15.5" cy="12.5" r="1.3" fill="currentColor" />
+                    <polygon points="12,14.5 11,16 13,16" fill="currentColor" stroke="none" />
+                    <path d="M3.2 12l2.6.5M3.2 14.5l2.6-.5M20.8 12l-2.6.5M20.8 14.5l-2.6-.5" />
                   </svg>
                   <span className="truncate">
                     {addedAnimation ? "Added! 🐾" : "Add to Cart"}
@@ -1226,16 +1215,18 @@ export default function HeroScrollExperience() {
                       >
                         <svg
                           className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+                          viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
-                          strokeWidth="2"
-                          viewBox="0 0 24 24"
+                          strokeWidth="2.2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         >
-                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                          <line x1="3" y1="6" x2="21" y2="6" />
-                          <path d="M16 10a4 4 0 0 1-8 0" />
+                          <path d="M12 20c-5.2 0-8.2-3.8-8.2-7.8 0-2.2.6-3.8 1.2-4.8L5.2 4.2l4.2 3.2c.8-.3 1.7-.4 2.6-.4s1.8.1 2.6.4l4.2-3.2.2 3.2c.6 1 1.2 2.6 1.2 4.8 0 4-3 7.8-8.2 7.8Z" />
+                          <circle cx="8.5" cy="12.5" r="1.3" fill="currentColor" />
+                          <circle cx="15.5" cy="12.5" r="1.3" fill="currentColor" />
+                          <polygon points="12,14.5 11,16 13,16" fill="currentColor" stroke="none" />
+                          <path d="M3.2 12l2.6.5M3.2 14.5l2.6-.5M20.8 12l-2.6.5M20.8 14.5l-2.6-.5" />
                         </svg>
                       </button>
                     )}
@@ -1357,16 +1348,18 @@ export default function HeroScrollExperience() {
                       >
                         <svg
                           className="w-4 h-4 sm:w-4.5 sm:h-4.5"
+                          viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
-                          strokeWidth="2"
-                          viewBox="0 0 24 24"
+                          strokeWidth="2.2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         >
-                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                          <line x1="3" y1="6" x2="21" y2="6" />
-                          <path d="M16 10a4 4 0 0 1-8 0" />
+                          <path d="M12 20c-5.2 0-8.2-3.8-8.2-7.8 0-2.2.6-3.8 1.2-4.8L5.2 4.2l4.2 3.2c.8-.3 1.7-.4 2.6-.4s1.8.1 2.6.4l4.2-3.2.2 3.2c.6 1 1.2 2.6 1.2 4.8 0 4-3 7.8-8.2 7.8Z" />
+                          <circle cx="8.5" cy="12.5" r="1.3" fill="currentColor" />
+                          <circle cx="15.5" cy="12.5" r="1.3" fill="currentColor" />
+                          <polygon points="12,14.5 11,16 13,16" fill="currentColor" stroke="none" />
+                          <path d="M3.2 12l2.6.5M3.2 14.5l2.6-.5M20.8 12l-2.6.5M20.8 14.5l-2.6-.5" />
                         </svg>
                       </button>
                     )}

@@ -71,9 +71,9 @@ export default function Navbar({ theme = "blue" }: NavbarProps) {
           className="relative p-2 md:p-3 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer bg-brand-white rounded-2xl border-[3px] border-brand-black shadow-[3px_3px_0px_#111111]"
           aria-label={`Open Cart with ${totalItems} items`}
         >
-          {/* Mobile view (< md): Doodle Cat Icon */}
+          {/* Doodle Cat Cart Icon */}
           <svg
-            className="w-7 h-7 md:hidden"
+            className="w-7 h-7 md:w-8 md:h-8"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -86,21 +86,6 @@ export default function Navbar({ theme = "blue" }: NavbarProps) {
             <circle cx="15.5" cy="12.5" r="1.3" fill="currentColor" />
             <polygon points="12,14.5 11,16 13,16" fill="currentColor" stroke="none" />
             <path d="M3.2 12l2.6.5M3.2 14.5l2.6-.5M20.8 12l-2.6.5M20.8 14.5l-2.6-.5" />
-          </svg>
-
-          {/* Desktop view (>= md): Shopping Bag Icon */}
-          <svg
-            className="hidden md:block w-8 h-8"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            viewBox="0 0 24 24"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <path d="M16 10a4 4 0 0 1-8 0"></path>
           </svg>
 
           {/* Badge Counter */}
