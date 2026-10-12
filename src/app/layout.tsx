@@ -31,7 +31,7 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${fredoka.variable} ${nunitoSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-brand-blue text-brand-black">
+      <body className="min-h-full flex flex-col font-sans bg-[#FEF8EA] text-brand-black">
         <CartProvider>
           <SmoothScroll>
             {children}

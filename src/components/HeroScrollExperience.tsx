@@ -83,12 +83,9 @@ export default function HeroScrollExperience() {
   // Artwork is 941w x 1672h, pinned to bottom-0
   const isMobileView = viewport.width ? viewport.width < 768 : isMobile;
   const mobileArtworkWidth = viewport.width ? Math.min(viewport.width, 480) : 390;
-  // White floor starts at y=1400 in artwork (272px from bottom).
-  // Bag rests firmly on this white background (y~1445 in artwork) rather than floating up in the pellets.
-  const mobileHeroX = viewport.width ? -0.245 * mobileArtworkWidth : "-24.5vw";
-  const mobileHeroY = viewport.height
-    ? (viewport.height / 2) - (0.395 * mobileArtworkWidth)
-    : "27.5vh";
+  // In mockup: Bag rests on the white floor at the bottom-left beside the cat
+  const mobileHeroX = viewport.width ? -0.23 * mobileArtworkWidth : "-23vw";
+  const mobileHeroY = viewport.height ? 0.315 * viewport.height : "31.5vh";
 
   // Responsive Carousel Card Dimensions (Enlarged banner for mobile view, tuned for mobile viewport height)
   const isTablet = viewport.width ? viewport.width >= 640 && viewport.width < 1024 : false;
@@ -533,7 +530,7 @@ export default function HeroScrollExperience() {
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       className={`fixed inset-0 w-full h-[100dvh] max-h-[100dvh] overflow-hidden select-none flex flex-col justify-between transition-colors duration-700 ${
-        introPhase === "hero" ? "bg-[#FEFAEF]" : "bg-[#111317]"
+        introPhase === "hero" ? "bg-[#FEF8EA]" : "bg-[#111317]"
       }`}
     >
       {/* ── Native-Feel Pull-To-Refresh Indicator (Mobile Hero Mode) ── */}
@@ -640,7 +637,7 @@ export default function HeroScrollExperience() {
 
         {/* Right Actions: Cart & Shop Litter */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          {/* Shopping Bag Icon */}
+          {/* Shopping Bag / Doodle Cat Icon */}
           <button
             onClick={openCart}
             className={`relative p-2.5 sm:p-3 hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer rounded-full border shadow-lg ${
@@ -650,8 +647,26 @@ export default function HeroScrollExperience() {
             }`}
             aria-label="Open Cart"
           >
+            {/* Mobile view (< sm): Doodle Style Cat Symbol */}
             <svg
-              className="w-5 h-5"
+              className="w-5 h-5 sm:hidden"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 20c-5.2 0-8.2-3.8-8.2-7.8 0-2.2.6-3.8 1.2-4.8L5.2 4.2l4.2 3.2c.8-.3 1.7-.4 2.6-.4s1.8.1 2.6.4l4.2-3.2.2 3.2c.6 1 1.2 2.6 1.2 4.8 0 4-3 7.8-8.2 7.8Z" />
+              <circle cx="8.5" cy="12.5" r="1.3" fill="currentColor" />
+              <circle cx="15.5" cy="12.5" r="1.3" fill="currentColor" />
+              <polygon points="12,14.5 11,16 13,16" fill="currentColor" stroke="none" />
+              <path d="M3.2 12l2.6.5M3.2 14.5l2.6-.5M20.8 12l-2.6.5M20.8 14.5l-2.6-.5" />
+            </svg>
+
+            {/* Desktop view (>= sm): Shopping Bag Icon */}
+            <svg
+              className="hidden sm:block w-5 h-5"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -663,6 +678,7 @@ export default function HeroScrollExperience() {
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
+
             <span
               className={`absolute -top-1 -right-1 text-[10px] font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-md ${
                 introPhase === "hero"
@@ -771,7 +787,7 @@ export default function HeroScrollExperience() {
               ease: "easeOut",
             },
           }}
-          className="relative w-[38vw] sm:w-[30vw] md:w-[22vw] lg:w-[19vw] max-w-[170px] sm:max-w-[220px] md:max-w-[250px] lg:max-w-[280px] aspect-[1086/1448] origin-center flex items-center justify-center pointer-events-auto"
+          className="relative w-[42vw] xs:w-[43vw] sm:w-[30vw] md:w-[22vw] lg:w-[19vw] max-w-[205px] sm:max-w-[220px] md:max-w-[250px] lg:max-w-[280px] aspect-[1086/1448] origin-center flex items-center justify-center pointer-events-auto"
         >
 
 

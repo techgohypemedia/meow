@@ -6,44 +6,44 @@ import Image from "next/image";
 export default function HeroBackground() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0">
-      {/* ── Base Cream Background ── */}
-      <div className="absolute inset-0 bg-[#FEFAEF]" />
+      {/* ── Base Peach Background ── */}
+      <div className="absolute inset-0 bg-[#FEF8EA]" />
 
-      {/* ── Decorative Brick Accents (Color: #F4EBD8) Matching Mockup ── */}
+      {/* ── Decorative Brick Accents (Color: #EDDEC5) Matching Mockup ── */}
       {/* Top Right Brick Cluster */}
       <div className="absolute top-24 sm:top-28 right-4 sm:right-12 md:right-20 flex flex-col gap-2 opacity-90">
         <div className="flex gap-2">
-          <div className="w-12 sm:w-16 h-3 sm:h-4 bg-[#F4EBD8] rounded-[3px]" />
-          <div className="w-16 sm:w-20 h-3 sm:h-4 bg-[#F4EBD8] rounded-[3px]" />
+          <div className="w-12 sm:w-16 h-3 sm:h-4 bg-[#EDDEC5] rounded-[3px]" />
+          <div className="w-16 sm:w-20 h-3 sm:h-4 bg-[#EDDEC5] rounded-[3px]" />
         </div>
         <div className="flex gap-2 ml-6 sm:ml-8">
-          <div className="w-20 sm:w-24 h-3 sm:h-4 bg-[#F4EBD8] rounded-[3px]" />
-          <div className="w-10 sm:w-14 h-3 sm:h-4 bg-[#F4EBD8] rounded-[3px]" />
+          <div className="w-20 sm:w-24 h-3 sm:h-4 bg-[#EDDEC5] rounded-[3px]" />
+          <div className="w-10 sm:w-14 h-3 sm:h-4 bg-[#EDDEC5] rounded-[3px]" />
         </div>
       </div>
 
       {/* Right Middle Brick Accent */}
       <div className="absolute top-[26%] sm:top-[28%] right-3 sm:right-8 md:right-16 flex flex-col gap-2 opacity-80">
-        <div className="w-16 sm:w-20 h-3 sm:h-4 bg-[#F4EBD8] rounded-[3px]" />
-        <div className="w-12 sm:w-16 h-3 sm:h-4 bg-[#F4EBD8] rounded-[3px] ml-4" />
+        <div className="w-16 sm:w-20 h-3 sm:h-4 bg-[#EDDEC5] rounded-[3px]" />
+        <div className="w-12 sm:w-16 h-3 sm:h-4 bg-[#EDDEC5] rounded-[3px] ml-4" />
       </div>
 
       {/* Left Middle Brick Cluster (above left litter hill) */}
       <div className="absolute top-[24%] sm:top-[26%] left-3 sm:left-8 md:left-14 flex flex-col gap-2 opacity-80">
         <div className="flex gap-2">
-          <div className="w-14 sm:w-18 h-3 sm:h-4 bg-[#F4EBD8] rounded-[3px]" />
-          <div className="w-10 sm:w-14 h-3 sm:h-4 bg-[#F4EBD8] rounded-[3px]" />
+          <div className="w-14 sm:w-18 h-3 sm:h-4 bg-[#EDDEC5] rounded-[3px]" />
+          <div className="w-10 sm:w-14 h-3 sm:h-4 bg-[#EDDEC5] rounded-[3px]" />
         </div>
-        <div className="w-16 sm:w-22 h-3 sm:h-4 bg-[#F4EBD8] rounded-[3px] ml-5" />
+        <div className="w-16 sm:w-22 h-3 sm:h-4 bg-[#EDDEC5] rounded-[3px] ml-5" />
       </div>
 
       {/* ── Seamless White Floor Base (Fills any bottom space) ── */}
       <div className="absolute bottom-0 inset-x-0 h-[4vh] sm:h-[6vh] md:h-[8vh] bg-white z-0" />
 
       {/* ── Complete Hero Artwork (Blue Litter Hills, Peeking Cat & White Floor) ── */}
-      {/* Mobile view (< md: 768px): Uses the vertical portrait artwork */}
-      <div className="md:hidden absolute bottom-0 inset-x-0 w-full flex justify-center items-end pointer-events-none z-10 overflow-hidden">
-        <div className="relative w-full max-w-[480px] aspect-[941/1672] min-h-[320px]">
+      {/* Mobile view (< md: 768px): Uses the vertical portrait artwork scaled so the cat is prominent and large matching mockup */}
+      <div className="md:hidden absolute bottom-0 inset-x-0 w-full flex justify-center items-end pointer-events-none z-10 overflow-hidden h-[54vh] sm:h-[58vh]">
+        <div className="relative w-full h-full min-w-[360px] max-w-[500px]">
           <Image
             src="/hero-cat-hills-mobile.png"
             alt="Meow Ganics Litter Hills & Peeking Cat Mobile"
