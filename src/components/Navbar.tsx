@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import CartIcon from "@/components/CartIcon";
+import ProfileMenu from "@/components/ProfileMenu";
 
 interface NavbarProps {
   theme?: "blue" | "light";
@@ -65,18 +66,21 @@ export default function Navbar({ theme = "blue" }: NavbarProps) {
       </nav>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-3 md:gap-5">
-        {/* Shopping Cart Button with Dynamic Item Count */}
+      <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
+        {/* Cat Symbol Profile Menu (Frameless) */}
+        <ProfileMenu theme="frameless" />
+
+        {/* Shopping Cart Button with Dynamic Item Count (Frameless) */}
         <button
           onClick={openCart}
-          className="relative p-2 md:p-3 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer bg-brand-white rounded-2xl border-[3px] border-brand-black shadow-[3px_3px_0px_#111111]"
+          className="relative p-1 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer text-brand-black"
           aria-label={`Open Cart with ${totalItems} items`}
         >
           {/* Doodle Style Cart Icon */}
           <CartIcon className="w-7 h-7 md:w-8 md:h-8 text-brand-black" />
 
           {/* Badge Counter */}
-          <span className="absolute -top-2 -right-2 bg-brand-black text-brand-white text-[11px] md:text-xs font-heading font-black min-w-[22px] h-[22px] px-1 rounded-full flex items-center justify-center border-2 border-brand-white shadow-[1px_1px_0px_#111111] animate-in zoom-in">
+          <span className="absolute -top-1.5 -right-2 bg-brand-black text-brand-white text-[10px] md:text-xs font-heading font-black min-w-[20px] h-[20px] px-1 rounded-full flex items-center justify-center shadow-xs animate-in zoom-in">
             {totalItems}
           </span>
         </button>
@@ -124,6 +128,15 @@ export default function Navbar({ theme = "blue" }: NavbarProps) {
           >
             Reviews & Guarantee
           </Link>
+          <div className="pt-3 border-t-2 border-brand-black/10 flex items-center justify-between">
+            <span className="font-heading text-sm font-bold text-brand-black/80 flex items-center gap-1.5">
+              <span>🐱</span>
+              <span>VIP Cat Club: 480 🐾</span>
+            </span>
+            <span className="text-[11px] font-heading font-black bg-[#A9D3F4] px-2 py-0.5 rounded-full border border-brand-black">
+              Active Member
+            </span>
+          </div>
         </div>
       )}
     </motion.header>

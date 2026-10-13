@@ -8,6 +8,7 @@ import InteractiveCat from "./InteractiveCat";
 import HeroBackground from "./HeroBackground";
 import { useCart } from "@/context/CartContext";
 import CartIcon from "@/components/CartIcon";
+import ProfileMenu from "@/components/ProfileMenu";
 
 export interface OryzoItem {
   id: string;
@@ -636,31 +637,40 @@ export default function HeroScrollExperience() {
           />
         </Link>
 
-        {/* Right Actions: Cart & Shop Litter */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          {/* Shopping Bag / Doodle Cat Icon */}
-          <button
-            onClick={openCart}
-            className={`relative p-2.5 sm:p-3 hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer rounded-full border shadow-lg ${
-              introPhase === "hero"
-                ? "bg-white hover:bg-white/90 text-brand-black border-black/15 shadow-[0_4px_16px_rgba(0,0,0,0.18)]"
-                : "bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-md"
-            }`}
-            aria-label="Open Cart"
-          >
-            {/* Doodle Style Cart Icon */}
-            <CartIcon className="w-6 h-6 sm:w-6.5 sm:h-6.5" />
-
-            <span
-              className={`absolute -top-1 -right-1 text-[10px] font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-md ${
-                introPhase === "hero"
-                  ? "bg-black text-white"
-                  : "bg-white text-brand-black"
+        {/* Right Actions: Laptop Header (Desktop/Tablet) or Scrolled Mobile Header */}
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+          {/* Profile Menu with Cat Symbol (Hidden on mobile during hero phase, visible on laptop or when scrolled) */}
+          <div className={introPhase === "hero" ? "hidden md:flex" : "flex"}>
+            <ProfileMenu
+              theme="frameless"
+              dropdownAlign="right"
+              iconClassName={`w-6.5 h-6.5 sm:w-7 sm:h-7 ${
+                introPhase === "hero" ? "text-brand-black" : "text-white"
               }`}
+            />
+          </div>
+
+          {/* Shopping Cart Button (Hidden on mobile during hero phase, visible on laptop or when scrolled) */}
+          <div className={introPhase === "hero" ? "hidden md:flex" : "flex"}>
+            <button
+              onClick={openCart}
+              className={`relative p-1 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer ${
+                introPhase === "hero" ? "text-brand-black" : "text-white"
+              }`}
+              aria-label="Open Cart"
             >
-              {totalItems}
-            </span>
-          </button>
+              <CartIcon className="w-6.5 h-6.5 sm:w-7 sm:h-7" />
+              <span
+                className={`absolute -top-1.5 -right-2 text-[10px] font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-xs ${
+                  introPhase === "hero"
+                    ? "bg-brand-black text-brand-white"
+                    : "bg-brand-white text-brand-black"
+                }`}
+              >
+                {totalItems}
+              </span>
+            </button>
+          </div>
 
           {/* Shop Litter Button */}
           <button
@@ -684,6 +694,30 @@ export default function HeroScrollExperience() {
           </button>
         </div>
       </nav>
+
+      {/* ── Mobile Action Icons in Right Corner (Hero View: md:hidden) ── */}
+      {introPhase === "hero" && (
+        <div className="md:hidden absolute top-[130px] xs:top-[136px] sm:top-[144px] right-4 xs:right-6 z-40 flex items-center gap-4 xs:gap-5 pointer-events-auto">
+          {/* Left Red Circle: Cat Symbol Profile Menu (Frameless, No Circle Container) */}
+          <ProfileMenu
+            theme="frameless"
+            dropdownAlign="right"
+            iconClassName="w-8 h-8 xs:w-8.5 xs:h-8.5 text-brand-black"
+          />
+
+          {/* Right Red Circle: Cart Icon with Badge (Frameless, No Circle Container) */}
+          <button
+            onClick={openCart}
+            className="relative p-1 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer text-brand-black"
+            aria-label="Open Cart"
+          >
+            <CartIcon className="w-8 h-8 xs:w-8.5 xs:h-8.5 text-brand-black" />
+            <span className="absolute -top-1.5 -right-2 bg-brand-black text-brand-white text-[10px] font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-xs">
+              {totalItems}
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* Layer 5: Hero Product Bag with 3-Step Choreography: Hill -> Center Spotlight -> Minimizes into Slide Frame */}
       <div className="absolute inset-0 z-40 pointer-events-none flex items-center justify-center">

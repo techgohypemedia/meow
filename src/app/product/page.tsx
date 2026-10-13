@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import CartIcon from "@/components/CartIcon";
+import ProfileMenu from "@/components/ProfileMenu";
 
 export default function ProductPage() {
   const { totalItems, openCart, addToCart } = useCart();
@@ -73,15 +74,18 @@ export default function ProductPage() {
             <span>Back to Experience</span>
           </Link>
 
-          {/* Shopping Bag Icon */}
+          {/* Cat Symbol Profile Menu (Frameless) */}
+          <ProfileMenu theme="frameless" iconClassName="w-6.5 h-6.5 text-white" />
+
+          {/* Shopping Bag Icon (Frameless) */}
           <button
             onClick={openCart}
-            className="relative p-2.5 md:p-3 hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer bg-white/10 hover:bg-white/20 text-white rounded-full border border-white/20 shadow-md backdrop-blur-md"
+            className="relative p-1 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer text-white"
             aria-label="Open Cart"
           >
             {/* Doodle Style Cart Icon */}
-            <CartIcon className="w-6 h-6 md:w-6.5 md:h-6.5" />
-            <span className="absolute -top-1 -right-1 bg-white text-brand-black text-[10px] md:text-xs font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-md">
+            <CartIcon className="w-6.5 h-6.5" />
+            <span className="absolute -top-1.5 -right-2 bg-white text-brand-black text-[10px] md:text-xs font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-xs">
               {totalItems}
             </span>
           </button>
