@@ -16,7 +16,7 @@ import {
   Check,
   UserCheck,
 } from "lucide-react";
-import CatProfileIcon from "@/components/CatProfileIcon";
+import ProfileIcon from "@/components/ProfileIcon";
 
 interface ProfileMenuProps {
   theme?: "frameless" | "brutalist" | "glass-dark" | "glass-light";
@@ -131,7 +131,7 @@ export default function ProfileMenu({
   const isGlassDark = theme === "glass-dark";
 
   const buttonStyle = isFrameless
-    ? "p-1.5 hover:scale-115 active:scale-95 transition-transform text-brand-black"
+    ? "p-1 hover:scale-110 active:scale-95 transition-transform text-brand-black"
     : isBrutalist
     ? "bg-brand-white text-brand-black rounded-2xl border-[3px] border-brand-black shadow-[3px_3px_0px_#111111] hover:shadow-[1px_1px_0px_#111111] hover:translate-x-[2px] hover:translate-y-[2px]"
     : isGlassDark
@@ -154,7 +154,7 @@ export default function ProfileMenu({
           transition={{ duration: 0.3 }}
           className="relative flex items-center justify-center"
         >
-          <CatProfileIcon
+          <ProfileIcon
             className={iconClassName}
           />
         </motion.div>
@@ -187,7 +187,7 @@ export default function ProfileMenu({
                       className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl border-[2.5px] border-brand-black shadow-[2px_2px_0px_#111111] flex items-center justify-center text-2xl overflow-hidden"
                       style={{ backgroundColor: activeCat?.avatarColor || "#FFFFFF" }}
                     >
-                      <CatProfileIcon className="w-10 h-10 text-brand-black" />
+                      <ProfileIcon className="w-10 h-10 text-brand-black" />
                     </div>
                     <span className="absolute -top-1 -right-1 bg-amber-400 text-brand-black text-[10px] font-heading font-black px-1 rounded-full border border-brand-black shadow-xs">
                       ★ VIP
