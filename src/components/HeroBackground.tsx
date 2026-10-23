@@ -43,20 +43,20 @@ export default function HeroBackground() {
       {/* ── Complete Hero Artwork (Blue Litter Hills, Peeking Cat & White Floor) ── */}
       {/* Mobile view (< md: 768px): Uses the vertical portrait artwork scaled so the cat is prominent and large matching mockup */}
       {/* Artwork is 941x1672: the cat spans x 462-848 (~41% of its width, centred at 69.6%), ears at
-          y=1180, paws at y=1430. Scaled to 120vw, shifted -14.1vw and dropped 6.5vw, the cat is ~49vw
-          wide (paws 44.8vw-94vw, leaving a gap on the right), ears ~56.2vw and paws ~24.4vw above
-          the bottom edge.
+          y=1180, paws at y=1430, head x 520-815. Scaled to 109vw, shifted -8.6vw and dropped 3.5vw:
+          head spans ~51.4vw-85.4vw, paws ~44.8vw-89vw, ears ~53.2vw and paws ~24.4vw above the
+          bottom edge (matches the mockup measured at full phone width).
           The wrapper is clipped to 75vw tall so the artwork's cream sky doesn't cover the bricks. */}
       <div className="md:hidden absolute bottom-0 inset-x-0 h-[75vw] pointer-events-none z-10 overflow-hidden">
         <div
           className="absolute"
-          style={{ width: "120vw", aspectRatio: "941 / 1672", left: "-14.1vw", bottom: "-6.5vw" }}
+          style={{ width: "109vw", aspectRatio: "941 / 1672", left: "-8.6vw", bottom: "-3.5vw" }}
         >
           <Image
             src="/hero-cat-hills-mobile.png"
             alt="Meow Ganics Litter Hills & Peeking Cat Mobile"
             fill
-            sizes="120vw"
+            sizes="109vw"
             className="object-contain"
             priority
           />

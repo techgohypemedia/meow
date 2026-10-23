@@ -84,18 +84,19 @@ export default function HeroScrollExperience() {
   // Precise mobile hero position matching the portrait artwork (Image 1 & Image 2)
   // Artwork is 941w x 1672h, pinned to bottom-0
   const isMobileView = viewport.width ? viewport.width < 768 : isMobile;
-  // Mobile hero position: bag ~40vw wide centred at 30vw so its right edge just tucks over the
-  // cat's left paw. The mobile artwork (HeroBackground) puts the ears 0.562vw above the viewport
-  // bottom; the bag top sits ~5vw above them (0.615vw), matching the mockup.
+  // Mobile hero position, measured from the mockup at full phone width (HeroBackground puts the
+  // cat's paws at ~44.8vw-89vw and its ear tips 0.532vw above the viewport bottom):
+  //   bag ~43vw wide, centred at 26vw so it spans ~4.5vw-47.5vw and just meets the cat's left
+  //   paw; bag top 0.66vw above the bottom so the bag grows evenly up and down.
   const mobileBagBaseWidth = viewport.width >= 640
     ? Math.min(viewport.width * 0.30, 220)
     : Math.min(viewport.width * 0.42, 205);
-  const mobileBagWidth = viewport.width * 0.40;
+  const mobileBagWidth = viewport.width * 0.43;
   const mobileBagHeight = mobileBagWidth * (1448 / 1086);
   const mobileHeroScale = mobileBagBaseWidth ? mobileBagWidth / mobileBagBaseWidth : 1.0;
-  const mobileHeroX = viewport.width ? viewport.width * (0.30 - 0.5) : "-20vw";
+  const mobileHeroX = viewport.width ? viewport.width * (0.26 - 0.5) : "-24vw";
   const mobileHeroY = viewport.height
-    ? viewport.height / 2 - (viewport.width * 0.615 - mobileBagHeight / 2)
+    ? viewport.height / 2 - (viewport.width * 0.66 - mobileBagHeight / 2)
     : "26.5vh";
 
   // Laptop hero position (>= 1024px): bag locked bottom-left on the floor, sized off viewport
