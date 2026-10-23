@@ -42,21 +42,51 @@ export default function HeroBackground() {
 
       {/* ── Complete Hero Artwork (Blue Litter Hills, Peeking Cat & White Floor) ── */}
       {/* Mobile view (< md: 768px): Uses the vertical portrait artwork scaled so the cat is prominent and large matching mockup */}
-      <div className="md:hidden absolute bottom-0 inset-x-0 w-full flex justify-center items-end pointer-events-none z-10 overflow-hidden h-[54vh] sm:h-[58vh]">
-        <div className="relative w-full h-full min-w-[360px] max-w-[500px]">
+      {/* Artwork is 941x1672: the cat spans x 462-848 (~41% of its width, centred at 69.6%), ears at
+          y=1180, paws at y=1430. Scaled to 120vw, shifted -14.1vw and dropped 6.5vw, the cat is ~49vw
+          wide (paws 44.8vw-94vw, leaving a gap on the right), ears ~56.2vw and paws ~24.4vw above
+          the bottom edge.
+          The wrapper is clipped to 75vw tall so the artwork's cream sky doesn't cover the bricks. */}
+      <div className="md:hidden absolute bottom-0 inset-x-0 h-[75vw] pointer-events-none z-10 overflow-hidden">
+        <div
+          className="absolute"
+          style={{ width: "120vw", aspectRatio: "941 / 1672", left: "-14.1vw", bottom: "-6.5vw" }}
+        >
           <Image
             src="/hero-cat-hills-mobile.png"
             alt="Meow Ganics Litter Hills & Peeking Cat Mobile"
             fill
-            sizes="100vw"
-            className="object-cover object-bottom w-full h-full"
+            sizes="120vw"
+            className="object-contain"
             priority
           />
         </div>
       </div>
 
-      {/* Desktop & Tablet view (>= md: 768px): Uses the landscape artwork */}
-      <div className="hidden md:flex absolute bottom-0 inset-x-0 w-full justify-center items-end pointer-events-none z-10 overflow-hidden">
+      {/* Laptop view (>= lg: 1024px): artwork scaled off viewport width so the cat stays locked
+          right of centre (~72vw) with its paws ~12vh above the bottom edge on every laptop.
+          Artwork is 1672x941 and the cat's paws sit at y=800 (141px above the image bottom). */}
+      <div
+        className="hidden lg:block absolute pointer-events-none z-10"
+        style={{
+          width: "160vw",
+          aspectRatio: "1672 / 941",
+          left: "-34vw",
+          bottom: "calc(12vh - 160vw * 141 / 1672)",
+        }}
+      >
+        <Image
+          src="/hero-cat-hills.png"
+          alt="Meow Ganics Litter Hills & Peeking Cat"
+          fill
+          sizes="160vw"
+          className="object-contain"
+          priority
+        />
+      </div>
+
+      {/* Tablet view (md to lg): Uses the landscape artwork */}
+      <div className="hidden md:flex lg:hidden absolute bottom-0 inset-x-0 w-full justify-center items-end pointer-events-none z-10 overflow-hidden">
         <div className="relative w-full aspect-[1672/941] min-h-[300px] md:min-h-[340px] max-h-[66vh] md:max-h-[74vh]">
           <Image
             src="/hero-cat-hills.png"

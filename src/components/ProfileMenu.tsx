@@ -131,7 +131,7 @@ export default function ProfileMenu({
   const isGlassDark = theme === "glass-dark";
 
   const buttonStyle = isFrameless
-    ? "p-1 hover:scale-110 active:scale-95 transition-transform text-brand-black"
+    ? "p-0 md:p-1 hover:scale-110 active:scale-95 transition-transform text-brand-black"
     : isBrutalist
     ? "bg-brand-white text-brand-black rounded-2xl border-[3px] border-brand-black shadow-[3px_3px_0px_#111111] hover:shadow-[1px_1px_0px_#111111] hover:translate-x-[2px] hover:translate-y-[2px]"
     : isGlassDark

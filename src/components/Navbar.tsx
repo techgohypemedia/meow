@@ -66,14 +66,14 @@ export default function Navbar({ theme = "blue" }: NavbarProps) {
       </nav>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
+      <div className="fixed top-6 right-3 z-50 flex items-center gap-0 rounded-full bg-brand-blue/90 backdrop-blur-sm px-1.5 py-0.5 md:static md:gap-5 md:bg-transparent md:backdrop-blur-none md:p-0 md:rounded-none">
         {/* Cat Symbol Profile Menu (Frameless) */}
         <ProfileMenu theme="frameless" />
 
         {/* Shopping Cart Button with Dynamic Item Count (Frameless) */}
         <button
           onClick={openCart}
-          className="relative p-1 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer text-brand-black"
+          className="relative p-0 md:p-1 -ml-2.5 md:ml-0 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer text-brand-black"
           aria-label={`Open Cart with ${totalItems} items`}
         >
           {/* Doodle Style Cart Icon */}

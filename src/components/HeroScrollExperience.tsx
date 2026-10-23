@@ -84,10 +84,29 @@ export default function HeroScrollExperience() {
   // Precise mobile hero position matching the portrait artwork (Image 1 & Image 2)
   // Artwork is 941w x 1672h, pinned to bottom-0
   const isMobileView = viewport.width ? viewport.width < 768 : isMobile;
-  const mobileArtworkWidth = viewport.width ? Math.min(viewport.width, 480) : 390;
-  // In mockup: Bag rests on the white floor at the bottom-left beside the cat
-  const mobileHeroX = viewport.width ? -0.23 * mobileArtworkWidth : "-23vw";
-  const mobileHeroY = viewport.height ? 0.265 * viewport.height : "26.5vh";
+  // Mobile hero position: bag ~40vw wide centred at 30vw so its right edge just tucks over the
+  // cat's left paw. The mobile artwork (HeroBackground) puts the ears 0.562vw above the viewport
+  // bottom; the bag top sits ~5vw above them (0.615vw), matching the mockup.
+  const mobileBagBaseWidth = viewport.width >= 640
+    ? Math.min(viewport.width * 0.30, 220)
+    : Math.min(viewport.width * 0.42, 205);
+  const mobileBagWidth = viewport.width * 0.40;
+  const mobileBagHeight = mobileBagWidth * (1448 / 1086);
+  const mobileHeroScale = mobileBagBaseWidth ? mobileBagWidth / mobileBagBaseWidth : 1.0;
+  const mobileHeroX = viewport.width ? viewport.width * (0.30 - 0.5) : "-20vw";
+  const mobileHeroY = viewport.height
+    ? viewport.height / 2 - (viewport.width * 0.615 - mobileBagHeight / 2)
+    : "26.5vh";
+
+  // Laptop hero position (>= 1024px): bag locked bottom-left on the floor, sized off viewport
+  // width like the background artwork so bag and cat keep the same layout on every laptop.
+  // Bag is 22vw wide, centred at 28vw, bottom edge 3vh above the viewport bottom.
+  const isLaptopView = viewport.width >= 1024;
+  const laptopBagBaseWidth = Math.min(viewport.width * 0.19, 280);
+  const laptopBagHeight = viewport.width * 0.22 * (1448 / 1086);
+  const laptopHeroX = viewport.width * (0.28 - 0.5);
+  const laptopHeroY = viewport.height * 0.47 - laptopBagHeight / 2;
+  const laptopHeroScale = laptopBagBaseWidth ? (viewport.width * 0.22) / laptopBagBaseWidth : 0.92;
 
   // Responsive Carousel Card Dimensions (Enlarged banner for mobile view, tuned for mobile viewport height)
   const isTablet = viewport.width ? viewport.width >= 640 && viewport.width < 1024 : false;
@@ -632,7 +651,7 @@ export default function HeroScrollExperience() {
             alt="Meow Ganics Logo"
             width={1776}
             height={725}
-            className="w-[72vw] xs:w-[74vw] max-w-[315px] sm:max-w-none sm:w-[260px] md:w-[285px] lg:w-[310px] h-auto max-h-[114px] xs:max-h-[126px] sm:max-h-[84px] md:max-h-[92px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_2px_6px_rgba(0,0,0,0.10)]"
+            className="w-[72vw] xs:w-[74vw] max-w-[315px] sm:max-w-none sm:w-[260px] md:w-[285px] lg:w-[340px] h-auto max-h-[114px] xs:max-h-[126px] sm:max-h-[84px] md:max-h-[92px] lg:max-h-[139px] object-contain object-left transition-transform duration-300 group-hover:scale-105 origin-left drop-shadow-[0_2px_6px_rgba(0,0,0,0.10)]"
             priority
           />
         </Link>
@@ -640,7 +659,7 @@ export default function HeroScrollExperience() {
         {/* Right Actions: Laptop Header (Desktop/Tablet) or Scrolled Mobile Header */}
         <div className="flex items-center gap-3 sm:gap-4 shrink-0">
           {/* Profile Menu with Cat Symbol (Hidden on mobile during hero phase, visible on laptop or when scrolled) */}
-          <div className={introPhase === "hero" ? "hidden md:flex" : "flex"}>
+          <div className="hidden md:flex">
             <ProfileMenu
               theme="frameless"
               dropdownAlign="right"
@@ -651,7 +670,7 @@ export default function HeroScrollExperience() {
           </div>
 
           {/* Shopping Cart Button (Hidden on mobile during hero phase, visible on laptop or when scrolled) */}
-          <div className={introPhase === "hero" ? "hidden md:flex" : "flex"}>
+          <div className="hidden md:flex">
             <button
               onClick={openCart}
               className={`relative p-1 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer ${
@@ -696,23 +715,33 @@ export default function HeroScrollExperience() {
       </nav>
 
       {/* ── Mobile Action Icons in Right Corner (Hero View: md:hidden) ── */}
-      {introPhase === "hero" && (
-        <div className="md:hidden absolute top-[130px] xs:top-[136px] sm:top-[144px] right-4 xs:right-6 z-40 flex items-center gap-4 xs:gap-5 pointer-events-auto">
+      {true && (
+        <div className="md:hidden fixed top-[130px] xs:top-[136px] sm:top-[144px] right-4 xs:right-6 z-40 flex items-center gap-0 pointer-events-auto">
           {/* Left Red Circle: Cat Symbol Profile Menu (Frameless, No Circle Container) */}
           <ProfileMenu
             theme="frameless"
             dropdownAlign="right"
-            iconClassName="w-8 h-8 xs:w-8.5 xs:h-8.5 text-brand-black"
+            iconClassName={`w-8 h-8 xs:w-8.5 xs:h-8.5 ${
+              introPhase === "hero" ? "text-brand-black" : "text-white"
+            }`}
           />
 
           {/* Right Red Circle: Cart Icon with Badge (Frameless, No Circle Container) */}
           <button
             onClick={openCart}
-            className="relative p-1 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer text-brand-black"
+            className={`relative p-0 ml-1 hover:scale-110 active:scale-95 transition-transform flex items-center justify-center cursor-pointer ${
+              introPhase === "hero" ? "text-brand-black" : "text-white"
+            }`}
             aria-label="Open Cart"
           >
-            <CartIcon className="w-8 h-8 xs:w-8.5 xs:h-8.5 text-brand-black" />
-            <span className="absolute -top-1.5 -right-2 bg-brand-black text-brand-white text-[10px] font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-xs">
+            <CartIcon className="w-8 h-8 xs:w-8.5 xs:h-8.5" />
+            <span
+              className={`absolute -top-1.5 -right-2 text-[10px] font-heading font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-xs ${
+                introPhase === "hero"
+                  ? "bg-brand-black text-brand-white"
+                  : "bg-brand-white text-brand-black"
+              }`}
+            >
               {totalItems}
             </span>
           </button>
@@ -727,12 +756,16 @@ export default function HeroScrollExperience() {
               introPhase === "hero"
                 ? isMobileView
                   ? mobileHeroX
+                  : isLaptopView
+                  ? laptopHeroX
                   : "-26vw"
                 : "0vw",
             y:
               introPhase === "hero"
                 ? isMobileView
                   ? mobileHeroY
+                  : isLaptopView
+                  ? laptopHeroY
                   : "16vh"
                 : "0vh",
             rotate:
@@ -750,7 +783,9 @@ export default function HeroScrollExperience() {
             scale:
               introPhase === "hero"
                 ? isMobileView
-                  ? 1.0
+                  ? mobileHeroScale
+                  : isLaptopView
+                  ? laptopHeroScale
                   : 0.92
                 : introPhase === "spotlight" || introPhase === "stabilizing"
                 ? isMobileView
@@ -1356,10 +1391,10 @@ export default function HeroScrollExperience() {
           ══════════════════════════════════════════════════════════════════════════════════════ */}
       {/* ── Fixed Center-Bottom Explore Button (Hero Mode) ── */}
       {introPhase === "hero" && (
-        <div className="absolute bottom-[max(0.4rem,env(safe-area-inset-bottom,0px))] sm:bottom-6 md:bottom-8 inset-x-0 mx-auto w-fit z-50 flex items-center justify-center pointer-events-auto">
+        <div className="absolute bottom-[max(0.4rem,env(safe-area-inset-bottom,0px))] sm:bottom-6 md:bottom-8 lg:bottom-3 inset-x-0 mx-auto w-fit z-50 flex items-center justify-center pointer-events-auto">
           <button
             onClick={handleNext}
-            className="flex items-center gap-1.5 sm:gap-2 text-brand-black font-heading font-bold cursor-pointer hover:scale-105 active:scale-95 transition-all bg-brand-white/90 hover:bg-brand-white backdrop-blur-md px-3 sm:px-5 py-1 sm:py-2 rounded-full border border-brand-black/20 shadow-md text-[10.5px] sm:text-sm"
+            className="flex items-center gap-1.5 sm:gap-2 text-brand-black font-heading font-bold cursor-pointer hover:scale-105 active:scale-95 transition-all bg-brand-white/90 hover:bg-brand-white backdrop-blur-md px-3 sm:px-5 lg:px-3.5 py-1 sm:py-2 lg:py-1 rounded-full border border-brand-black/20 shadow-md text-[10.5px] sm:text-sm lg:text-xs"
           >
             <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-brand-black animate-pulse" />
             <span className="sm:hidden">Scroll to explore</span>
