@@ -1078,7 +1078,7 @@ export default function HeroScrollExperience() {
               style={{
                 left: isMobile ? "50%" : "max(2.5rem, calc(50% - 580px))",
                 bottom: isMobile ? "calc(4.5rem + env(safe-area-inset-bottom, 0px))" : "auto",
-                top: isMobile ? "auto" : "50%",
+                top: isMobile ? "auto" : "calc(50% + 52px)",
                 position: "absolute",
                 zIndex: 45,
               }}
