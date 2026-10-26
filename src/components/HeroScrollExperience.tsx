@@ -49,7 +49,7 @@ export const ORYZO_ITEMS: OryzoItem[] = [
 ];
 
 export type ShowcaseStage = "carousel" | "focus" | "details";
-export type IntroPhase = "hero" | "spotlight" | "stabilizing" | "docked";
+export type IntroPhase = "hero" | "spotlight" | "box" | "blur" | "docked";
 
 export default function HeroScrollExperience() {
   const [isMobile, setIsMobile] = useState(false);
@@ -109,15 +109,15 @@ export default function HeroScrollExperience() {
   const laptopHeroY = viewport.height * 0.47 - laptopBagHeight / 2;
   const laptopHeroScale = laptopBagBaseWidth ? (viewport.width * 0.22) / laptopBagBaseWidth : 0.92;
 
-  // Responsive Carousel Card Dimensions (Enlarged banner for mobile view, tuned for mobile viewport height)
+  // Responsive Carousel Card Dimensions (Comfortable margins so it does not touch header top or controls bottom)
   const isTablet = viewport.width ? viewport.width >= 640 && viewport.width < 1024 : false;
-  const rawCardWidth = !isMobile ? 380 : isTablet ? 340 : (viewport.width ? Math.min(Math.round(viewport.width * 0.74), 280) : 270);
-  const maxMobileCardHeight = viewport.height ? Math.round(viewport.height * 0.42) : 330;
-  const cardWidth = !isMobile ? 380 : isTablet ? 340 : rawCardWidth;
-  const cardHeight = !isMobile ? 510 : isTablet ? 455 : Math.min(Math.round(cardWidth * (510 / 380)), maxMobileCardHeight);
+  const rawCardWidth = !isMobile ? 335 : isTablet ? 305 : (viewport.width ? Math.min(Math.round(viewport.width * 0.70), 260) : 250);
+  const maxMobileCardHeight = viewport.height ? Math.round(viewport.height * 0.38) : 310;
+  const cardWidth = !isMobile ? 335 : isTablet ? 305 : rawCardWidth;
+  const cardHeight = !isMobile ? 445 : isTablet ? 405 : Math.min(Math.round(cardWidth * (445 / 335)), maxMobileCardHeight);
 
-  // Scaled to fit cleanly INSIDE the dashed box (no enlarging or overflowing outside the card)
-  const inBoxBagScale = isMobileView ? 0.78 : 0.88;
+  // Scaled to fit cleanly INSIDE the dashed box with breathing room on top and bottom
+  const inBoxBagScale = isMobileView ? 0.72 : 0.80;
 
   // Lock body scroll to power the smooth choreographed steps
   useEffect(() => {
@@ -126,21 +126,6 @@ export default function HeroScrollExperience() {
       document.body.style.overflow = "";
     };
   }, []);
-
-  // Dedicated reliable state-machine for intro progression
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (introPhase === "stabilizing") {
-      timer = setTimeout(() => {
-        setIntroPhase("docked");
-        setIsDocked(true);
-        setStage("carousel");
-      }, 350);
-    }
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, [introPhase]);
 
   const currentItem = ORYZO_ITEMS[activeIndex] || ORYZO_ITEMS[0];
   // Total steps: Carousel slides (5) + Focus step (1) + Product details (1)
@@ -159,27 +144,45 @@ export default function HeroScrollExperience() {
   }, [introPhase]);
 
   const handleNext = useCallback(() => {
-    if (introPhase === "stabilizing") return;
-
-    // Step 0 -> Step 1: Hero to Center Spotlight
+    // Step 0 -> Step 1: Hero to Center Spotlight (pure black background, center bag, no box, no blur, no text)
     if (introPhase === "hero") {
       setIntroPhase("spotlight");
       isWheelDebounced.current = true;
       setTimeout(() => {
         isWheelDebounced.current = false;
-      }, 550);
+      }, 500);
       return;
     }
 
-    // Step 1 -> Step 2: Smoothly enter carousel banner (syncs bag and banner simultaneously)
-    if (introPhase === "spotlight" || (!isDocked && introPhase !== "docked")) {
+    // Step 1 -> Step 2: Spotlight to Clean Border Box (dashed box frames bag, clean black inside, no blur, no text)
+    if (introPhase === "spotlight") {
+      setIntroPhase("box");
+      isWheelDebounced.current = true;
+      setTimeout(() => {
+        isWheelDebounced.current = false;
+      }, 500);
+      return;
+    }
+
+    // Step 2 -> Step 3: Box to Blurred Banner Behind (blurred banner & Flushable text appear behind bag)
+    if (introPhase === "box") {
+      setIntroPhase("blur");
+      isWheelDebounced.current = true;
+      setTimeout(() => {
+        isWheelDebounced.current = false;
+      }, 500);
+      return;
+    }
+
+    // Step 3 -> Step 4: Blur to Docked Carousel Banner (un-blurs to sharp photo, bag tilts 8° & merges, side cards slide in)
+    if (introPhase === "blur" || (!isDocked && introPhase !== "docked")) {
       setIntroPhase("docked");
       setIsDocked(true);
       setStage("carousel");
       isWheelDebounced.current = true;
       setTimeout(() => {
         isWheelDebounced.current = false;
-      }, 550);
+      }, 500);
       return;
     }
 
@@ -190,8 +193,6 @@ export default function HeroScrollExperience() {
   }, [introPhase, isDocked, stage]);
 
   const handlePrev = useCallback(() => {
-    if (introPhase === "stabilizing") return;
-
     if (stage === "details" || stage === "focus") {
       // Return from Full Screen Details back to Carousel at CURRENT active slide
       setStage("carousel");
@@ -203,20 +204,44 @@ export default function HeroScrollExperience() {
         handleSlidePrev();
         return;
       }
-      // Return from Carousel to Center Spotlight
+      // Return from Docked Carousel to Blurred Banner state
       setIsDocked(false);
+      setIntroPhase("blur");
+      isWheelDebounced.current = true;
+      setTimeout(() => {
+        isWheelDebounced.current = false;
+      }, 500);
+      return;
+    }
+
+    // Return from Blurred Banner state to Clean Border Box
+    if (introPhase === "blur") {
+      setIntroPhase("box");
+      isWheelDebounced.current = true;
+      setTimeout(() => {
+        isWheelDebounced.current = false;
+      }, 500);
+      return;
+    }
+
+    // Return from Clean Border Box to Spotlight (pure black background, no box)
+    if (introPhase === "box") {
       setIntroPhase("spotlight");
       isWheelDebounced.current = true;
       setTimeout(() => {
         isWheelDebounced.current = false;
-      }, 550);
-    } else if (introPhase === "spotlight") {
-      // Return from Center Spotlight to Hero Hill
+      }, 500);
+      return;
+    }
+
+    // Return from Spotlight to Hero Hill
+    if (introPhase === "spotlight") {
       setIntroPhase("hero");
       isWheelDebounced.current = true;
       setTimeout(() => {
         isWheelDebounced.current = false;
-      }, 550);
+      }, 500);
+      return;
     }
   }, [introPhase, stage, isDocked, activeIndex, handleSlidePrev]);
 
@@ -237,27 +262,22 @@ export default function HeroScrollExperience() {
     }
   }, [slideDir, activeIndex]);
 
-  // Continuous Wheel listener
+    // Continuous Wheel listener
   const handleWheel = (e: React.WheelEvent) => {
     if (isWheelDebounced.current) return;
-    if (introPhase === "stabilizing") return;
 
-    // In spotlight, smoothly enter carousel frame on scroll down, or return to hero on scroll up
-    if (introPhase === "spotlight") {
-      if (e.deltaY > 8) {
-        setIntroPhase("docked");
-        setIsDocked(true);
-        setStage("carousel");
+    // In spotlight, box, or blur: step sequentially on wheel
+    if (introPhase === "spotlight" || introPhase === "box" || introPhase === "blur") {
+      if (Math.abs(e.deltaY) > 12) {
         isWheelDebounced.current = true;
+        if (e.deltaY > 0) {
+          handleNext();
+        } else {
+          handlePrev();
+        }
         setTimeout(() => {
           isWheelDebounced.current = false;
-        }, 550);
-      } else if (e.deltaY < -8) {
-        setIntroPhase("hero");
-        isWheelDebounced.current = true;
-        setTimeout(() => {
-          isWheelDebounced.current = false;
-        }, 550);
+        }, 650);
       }
       return;
     }
@@ -374,11 +394,6 @@ export default function HeroScrollExperience() {
       setDragOffset(0);
       return;
     }
-    if (introPhase === "stabilizing") {
-      touchStartRef.current = null;
-      setDragOffset(0);
-      return;
-    }
 
     const touchEnd = e.changedTouches?.[0];
     if (!touchEnd) {
@@ -395,21 +410,19 @@ export default function HeroScrollExperience() {
     // Fast-swipe handling with responsive thresholds
     const minSwipeDist = 24;
 
-    if (introPhase === "spotlight") {
+    if (introPhase === "spotlight" || introPhase === "box" || introPhase === "blur") {
       if (diffY > 10) {
-        setIntroPhase("docked");
-        setIsDocked(true);
-        setStage("carousel");
+        handleNext();
         touchCooldownRef.current = true;
         setTimeout(() => {
           touchCooldownRef.current = false;
-        }, 600);
+        }, 550);
       } else if (diffY < -10) {
-        setIntroPhase("hero");
+        handlePrev();
         touchCooldownRef.current = true;
         setTimeout(() => {
           touchCooldownRef.current = false;
-        }, 600);
+        }, 550);
       }
       return;
     }
@@ -515,10 +528,6 @@ export default function HeroScrollExperience() {
       touchStartRef.current = null;
       return;
     }
-    if (introPhase === "stabilizing") {
-      touchStartRef.current = null;
-      return;
-    }
 
     const diffX = touchStartRef.current.x - e.clientX;
     const diffY = touchStartRef.current.y - e.clientY;
@@ -560,7 +569,7 @@ export default function HeroScrollExperience() {
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       className={`fixed inset-0 w-full h-[100dvh] max-h-[100dvh] overflow-hidden select-none flex flex-col justify-between transition-colors duration-700 ${
-        introPhase === "hero" ? "bg-[#FEF8EA]" : "bg-[#111317]"
+        introPhase === "hero" ? "bg-[#FEF8EA]" : "bg-[#07080A]"
       }`}
     >
       {/* ── Native-Feel Pull-To-Refresh Indicator (Mobile Hero Mode) ── */}
@@ -616,21 +625,19 @@ export default function HeroScrollExperience() {
         <HeroBackground />
       </motion.div>
 
-      {/* Layer 0.5: Clean Studio Solid Dark Background */}
+      {/* Layer 0.5: Clean Studio Solid Pure Black Background */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{
           opacity: introPhase === "hero" ? 0 : 1,
         }}
         transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
-        className={`absolute inset-0 bg-[#111317] pointer-events-none z-0 ${
+        className={`absolute inset-0 bg-[#07080A] pointer-events-none z-0 ${
           introPhase === "hero" ? "opacity-0 invisible pointer-events-none" : ""
         }`}
       />
 
-
-
-      {/* Layer 1: Ambient Background Color Glow (Left Warm Espresso Bloom, disabled in spotlight to preserve dark studio) */}
+      {/* Layer 1: Ambient Background Color Glow (Left Warm Espresso Bloom, disabled in spotlight and box to preserve pure dark studio) */}
       <div className={`absolute inset-0 pointer-events-none overflow-hidden z-0 ${introPhase === "hero" ? "hidden" : ""}`}>
         <motion.div
           animate={{
@@ -638,7 +645,9 @@ export default function HeroScrollExperience() {
             opacity:
               introPhase === "hero"
                 ? 0.05
-                : introPhase === "spotlight" || introPhase === "stabilizing"
+                : introPhase === "spotlight" || introPhase === "box"
+                ? 0.0
+                : introPhase === "blur"
                 ? 0.12
                 : stage === "details"
                 ? 0.35
@@ -760,7 +769,16 @@ export default function HeroScrollExperience() {
       )}
 
       {/* Layer 5: Hero Product Bag Synchronized into Banner Card (Oryzo.ai Reference Flow) */}
-      <div className="absolute inset-0 z-40 pointer-events-none flex items-center justify-center">
+      <div
+        style={{
+          clipPath:
+            introPhase === "docked"
+              ? `inset(calc(50% - ${cardHeight / 2}px + ${isMobile ? -20 : 0}px) calc(50% - ${cardWidth / 2}px) calc(50% - ${cardHeight / 2}px - ${isMobile ? -20 : 0}px) calc(50% - ${cardWidth / 2}px))`
+              : "none",
+          transition: "clip-path 0.75s cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
+        className="absolute inset-0 z-40 pointer-events-none flex items-center justify-center overflow-visible"
+      >
         <motion.div
           animate={{
             x:
@@ -770,6 +788,10 @@ export default function HeroScrollExperience() {
                   : isLaptopView
                   ? laptopHeroX
                   : "-26vw"
+                : introPhase === "docked"
+                ? isMobileView
+                  ? `${Math.round(8 * (cardWidth / 335))}px`
+                  : "8px"
                 : "0vw",
             y:
               introPhase === "hero"
@@ -778,15 +800,17 @@ export default function HeroScrollExperience() {
                   : isLaptopView
                   ? laptopHeroY
                   : "16vh"
+                : introPhase === "docked"
+                ? isMobile
+                  ? `${-20 + Math.round(-26 * (cardHeight / 445))}px`
+                  : "-26px"
                 : isMobile
                 ? "-20px"
                 : "0px",
             rotate:
-              introPhase === "hero"
-                ? 0
-                : introPhase === "spotlight" || introPhase === "stabilizing"
-                ? 0
-                : 8.0,
+              introPhase === "docked"
+                ? 12.0
+                : 0,
             rotateX: 0,
             rotateY: 0,
             scale:
@@ -796,16 +820,20 @@ export default function HeroScrollExperience() {
                   : isLaptopView
                   ? laptopHeroScale
                   : 0.92
-                : introPhase === "spotlight" || introPhase === "stabilizing"
+                : introPhase === "spotlight"
                 ? isMobileView
                   ? 1.05
-                  : 1.18
+                  : 1.15
+                : introPhase === "docked"
+                ? isMobileView
+                  ? 1.48 * (cardWidth / 335)
+                  : 1.48
                 : inBoxBagScale,
             opacity:
-              introPhase === "hero" || introPhase === "spotlight" || introPhase === "stabilizing"
-                ? 1
-                : 0,
-            pointerEvents: introPhase === "hero" || introPhase === "spotlight" ? "auto" : "none",
+              introPhase === "docked"
+                ? 0
+                : 1,
+            pointerEvents: introPhase !== "docked" ? "auto" : "none",
           }}
           transition={{
             x: {
@@ -834,10 +862,10 @@ export default function HeroScrollExperience() {
         >
           <motion.div
             onClick={() => {
-              if (introPhase === "hero" || introPhase === "spotlight") handleNext();
+              if (introPhase !== "docked") handleNext();
             }}
             animate={
-              introPhase === "spotlight"
+              introPhase === "spotlight" || introPhase === "box" || introPhase === "blur"
                 ? {
                     y: [-4, 4, -4],
                     rotate: [-0.4, 0.4, -0.4],
@@ -845,7 +873,7 @@ export default function HeroScrollExperience() {
                 : {}
             }
             transition={
-              introPhase === "spotlight"
+              introPhase === "spotlight" || introPhase === "box" || introPhase === "blur"
                 ? {
                     repeat: Infinity,
                     duration: 4,
@@ -998,11 +1026,11 @@ export default function HeroScrollExperience() {
             }}
             className="relative z-20 flex items-center justify-center origin-center shrink-0 pointer-events-auto"
           >
-            {/* Dashed Border Box: Active on the Banner in Carousel mode, hidden during Spotlight */}
+            {/* Dashed Border Box: Appears in Box stage, stays through Blur and Docked Carousel */}
             <motion.div
               animate={{
                 opacity:
-                  introPhase === "docked" && stage === "carousel"
+                  (introPhase === "box" || introPhase === "blur" || introPhase === "docked") && stage === "carousel"
                     ? 1
                     : 0,
                 scale: stage === "carousel" ? 1 : 0.92,
@@ -1018,27 +1046,23 @@ export default function HeroScrollExperience() {
               <div className="absolute -top-[1px] -right-[1px] w-3 h-3 border-t-2 border-r-2 border-white/90" />
               <div className="absolute -bottom-[1px] -left-[1px] w-3 h-3 border-b-2 border-l-2 border-white/90" />
               <div className="absolute -bottom-[1px] -right-[1px] w-3 h-3 border-b-2 border-r-2 border-white/90" />
+              {/* Top Right Accent Dot from user reference images */}
+              <div className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-white/90 shadow-[0_0_6px_rgba(255,255,255,0.8)]" />
             </motion.div>
 
-            {/* Step 1: Carousel Filmstrip (When in Carousel stage, crossfades smoothly from spotlight) */}
+            {/* Step 1: Carousel Filmstrip (Hidden in Spotlight & Box -> More Visible Banner in Blur -> Sharp in Docked) */}
             <motion.div
               className="absolute inset-0 pointer-events-none"
               animate={{
                 rotate: stage === "carousel" ? slideDir * 3 : 0,
-                opacity: stage === "carousel" && introPhase === "docked" ? 1 : 0,
-                scale: stage === "carousel" && introPhase === "docked" ? 1 : 1.04,
+                opacity: (introPhase === "blur" || introPhase === "docked") && stage === "carousel" ? 1 : 0,
+                filter: introPhase === "blur" ? "blur(7px) brightness(0.95)" : "blur(0px) brightness(1)",
+                scale: introPhase === "blur" ? 1.04 : stage === "carousel" && introPhase === "docked" ? 1 : 1.04,
               }}
               transition={{
-                opacity: {
-                  duration: 0.6,
-                  delay: introPhase === "docked" ? 0.32 : 0,
-                  ease: [0.16, 1, 0.3, 1],
-                },
-                scale: {
-                  duration: 0.75,
-                  delay: introPhase === "docked" ? 0.32 : 0,
-                  ease: [0.16, 1, 0.3, 1],
-                },
+                opacity: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+                filter: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
+                scale: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
                 rotate: { type: "spring", stiffness: 200, damping: 20, mass: 0.5 },
               }}
             >
@@ -1471,25 +1495,14 @@ export default function HeroScrollExperience() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════════════════════
-          LAYER 7: BOTTOM CONTROLS & CONTINUOUS SCROLL STATUS BAR (Spotlight / Carousel Modes)
+          LAYER 7: BOTTOM CONTROLS & CONTINUOUS SCROLL STATUS BAR (Only shown when Docked Carousel)
           ══════════════════════════════════════════════════════════════════════════════════════ */}
-      <div className={`relative z-40 max-w-7xl mx-auto w-full px-4 sm:px-8 md:px-12 flex items-center justify-between text-xs text-white/50 pointer-events-auto shrink-0 pb-[max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.25rem))] sm:pb-4 transition-all duration-300 ${
-        introPhase === "hero" ? "opacity-0 pointer-events-none" : "opacity-100"
+      <div className={`relative z-40 max-w-7xl mx-auto w-full px-4 sm:px-8 md:px-12 flex items-center justify-between text-xs text-white/50 pointer-events-auto shrink-0 pb-[max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.25rem))] sm:pb-4 transition-all duration-500 ${
+        introPhase !== "docked" ? "opacity-0 pointer-events-none invisible" : "opacity-100"
       }`}>
         {/* Left Action / Stage indicator */}
         <div className="flex items-center">
-          {introPhase === "spotlight" ? (
-            <button
-              onClick={handleNext}
-              className="flex items-center gap-2 text-white font-heading font-bold cursor-pointer hover:scale-105 active:scale-95 transition-all bg-white/15 hover:bg-white/20 backdrop-blur-md px-4 sm:px-5 py-2 rounded-full border border-white/25 shadow-[0_4px_20px_rgba(0,0,0,0.4)] text-xs group"
-            >
-              <span className="w-2 h-2 rounded-full bg-[#A9D3F4] animate-ping" />
-              <span className="tracking-wide">Scroll down to continue</span>
-              <svg className="w-3.5 h-3.5 stroke-current stroke-2 fill-none group-hover:translate-y-0.5 transition-transform" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </button>
-          ) : stage === "details" ? (
+          {stage === "details" ? (
             <div className="flex items-center gap-2 text-white/80 font-heading text-xs truncate max-w-[180px] sm:max-w-none">
               <span className="w-2 h-2 rounded-full bg-[#A9D3F4] animate-pulse shrink-0" />
               <span className="truncate">{currentItem.flavor}</span>
