@@ -1301,23 +1301,6 @@ export default function HeroScrollExperience() {
                       </button>
                     )}
                   </div>
-
-                  {/* Subtle Swipe & Scroll Gesture Hint */}
-                  <div className="flex items-center gap-2 mt-3 pt-2.5 border-t border-white/10 text-white/60 text-[11px] font-mono select-none">
-                    <span className="flex items-center gap-1 text-white/80 font-semibold">
-                      <svg className="w-3.5 h-3.5 text-[#A9D3F4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                      </svg>
-                      Swipe ⇄
-                    </span>
-                    <span className="text-white/30">•</span>
-                    <span className="flex items-center gap-1 text-white/80 font-semibold">
-                      <svg className="w-3.5 h-3.5 text-[#A9D3F4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                      </svg>
-                      Scroll ↕
-                    </span>
-                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1435,20 +1418,6 @@ export default function HeroScrollExperience() {
           transition={{ duration: 0.5 }}
           className="flex items-center gap-2.5 sm:gap-4"
         >
-          {/* Scroll & Swipe cue matching Oryzo - shown only when not in final details mode */}
-          {stage !== "details" && (
-            <div
-              onClick={handleNext}
-              className="hidden md:flex items-center gap-2 text-white/75 text-[10px] sm:text-[11px] font-mono tracking-wider uppercase select-none cursor-pointer hover:text-white transition-colors bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1 rounded-full backdrop-blur-sm"
-            >
-              <span className="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center text-white/80">
-                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </span>
-              <span>Scroll ↕ or Swipe ⇄</span>
-            </div>
-          )}
 
           {/* Dots for the carousel slides */}
           <div className="flex items-center gap-1.5 md:pl-3 md:border-l md:border-white/15">
