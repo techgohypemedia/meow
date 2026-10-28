@@ -65,6 +65,7 @@ export default function HeroScrollExperience() {
   const [dragOffset, setDragOffset] = useState(0); // horizontal drag in carousel mode
 
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const lastTouchRef = useRef<{ x: number; y: number } | null>(null);
   const touchCooldownRef = useRef(false);
   const isWheelDebounced = useRef(false);
   const transitionTimers = useRef<NodeJS.Timeout[]>([]);
@@ -394,38 +395,90 @@ export default function HeroScrollExperience() {
         y: e.touches[0].clientY,
         time: Date.now(),
       };
+      lastTouchRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
       setDragOffset(0);
       if (!isRefreshing) setPullProgress(0);
     }
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
-    if (!touchStartRef.current || isRefreshing || touchCooldownRef.current) return;
+    if (!touchStartRef.current || !lastTouchRef.current || isRefreshing || touchCooldownRef.current) return;
     const currentX = e.touches[0].clientX;
     const currentY = e.touches[0].clientY;
-    const diffX = currentX - touchStartRef.current.x;
-    const diffY = currentY - touchStartRef.current.y;
+    const totalDiffX = currentX - touchStartRef.current.x; // > 0 = drag right, < 0 = drag left
+    const totalDiffY = currentY - touchStartRef.current.y; // > 0 = drag down, < 0 = drag up
+    const stepDeltaY = (lastTouchRef.current.y - currentY) * 1.5; // > 0 = scroll down, < 0 = scroll up
+    lastTouchRef.current = { x: currentX, y: currentY };
 
     // 1. Pull down to refresh gesture in Hero phase (drag down from top)
-    if (virtualScroll.current <= 0 && diffY > 0 && Math.abs(diffY) > Math.abs(diffX)) {
-      const pull = Math.min(Math.pow(diffY, 0.82) * 1.4, 90);
+    if (virtualScroll.current <= 0 && introPhase === "hero" && totalDiffY > 0 && Math.abs(totalDiffY) > Math.abs(totalDiffX)) {
+      const pull = Math.min(Math.pow(totalDiffY, 0.82) * 1.4, 90);
       setPullProgress(pull);
       return;
     }
 
-    // 2. Interactive horizontal drag in Carousel phase
-    if (introPhase === "docked" && stage === "carousel" && Math.abs(diffX) > Math.abs(diffY)) {
-      setDragOffset(diffX * 0.75);
+    // 2. Full-screen details view: swiping/scrolling down (drag down) returns to carousel
+    if (stage === "details") {
+      if (totalDiffY > 35 && Math.abs(totalDiffY) > Math.abs(totalDiffX)) {
+        touchCooldownRef.current = true;
+        setStage("carousel");
+        setTimeout(() => {
+          touchCooldownRef.current = false;
+        }, 380);
+        touchStartRef.current = null;
+        lastTouchRef.current = null;
+      }
       return;
     }
 
-    // 3. Continuous 160vh touch scroll
-    if (stage !== "details") {
-      const totalDistance = Math.max((viewport.height || 850) * 1.60, 1150);
-      const delta = (touchStartRef.current.y - currentY) * 1.6;
-      touchStartRef.current.y = currentY;
-      virtualScroll.current = Math.min(Math.max(virtualScroll.current + delta, 0), totalDistance);
-      scrollProgress.set(virtualScroll.current / totalDistance);
+    // 3. When docked in carousel:
+    if (isDocked && stage === "carousel") {
+      // Interactive horizontal drag in Carousel phase
+      if (Math.abs(totalDiffX) > Math.abs(totalDiffY)) {
+        setDragOffset(totalDiffX * 0.75);
+        return;
+      }
+
+      // Vertical drag: dragging finger UP (scrolling DOWN) enters details!
+      if (totalDiffY < -30) {
+        touchCooldownRef.current = true;
+        setStage("details");
+        setTimeout(() => {
+          touchCooldownRef.current = false;
+        }, 420);
+        touchStartRef.current = null;
+        lastTouchRef.current = null;
+        return;
+      }
+
+      // Vertical drag: dragging finger DOWN (scrolling UP) scrolls back towards hero
+      if (totalDiffY > 20) {
+        const totalDistance = Math.max((viewport.height || 850) * 1.60, 1150);
+        virtualScroll.current = Math.min(Math.max(virtualScroll.current + stepDeltaY, 0), totalDistance);
+        scrollProgress.set(virtualScroll.current / totalDistance);
+        return;
+      }
+      return;
+    }
+
+    // 4. Continuous 160vh touch scroll (Hero -> Spotlight -> Box -> Blur -> Docked)
+    const totalDistance = Math.max((viewport.height || 850) * 1.60, 1150);
+    virtualScroll.current = Math.min(Math.max(virtualScroll.current + stepDeltaY, 0), totalDistance);
+    const progress = virtualScroll.current / totalDistance;
+    scrollProgress.set(progress);
+
+    // If scroll reached docked threshold and finger is still scrolling down with momentum
+    if (progress >= 0.98 && stepDeltaY > 16) {
+      touchCooldownRef.current = true;
+      setStage("details");
+      setTimeout(() => {
+        touchCooldownRef.current = false;
+      }, 420);
+      touchStartRef.current = null;
+      lastTouchRef.current = null;
     }
   };
 
@@ -436,6 +489,7 @@ export default function HeroScrollExperience() {
         setIsRefreshing(true);
         setPullProgress(65);
         touchStartRef.current = null;
+        lastTouchRef.current = null;
         setTimeout(() => {
           window.location.reload();
         }, 500);
@@ -445,7 +499,7 @@ export default function HeroScrollExperience() {
       }
     }
 
-    // 2. Handle interactive horizontal drag in Carousel phase
+    // 2. Handle interactive horizontal drag release in Carousel phase
     if (introPhase === "docked" && stage === "carousel" && dragOffset !== 0) {
       const currentDrag = dragOffset;
       setDragOffset(0);
@@ -461,12 +515,14 @@ export default function HeroScrollExperience() {
           handleSlidePrev();
         }
         touchStartRef.current = null;
+        lastTouchRef.current = null;
         return;
       }
     }
 
     if (!touchStartRef.current || touchCooldownRef.current) {
       touchStartRef.current = null;
+      lastTouchRef.current = null;
       setDragOffset(0);
       return;
     }
@@ -474,40 +530,55 @@ export default function HeroScrollExperience() {
     const touchEnd = e.changedTouches?.[0];
     if (!touchEnd) {
       touchStartRef.current = null;
+      lastTouchRef.current = null;
       setDragOffset(0);
       return;
     }
 
-    const diffX = touchStartRef.current.x - touchEnd.clientX;
-    const diffY = touchStartRef.current.y - touchEnd.clientY;
+    const totalDiffX = touchStartRef.current.x - touchEnd.clientX;
+    const totalDiffY = touchStartRef.current.y - touchEnd.clientY;
     touchStartRef.current = null;
+    lastTouchRef.current = null;
     setDragOffset(0);
 
-    // Fast-swipe handling with responsive thresholds
     const minSwipeDist = 20;
 
-    if (Math.abs(diffX) >= Math.abs(diffY)) {
+    // Fast-swipe handling with responsive thresholds
+    if (Math.abs(totalDiffX) >= Math.abs(totalDiffY)) {
       // Horizontal swipe fallback
-      if (introPhase === "docked" && stage === "carousel" && Math.abs(diffX) > minSwipeDist) {
+      if (introPhase === "docked" && stage === "carousel" && Math.abs(totalDiffX) > minSwipeDist) {
         touchCooldownRef.current = true;
         setTimeout(() => {
           touchCooldownRef.current = false;
         }, 360);
 
-        if (diffX > 0) handleSlideNext();
+        if (totalDiffX > 0) handleSlideNext();
         else handleSlidePrev();
       }
     } else {
       // Vertical swipe: stage transitions
-      if (Math.abs(diffY) > minSwipeDist) {
+      if (Math.abs(totalDiffY) > minSwipeDist) {
         const cooldownTime = introPhase === "hero" ? 1200 : stage !== "carousel" ? 380 : 420;
         touchCooldownRef.current = true;
         setTimeout(() => {
           touchCooldownRef.current = false;
         }, cooldownTime);
 
-        if (diffY > 0) handleNext();
-        else handlePrev();
+        if (totalDiffY > 0) {
+          // Swiped up -> scroll down
+          if (isDocked && stage === "carousel") {
+            setStage("details");
+          } else if (stage !== "details") {
+            handleNext();
+          }
+        } else {
+          // Swiped down -> scroll up
+          if (stage === "details") {
+            setStage("carousel");
+          } else {
+            handlePrev();
+          }
+        }
       }
     }
   };
@@ -627,6 +698,7 @@ export default function HeroScrollExperience() {
       onTouchEnd={onTouchEnd}
       onTouchCancel={() => {
         touchStartRef.current = null;
+        lastTouchRef.current = null;
         setDragOffset(0);
       }}
       onPointerDown={onPointerDown}
@@ -991,7 +1063,14 @@ export default function HeroScrollExperience() {
             style={{
               overflow: "hidden",
             }}
-            className="relative z-20 flex items-center justify-center origin-center shrink-0 pointer-events-auto"
+            onClick={() => {
+              if (isDocked && stage === "carousel") {
+                setStage("details");
+              }
+            }}
+            className={`relative z-20 flex items-center justify-center origin-center shrink-0 pointer-events-auto ${
+              isDocked && stage === "carousel" ? "cursor-pointer" : ""
+            }`}
           >
             {/* Dashed Border Box: Appears in Box stage, stays through Blur and Docked Carousel */}
             <motion.div
@@ -1085,11 +1164,11 @@ export default function HeroScrollExperience() {
                 className="object-cover object-center w-full h-full"
                 priority
               />
-              {/* Subtle cinematic left vignette for the glass card */}
+              {/* Subtle cinematic vignette for the glass card */}
               <motion.div
                 animate={{ opacity: stage === "details" ? 1 : 0 }}
                 transition={{ duration: 0.7, ease: "easeOut" }}
-                className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-black/10 pointer-events-none"
+                className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent md:bg-gradient-to-r md:from-black/80 md:via-black/35 md:to-black/10 pointer-events-none"
               />
             </motion.div>
 
@@ -1098,8 +1177,8 @@ export default function HeroScrollExperience() {
               initial={{ opacity: 0 }}
               animate={{
                 opacity: stage === "details" ? 1 : 0,
-                x: isMobile ? "-50%" : stage === "details" ? 0 : -40,
-                y: isMobile ? (stage === "details" ? 0 : 20) : "-50%",
+                x: isMobile ? 0 : stage === "details" ? 0 : -40,
+                y: stage === "details" ? 0 : 20,
                 pointerEvents: stage === "details" ? "auto" : "none",
               }}
               transition={{
@@ -1114,7 +1193,7 @@ export default function HeroScrollExperience() {
                 position: "absolute",
                 zIndex: 45,
               }}
-              className={`w-[calc(100vw-2.5rem)] max-w-[340px] sm:max-w-[420px] lg:max-w-[460px] xl:max-w-[480px] p-4.5 sm:p-7 md:p-8 shrink-0 flex flex-col justify-between ${
+              className={`-translate-x-1/2 md:translate-x-0 md:-translate-y-1/2 w-[calc(100vw-2.5rem)] max-w-[340px] sm:max-w-[420px] lg:max-w-[460px] xl:max-w-[480px] p-4.5 sm:p-7 md:p-8 shrink-0 flex flex-col justify-between ${
                 stage !== "details" ? "pointer-events-none" : ""
               }`}
             >
@@ -1386,17 +1465,28 @@ export default function HeroScrollExperience() {
         {/* Left Action / Stage indicator */}
         <div className="flex items-center">
           {stage === "details" ? (
-            <div className="flex items-center gap-2 text-white/80 font-heading text-xs truncate max-w-[180px] sm:max-w-none">
+            <button
+              onClick={() => setStage("carousel")}
+              className="flex items-center gap-2 text-white/80 hover:text-white transition-colors cursor-pointer font-heading text-xs truncate max-w-[180px] sm:max-w-none"
+            >
               <span className="w-2 h-2 rounded-full bg-[#A9D3F4] animate-pulse shrink-0" />
               <span className="truncate">{currentItem.flavor}</span>
-            </div>
+              <span className="text-white/40 text-[10px] hidden sm:inline">• Tap to close</span>
+            </button>
           ) : stage === "focus" ? (
             <div className="flex items-center gap-2 text-white/80 font-heading text-xs">
               <span className="w-2 h-2 rounded-full bg-[#A9D3F4] animate-pulse" />
               <span>Focus • Scroll for Details</span>
             </div>
           ) : (
-            <div className="flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 backdrop-blur-md text-white/90 text-[11px] sm:text-xs font-heading font-medium tracking-wide shadow-sm transition-all select-none">
+            <button
+              onClick={() => {
+                if (isDocked && stage === "carousel") {
+                  setStage("details");
+                }
+              }}
+              className="flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 backdrop-blur-md text-white/90 text-[11px] sm:text-xs font-heading font-medium tracking-wide shadow-sm transition-all select-none cursor-pointer"
+            >
               <span className="w-2 h-2 rounded-full bg-[#A9D3F4] animate-pulse shrink-0 shadow-[0_0_8px_#A9D3F4]" />
               <span className="flex items-center gap-1.5">
                 <span>Swipe</span>
@@ -1405,7 +1495,7 @@ export default function HeroScrollExperience() {
                 <span>Scroll</span>
                 <span className="text-white/60 font-mono text-[10px]">↕</span>
               </span>
-            </div>
+            </button>
           )}
         </div>
 
