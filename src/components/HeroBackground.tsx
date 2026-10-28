@@ -41,22 +41,17 @@ export default function HeroBackground() {
       <div className="absolute bottom-0 inset-x-0 h-[4vh] sm:h-[6vh] md:h-[8vh] bg-white z-0" />
 
       {/* ── Complete Hero Artwork (Blue Litter Hills, Peeking Cat & White Floor) ── */}
-      {/* Mobile view (< md: 768px): Uses the vertical portrait artwork scaled so the cat is prominent and large matching mockup */}
-      {/* Artwork is 941x1672: the cat spans x 462-848 (~41% of its width, centred at 69.6%), ears at
-          y=1180, paws at y=1430, head x 520-815. Scaled to 109vw, shifted -8.6vw and dropped 3.5vw:
-          head spans ~51.4vw-85.4vw, paws ~44.8vw-89vw, ears ~53.2vw and paws ~24.4vw above the
-          bottom edge (matches the mockup measured at full phone width).
-          The wrapper is clipped to 75vw tall so the artwork's cream sky doesn't cover the bricks. */}
-      <div className="md:hidden absolute bottom-0 inset-x-0 h-[75vw] pointer-events-none z-10 overflow-hidden">
+      {/* Mobile view (< md: 768px): Uses the vertical portrait artwork scaled so the cat is prominent and cute */}
+      <div className="md:hidden absolute bottom-0 inset-x-0 h-[78vw] pointer-events-none z-10 overflow-hidden">
         <div
           className="absolute"
-          style={{ width: "109vw", aspectRatio: "941 / 1672", left: "-8.6vw", bottom: "-3.5vw" }}
+          style={{ width: "119vw", aspectRatio: "941 / 1672", left: "-14vw", bottom: "-4vw" }}
         >
           <Image
             src="/hero-cat-hills-mobile.png"
             alt="Meow Ganics Litter Hills & Peeking Cat Mobile"
             fill
-            sizes="109vw"
+            sizes="119vw"
             className="object-contain"
             priority
           />
