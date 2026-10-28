@@ -45,8 +45,7 @@ export default function PeekingCat() {
             ? { duration: 0.5, ease: "easeOut" }
             : { duration: 4.5, repeat: Infinity, ease: "easeInOut" }
         }
-        className="relative w-full aspect-[4762/2749] max-h-[25vh] sm:max-h-[30vh] md:max-h-[34vh]"
-      >
+        className="relative w-full aspect-[4762/2749] max-h-[25vh] sm:max-h-[30vh] md:max-h-[34vh]"      >
         {/* SVG Eye & Nose Layer behind the transparent cutouts of Asset 4.png */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none z-0"

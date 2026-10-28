@@ -2,6 +2,13 @@
 
 import React from "react";
 import Image from "next/image";
+import CatWave from "./CatWave";
+
+// Where the animated cat sits inside each artwork container, as % of the artwork box. Measured
+// from the eyes/nose of the cat painted into hero-cat-hills*.png. The *-nocat.png variants are the
+// same artwork with only the slivers of the painted cat that the frames ever leave exposed removed.
+const CAT_RECT_DESKTOP = { left: 52.521, top: 56.468, width: 28.435, height: 33.683 };
+const CAT_RECT_MOBILE = { left: 46.106, top: 67.993, width: 50.436, height: 18.923 };
 
 export default function HeroBackground() {
   return (
@@ -40,7 +47,7 @@ export default function HeroBackground() {
       {/* ── Seamless White Floor Base (Fills any bottom space) ── */}
       <div className="absolute bottom-0 inset-x-0 h-[4vh] sm:h-[6vh] md:h-[8vh] bg-white z-0" />
 
-      {/* ── Complete Hero Artwork (Blue Litter Hills, Peeking Cat & White Floor) ── */}
+      {/* ── Hero Artwork (Blue Litter Hills & White Floor) + animated Peeking Cat overlay ── */}
       {/* Mobile view (< md: 768px): Uses the vertical portrait artwork scaled so the cat is prominent and cute */}
       <div className="md:hidden absolute bottom-0 inset-x-0 h-[78vw] pointer-events-none z-10 overflow-hidden">
         <div
@@ -48,13 +55,14 @@ export default function HeroBackground() {
           style={{ width: "119vw", aspectRatio: "941 / 1672", left: "-14vw", bottom: "-4vw" }}
         >
           <Image
-            src="/hero-cat-hills-mobile.png"
-            alt="Meow Ganics Litter Hills & Peeking Cat Mobile"
+            src="/hero-cat-hills-mobile-nocat-v3.png"
+            alt="Meow Ganics Litter Hills Mobile"
             fill
             sizes="119vw"
             className="object-contain"
             priority
           />
+          <CatWave frameSet="sm" rect={CAT_RECT_MOBILE} />
         </div>
       </div>
 
@@ -71,13 +79,14 @@ export default function HeroBackground() {
         }}
       >
         <Image
-          src="/hero-cat-hills.png"
-          alt="Meow Ganics Litter Hills & Peeking Cat"
+          src="/hero-cat-hills-nocat-v3.png"
+          alt="Meow Ganics Litter Hills"
           fill
           sizes="160vw"
           className="object-contain"
           priority
         />
+        <CatWave frameSet="lg" rect={CAT_RECT_DESKTOP} />
       </div>
 
       {/* Tablet view (md to lg): Uses the landscape artwork */}
