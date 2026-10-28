@@ -3,6 +3,28 @@
 import React from "react";
 import Image from "next/image";
 
+// The three little "surprise" strokes beside the cat's head live in their own image so they can
+// sway gently while the cat and hills stay perfectly still. Boxes are % of the artwork container.
+const MARKS_DESKTOP = { left: 53.409, top: 52.816, width: 3.947, height: 10.521 };
+const MARKS_MOBILE = { left: 49.841, top: 66.806, width: 6.589, height: 5.801 };
+
+function SurpriseMarks({ src, box }: { src: string; box: typeof MARKS_DESKTOP }) {
+  return (
+    <div
+      className="absolute pointer-events-none"
+      style={{ left: `${box.left}%`, top: `${box.top}%`, width: `${box.width}%`, height: `${box.height}%` }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        draggable={false}
+        className="animate-feather w-full h-full select-none"
+      />
+    </div>
+  );
+}
+
 export default function HeroBackground() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0">
@@ -48,13 +70,14 @@ export default function HeroBackground() {
           style={{ width: "119vw", aspectRatio: "941 / 1672", left: "-14vw", bottom: "-4vw" }}
         >
           <Image
-            src="/hero-cat-hills-mobile.png"
+            src="/hero-cat-hills-mobile-v2.png"
             alt="Meow Ganics Litter Hills & Peeking Cat Mobile"
             fill
             sizes="119vw"
             className="object-contain"
             priority
           />
+          <SurpriseMarks src="/hero-marks-mobile.png" box={MARKS_MOBILE} />
         </div>
       </div>
 
@@ -71,13 +94,14 @@ export default function HeroBackground() {
         }}
       >
         <Image
-          src="/hero-cat-hills.png"
+          src="/hero-cat-hills-v2.png"
           alt="Meow Ganics Litter Hills & Peeking Cat"
           fill
           sizes="160vw"
           className="object-contain"
           priority
         />
+        <SurpriseMarks src="/hero-marks.png" box={MARKS_DESKTOP} />
       </div>
 
       {/* Tablet view (md to lg): Uses the landscape artwork */}

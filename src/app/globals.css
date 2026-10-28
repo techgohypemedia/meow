@@ -137,6 +137,30 @@ button {
   animation: float 4s ease-in-out infinite;
 }
 
+/* Gentle sway for the cat's surprise strokes: pivots from the end nearest the head. */
+@keyframes feather {
+  0%,
+  100% {
+    transform: rotate(-4deg) translateY(0);
+    opacity: 0.92;
+  }
+  50% {
+    transform: rotate(4deg) translateY(-2px);
+    opacity: 1;
+  }
+}
+
+.animate-feather {
+  transform-origin: 90% 85%;
+  animation: feather 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-feather {
+    animation: none;
+  }
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
